@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <ProjectGuid>{7AED6730-391A-447E-8EE8-57CAFFB2E0A9}</ProjectGuid>
+        <OutputType>Library</OutputType>
+        <AppDesignerFolder>Properties</AppDesignerFolder>
+        <RootNamespace>AethaModelSwapMod</RootNamespace>
+        <AssemblyName>AethaModelSwapMod</AssemblyName>
+        <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+        <FileAlignment>512</FileAlignment>
+        <LangVersion>default</LangVersion>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>bin\Debug\</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>bin\Release\</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <PropertyGroup>
+      <PostBuildEvent>copy /y 0Harmony.dll ..\..\Plugin\0Harmony.dll
+copy /y AethaModelSwapMod.dll ..\..\Plugin\AethaModelSwapMod.dll</PostBuildEvent>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="0Harmony, Version=2.3.6.0, Culture=neutral, processorArchitecture=MSIL">
+          <HintPath>packages\Lib.Harmony.2.3.6\lib\net48\0Harmony.dll</HintPath>
+        </Reference>
+        <Reference Include="Assembly-CSharp">
+          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\Assembly-CSharp.dll</HintPath>
+        </Reference>
+        <Reference Include="com.rlabrecque.steamworks.net">
+          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\com.rlabrecque.steamworks.net.dll</HintPath>
+        </Reference>
+        <Reference Include="Landfall.Modding">
+          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\Landfall.Modding.dll</HintPath>
+        </Reference>
+        <Reference Include="mscorlib">
+          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\mscorlib.dll</HintPath>
+        </Reference>
+        <Reference Include="netstandard">
+          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\netstandard.dll</HintPath>
+        </Reference>
+        <Reference Include="Newtonsoft.Json">
+          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\Newtonsoft.Json.dll</HintPath>
+        </Reference>
+        <Reference Include="Sirenix.Serialization">
+          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\Sirenix.Serialization.dll</HintPath>
+        </Reference>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+        <Reference Include="Unity.Localization">
+          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\Unity.Localization.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Mathematics">
+          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\Unity.Mathematics.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine">
+          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\UnityEngine.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.AnimationModule">
+          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.AssetBundleModule">
+          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.CoreModule">
+          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.ImageConversionModule">
+          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.UI">
+          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\UnityEngine.UI.dll</HintPath>
+        </Reference>
+        <Reference Include="Zorro.ControllerSupport">
+          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\Zorro.ControllerSupport.dll</HintPath>
+        </Reference>
+        <Reference Include="Zorro.Core.Runtime">
+          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\Zorro.Core.Runtime.dll</HintPath>
+        </Reference>
+        <Reference Include="Zorro.Settings.Runtime">
+          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\Zorro.Settings.Runtime.dll</HintPath>
+        </Reference>
+        <Reference Include="Zorro.UI.Runtime">
+          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\Zorro.UI.Runtime.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="AethaModelSwap.cs" />
+        <Compile Include="HasteClone.cs" />
+        <Compile Include="Patches\EscapeMenuMainPagePatches.cs" />
+        <Compile Include="Patches\EscapeMenuPatches.cs" />
+        <Compile Include="Patches\PlayerCharacterPatches.cs" />
+        <Compile Include="Patches\PlayerPatches.cs" />
+        <Compile Include="Patches\RemotePlayerHudMarkerManagerPatches.cs" />
+        <Compile Include="Patches\SkinDatabasePatches.cs" />
+        <Compile Include="Patches\SkinManagerPatches.cs" />
+        <Compile Include="Patches\SkinSelectionListEntryPatches.cs" />
+        <Compile Include="Patches\SkinSetterPatches.cs" />
+        <Compile Include="SimpleLimbIK.cs" />
+        <Compile Include="ModelIKParameters.cs" />
+        <Compile Include="ModelParameterEditor.cs" />
+        <Compile Include="Settings.cs" />
+        <Compile Include="Properties\AssemblyInfo.cs" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Include="packages.config" />
+    </ItemGroup>
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+         Other similar extension points exist, see Microsoft.Common.targets.
+    <Target Name="BeforeBuild">
+    </Target>
+    <Target Name="AfterBuild">
+    </Target>
+    -->
+
+</Project>
