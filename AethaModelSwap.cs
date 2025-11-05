@@ -189,7 +189,6 @@ public class AethaModelSwap
                 var regDirectory = directory;
                 var regPath = path;
                 var regName = prefab.name;
-                var regBundle = bundle;
 
                 var sprite = LoadSprite($"{regDirectory}\\{regName}");
                 
@@ -205,13 +204,13 @@ public class AethaModelSwap
                     }, 
                     () =>
                     {
-                        if (!regBundle)
+                        if (!bundle)
                         {
-                            regBundle = AssetBundle.LoadFromFile(regPath);
+                            bundle = AssetBundle.LoadFromFile(regPath);
                         }
-                        LoadedBundles.Add(regBundle);
+                        LoadedBundles.Add(bundle);
                         Debug.Log($"Lazily loading prefab: {regName}");
-                        var skin = regBundle.LoadAsset<GameObject>(regName);
+                        var skin = bundle.LoadAsset<GameObject>(regName);
                         return skin;
                     });
             }
