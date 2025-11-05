@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Landfall.Haste;
+using Zorro.Core.CLI;
 using Object = UnityEngine.Object;
 
 namespace AethaModelSwapMod;
@@ -37,6 +38,7 @@ public class AethaModelSwap
 
     static AethaModelSwap()
     {
+        ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action(ModelParamsEditor.OpenEditor).Method));
         // Load skins from all mod directories (including this one)
         foreach (var item in Modloader.LoadedItemDirectories)
         {

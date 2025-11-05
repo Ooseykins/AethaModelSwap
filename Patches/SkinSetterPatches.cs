@@ -11,7 +11,7 @@ public class SkinSetterPatches
 {
     [HarmonyPrefix]
     [HarmonyPatch("SetHipAndNeckVisuals")]
-    private static void SetHipAndNeckVisuals(PlayerSkinSetter __instance, ref SkinManager.Skin skin, ref SkinManager.Skin neckSkin)
+    private static void SetHipAndNeckVisuals(PlayerSkinSetter __instance, SkinManager.Skin skin, ref SkinManager.Skin neckSkin)
     {
         if (AethaModelSwap.HasSkin((int)skin))
         {
@@ -19,21 +19,25 @@ public class SkinSetterPatches
         }
     }
 
+    [HarmonyPrefix]
+    [HarmonyPatch("SetNeckVisuals")]
+    private static void SetNeckVisualsPrefix(PlayerSkinSetter __instance, SkinManager.Skin skin)
+    {
+        // Set the neck's parent to null, cause it's about to be destroyed and we don't want two necks on the instantiated model
+        var currentNeck = GetCurrentNeck(__instance);
+        if (currentNeck)
+        {
+            currentNeck.transform.parent = null;
+        }
+    }
+
     [HarmonyPostfix]
     [HarmonyPatch("SetNeckVisuals")]
-    private static void SetNeckVisuals(PlayerSkinSetter __instance, SkinManager.Skin skin)
+    private static void SetNeckVisualsPostfix(PlayerSkinSetter __instance, SkinManager.Skin skin)
     {
         Debug.Log($"AethaModelSwap Postfix on {__instance}: switching to skin {(int)skin}");
 
-        var currentHipField =
-            typeof(PlayerSkinSetter).GetField("currentHip", BindingFlags.Instance | BindingFlags.NonPublic);
-        if (currentHipField == null)
-        {
-            Debug.LogError($"Something went wrong with reflection, AethaModelSwap is NOT swapping to {skin}");
-            return;
-        }
-        
-        var currentHip = currentHipField.GetValue(__instance) as GameObject;
+        var currentHip = GetCurrentHip(__instance);
         if (!currentHip)
         {
             Debug.LogError($"Something different went wrong with reflection, AethaModelSwap is NOT swapping to {skin}");
@@ -69,5 +73,27 @@ public class SkinSetterPatches
                     SetLayer(tf.GetChild(index));
             }
         }
+    }
+
+    static GameObject GetCurrentHip(PlayerSkinSetter playerSkinSetter)
+    {
+        var currentHipField = typeof(PlayerSkinSetter).GetField("currentHip", BindingFlags.Instance | BindingFlags.NonPublic);
+        if (currentHipField == null)
+        {
+            Debug.LogError($"Something went wrong with reflection, AethaModelSwap is NOT swapping skins");
+            return null;
+        }
+        return currentHipField.GetValue(playerSkinSetter) as GameObject;
+    }
+    
+    static GameObject GetCurrentNeck(PlayerSkinSetter playerSkinSetter)
+    {
+        var currentNeckField = typeof(PlayerSkinSetter).GetField("currentNeck", BindingFlags.Instance | BindingFlags.NonPublic);
+        if (currentNeckField == null)
+        {
+            Debug.LogError($"Something went wrong with reflection, AethaModelSwap is NOT swapping skins");
+            return null;
+        }
+        return currentNeckField.GetValue(playerSkinSetter) as GameObject;
     }
 }

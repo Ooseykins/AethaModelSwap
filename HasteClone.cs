@@ -574,22 +574,9 @@ public class HasteClone : MonoBehaviour
         }
         #endregion
     }
-
-    // Show the base model renderers if the clone is destroyed somehow out of order
+    
     private void OnDestroy()
     {
-        if (_sourceRoot)
-        {
-            foreach (var r in _sourceRoot.GetComponentsInChildren<SkinnedMeshRenderer>())
-            {
-                r.enabled = true;
-            }
-            foreach (var r in _sourceRoot.GetComponentsInChildren<MeshRenderer>())
-            {
-                r.enabled = true;
-            }
-        }
-        
         // Quickly null out the LocalClone so the editor can be updated to show the default model
         if (AethaModelSwap.LocalClone == this)
         {
