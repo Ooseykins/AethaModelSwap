@@ -269,6 +269,12 @@ public class HasteClone : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+        if (!_destAnimator || !_destAnimator.avatar || !_destAnimator.isHuman)
+        {
+            Debug.Log("HasteClone destroyed due to broken animator");
+            Destroy(gameObject);
+            return;
+        }
 
         _destRoot.localScale = Vector3.one;
         _destRoot.rotation = _sourceHips.rotation;
@@ -277,6 +283,12 @@ public class HasteClone : MonoBehaviour
         // Prevent bones from drifting away due to small errors by setting them back to their initial positions
         foreach (var kvp in _initialPositions)
         {
+            if (!kvp.Key)
+            {
+                Debug.Log("HasteClone destroyed due to missing dest bone");
+                Destroy(gameObject);
+                return;
+            }
             kvp.Key.localPosition = kvp.Value;
         }
         

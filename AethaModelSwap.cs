@@ -19,8 +19,17 @@ public class AethaModelSwap
     public static string EditorAssetBundlePath =>  $"{AssemblyDirectory}\\modeleditorui.assetbundle";
     public static HasteClone LocalClone { get; internal set; }
 
-    private static readonly Dictionary<int, (string name, Sprite sprite, Func<ModelIKParameters> modelIKParameters, Func<GameObject> loadPrefab, GameObject cachedPrefab)> RegisteredSkins = new();
+    private static readonly Dictionary<int, RegisteredSkin> RegisteredSkins = new();
     private static readonly HashSet<AssetBundle> LoadedBundles = new();
+
+    private class RegisteredSkin
+    {
+        public string name;
+        public Sprite sprite;
+        public Func<ModelIKParameters> modelIKParameters;
+        public Func<GameObject> loadPrefab;
+        public GameObject cachedPrefab;
+    }
 
     public static bool HasSkin(int index) => RegisteredSkins.ContainsKey(index);
     public static string GetName(int index) => RegisteredSkins.ContainsKey(index) ? RegisteredSkins[index].name : "";
@@ -46,6 +55,26 @@ public class AethaModelSwap
             }
         };
         new Harmony(Guid).PatchAll();
+    }
+
+    public static void ValidateLocalSkin()
+    {
+        if (!SkinDatabase.me) return;
+        var bodySkin = (SkinManager.Skin)FactSystem.GetFact(SkinManager.EquippedSkinBodyFact);
+        var headSkin = (SkinManager.Skin)FactSystem.GetFact(SkinManager.EquippedSkinHeadFact);
+        if ((!HasSkin((int)bodySkin) && !Enum.IsDefined(typeof(SkinManager.Skin), bodySkin)) 
+            || (!HasSkin((int)headSkin) && !Enum.IsDefined(typeof(SkinManager.Skin), headSkin)))
+        {
+            Debug.LogWarning($"Correcting local skin assigned to unavailable index {bodySkin} and {headSkin}");
+            SkinManager.BodySkin = SkinManager.Skin.Default;
+            SkinManager.HeadSkin = SkinManager.Skin.Default;
+            FactSystem.SetFact(SkinManager.EquippedSkinBodyFact, (float) SkinManager.Skin.Default);
+            FactSystem.SetFact(SkinManager.EquippedSkinHeadFact, (float) SkinManager.Skin.Default);
+            if (Player.localPlayer && PlayerCharacter.localPlayer.refs != null && PlayerCharacter.localPlayer.refs.playerSkinSetter)
+            {
+                SkinManager.SetBodySkin(SkinManager.Skin.Default);
+            }
+        }
     }
 
     public static void ResetSkin()
@@ -160,6 +189,7 @@ public class AethaModelSwap
                 var regDirectory = directory;
                 var regPath = path;
                 var regName = prefab.name;
+                var regBundle = bundle;
 
                 var sprite = LoadSprite($"{regDirectory}\\{regName}");
                 
@@ -175,13 +205,13 @@ public class AethaModelSwap
                     }, 
                     () =>
                     {
-                        if (!bundle)
+                        if (!regBundle)
                         {
-                            bundle = AssetBundle.LoadFromFile(regPath);
+                            regBundle = AssetBundle.LoadFromFile(regPath);
                         }
-                        LoadedBundles.Add(bundle);
+                        LoadedBundles.Add(regBundle);
                         Debug.Log($"Lazily loading prefab: {regName}");
-                        var skin = bundle.LoadAsset<GameObject>(regName);
+                        var skin = regBundle.LoadAsset<GameObject>(regName);
                         return skin;
                     });
             }
@@ -213,7 +243,15 @@ public class AethaModelSwap
         {
             Debug.LogError($"A skin is already registered to index {index}");
         }
-        RegisteredSkins[index] = (name, sprite, modelIKParameters, prefab, null);
+
+        RegisteredSkins[index] = new RegisteredSkin
+        {
+            name = name,
+            sprite = sprite,
+            modelIKParameters = modelIKParameters,
+            loadPrefab = prefab,
+        };
+
         Debug.Log($"Successfully registered skin {index}: {name}");
     }
 
@@ -221,6 +259,7 @@ public class AethaModelSwap
     // Call this again if your mod registers skins later
     public static void RegisterToSkinManager(SkinDatabase instance)
     {
+        ValidateLocalSkin();
         // Instantiate new skin database entries
         // These are scriptable objects so we use the default skin as a base
         Dictionary<int, SkinDatabaseEntry> newEntries = new();

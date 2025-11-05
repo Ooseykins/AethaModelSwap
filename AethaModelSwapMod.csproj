@@ -107,7 +107,6 @@ copy /y AethaModelSwapMod.dll ..\..\Plugin\AethaModelSwapMod.dll</PostBuildEvent
         <Compile Include="Patches\EscapeMenuPatches.cs" />
         <Compile Include="Patches\PlayerCharacterPatches.cs" />
         <Compile Include="Patches\PlayerPatches.cs" />
-        <Compile Include="Patches\RemotePlayerHudMarkerManagerPatches.cs" />
         <Compile Include="Patches\SkinDatabasePatches.cs" />
         <Compile Include="Patches\SkinManagerPatches.cs" />
         <Compile Include="Patches\SkinSelectionListEntryPatches.cs" />

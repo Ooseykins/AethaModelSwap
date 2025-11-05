@@ -9,15 +9,15 @@ namespace AethaModelSwapMod.Patches;
 [HarmonyPatch(typeof(SkinSelectionListEntry))]
 public class SkinSelectionListEntryPatches
 {
-    private static SkinManager.Skin selectedHead;
-    private static SkinManager.Skin selectedBody;
+    private static SkinManager.Skin _selectedHead;
+    private static SkinManager.Skin _selectedBody;
     
     [HarmonyPostfix]
     [HarmonyPatch("AssignSkinToListEntry")]
     private static void AssignSkinToListEntry(SkinSelectionListEntry __instance, SkinDatabaseEntry skinEntry, int id, SkinManager.SkinSlot slot)
     {
-        selectedHead = SkinManager.GetHeadSkinFromFacts();
-        selectedBody = SkinManager.GetBodySkinFromFacts();
+        _selectedHead = SkinManager.GetHeadSkinFromFacts();
+        _selectedBody = SkinManager.GetBodySkinFromFacts();
         __instance.gameObject.SetActive(slot == SkinManager.SkinSlot.Head || !AethaModelSwap.HasSkin((int)skinEntry.Skin));
     }
     
@@ -32,15 +32,15 @@ public class SkinSelectionListEntryPatches
         if (status == SkinManager.SkinStatus.Unlocked)
             return true;
 
-        var updateBoth = AethaModelSwap.HasSkin((int)selectedBody) || AethaModelSwap.HasSkin((int)selectedHead) || AethaModelSwap.HasSkin((int)__instance.skin.Skin);
+        var updateBoth = AethaModelSwap.HasSkin((int)_selectedBody) || AethaModelSwap.HasSkin((int)_selectedHead) || AethaModelSwap.HasSkin((int)__instance.skin.Skin);
 
         switch(__instance.slot)
         {
             case SkinManager.SkinSlot.Body:
-                selectedBody = __instance.skin.Skin;
+                _selectedBody = __instance.skin.Skin;
                 break;
             case SkinManager.SkinSlot.Head:
-                selectedHead = __instance.skin.Skin;
+                _selectedHead = __instance.skin.Skin;
                 break;
         }
 
@@ -53,8 +53,8 @@ public class SkinSelectionListEntryPatches
             return true;
         }
         
-        selectedBody = __instance.skin.Skin;
-        selectedHead = __instance.skin.Skin;
+        _selectedBody = __instance.skin.Skin;
+        _selectedHead = __instance.skin.Skin;
         
         var prevSlot = __instance.slot;
         __instance.slot = SkinManager.SkinSlot.Head;

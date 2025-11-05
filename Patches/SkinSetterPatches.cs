@@ -50,7 +50,6 @@ public class SkinSetterPatches
             {
                 r.enabled = true;
             }
-            Debug.Log($"There is no registered skin {skin}");
             return;
         }
 
