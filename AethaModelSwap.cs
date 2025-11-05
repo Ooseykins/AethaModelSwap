@@ -164,6 +164,11 @@ public class AethaModelSwap
                 }
 
                 var splitPoint = prefab.name.LastIndexOf('.');
+                if (splitPoint <= -1)
+                {
+                    Debug.Log($"Bad prefab naming for {prefab.name}, format should be Name.Number like Aetha.41");
+                    continue;
+                }
                 var prefabName = prefab.name.Substring(0, splitPoint);
                 var prefabIndex = prefab.name.Substring(splitPoint+1);
                 
