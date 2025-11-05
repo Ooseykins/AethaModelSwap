@@ -1,5 +1,7 @@
-﻿using System.Reflection;
+﻿using System.IO;
+using System.Reflection;
 using Landfall.Haste;
+using UnityEngine;
 using UnityEngine.Localization;
 using Zorro.Settings;
 
@@ -26,5 +28,17 @@ public class OpenEditor : ButtonSetting, IExposedSetting
     }
     public override string GetButtonText() => "Open";
     public LocalizedString GetDisplayName() => new UnlocalizedString("Model Editor");
+    public string GetCategory() => "General";
+}
+
+[HasteSetting]
+public class OpenModPath : ButtonSetting, IExposedSetting
+{
+    public override void OnClicked(ISettingHandler settingHandler)
+    {
+        Application.OpenURL(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+    }
+    public override string GetButtonText() => "Open";
+    public LocalizedString GetDisplayName() => new UnlocalizedString("AethaModelSwap Directory");
     public string GetCategory() => "General";
 }
