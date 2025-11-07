@@ -141,6 +141,7 @@ public class ModelParamsEditor : MonoBehaviour
                 {
                     AethaModelSwap.SetSkin(AethaModelSwap.LocalClone.SkinIndex);
                     EditorParams.replaceStandardShader = false;
+                    SetBools(EditorParams.replaceStandardShader);
                 }
             }
         });

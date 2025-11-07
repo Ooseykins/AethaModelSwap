@@ -73,3 +73,7 @@ I'll leave uploading your own mod to learn elsewhere. Here's a handy link: https
 The in-game scale slider just not cutting it? In the Import Settings for your model in Unity: go to the Model section and set Scale Factor bigger or smaller then click Apply to change the scaling.
 
 ![](StepByStepPictures/301SetTheScaling.png)
+
+## I can't turn off "Replace Standard materials"
+
+This is due to an optimization of the model materials. Uncheck the box, save the configuration, then restart the game. The model should now have it's base materials.
