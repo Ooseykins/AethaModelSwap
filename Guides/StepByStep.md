@@ -3,7 +3,7 @@
 
 Unity Editor from https://unity.com/download. I'll me using Unity 6 (6000.0.40f1) for this guide, but most versions should work fine. You'll want to use the "3D (Built-in render pipeline)" template, which is not included in most installs but has a download button right there.
 
-Make sure you have installed the modules for Windows, Linuxm, and Mac builds as well, so everyone can use your mod!
+Make sure you have installed the modules for Windows, Linux, and Mac builds as well, so everyone can use your mod!
 ![](StepByStepPictures/101AddModules.png)
 ![](StepByStepPictures/102AddModules.png)
 ![](StepByStepPictures/1ChooseATemplate.png)
