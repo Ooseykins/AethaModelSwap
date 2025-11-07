@@ -113,7 +113,7 @@ public class ModelParamsEditor : MonoBehaviour
         gameObject.SetActive(false);
         CursorHandler.RegisterCursorNeeder(gameObject);
         
-        AddSliderField("Scale", 1f, 0.5f, 4f, x => EditorParams.scale = x);
+        AddSliderField("Scale", 1f, 0.1f, 4f, x => EditorParams.scale = x);
         AddSliderField("Vertical Offset", 0f, -1f, 1f, x => EditorParams.verticalOffset = x);
         AddSeparator();
         AddSliderField("Stance Width", 1f, 0f, 4f, x => EditorParams.stanceWidth = x);

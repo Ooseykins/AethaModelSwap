@@ -67,3 +67,9 @@ You can add a small square image file to the same folder named the same as the .
 I'll leave uploading your own mod to learn elsewhere. Here's a handy link: https://github.com/Haste-Team/HastePlugins. The only files you need to include in a mod are the 3 .hastemodel files, your .json configuration files, and the icon image files. Make sure to set AethaModelSwap as a required item on the Steam workshop!
 
 ![](StepByStepPictures/13WorkshopRequiredItems.png)
+
+## My model is TOO BIG or TOO SMALL!
+
+The in-game scale slider just not cutting it? In the Import Settings for your model in Unity: go to the Model section and set Scale Factor bigger or smaller then click Apply to change the scaling.
+
+![](StepByStepPictures/301SetTheScaling.png)
