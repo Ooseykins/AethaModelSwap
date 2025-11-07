@@ -65,7 +65,7 @@ public class SkinSetterPatches
             var preview = __instance.transform.root.GetComponentInChildren<SkinPreview3d>();
             if (!preview) return;
             var layer = math.tzcnt(preview.cam.cullingMask);
-            SetLayer(clone.transform.root);
+            SetLayer(clone.transform);
             void SetLayer(Transform tf)
             {
                 tf.gameObject.layer = layer;
