@@ -17,7 +17,49 @@ public class AethaModelSwap
 {
     private const string Guid = "Aetha.ModelSwap";
     private static string AssemblyDirectory => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-    public static string EditorAssetBundlePath =>  $"{AssemblyDirectory}\\modeleditorui.assetbundle";
+    public static string EditorAssetBundlePath() {
+        switch(Application.platform)
+        {
+            case RuntimePlatform.WindowsPlayer:
+                return $"{AssemblyDirectory}\\modeleditorui.windows.assetbundle";
+            case RuntimePlatform.LinuxPlayer:
+                return $"{AssemblyDirectory}\\modeleditorui.linux.assetbundle";
+            case RuntimePlatform.OSXPlayer:
+                return $"{AssemblyDirectory}\\modeleditorui.mac.assetbundle";
+            default:
+                return $"{AssemblyDirectory}\\modeleditorui.windows.assetbundle";
+        }
+    }
+
+    private const string WindowsModelExtension = ".windows.hastemodel";
+    private const string LinuxModelExtension = ".linux.hastemodel";
+    private const string MacModelExtension = ".mac.hastemodel";
+    
+    private static bool IsCompatiblePlatformModel(string filename) {
+        if (!filename.EndsWith(".hastemodel"))
+        {
+            return false;
+        }
+        // Maybe some redundancy here, but whatever
+        switch (Application.platform)
+        {
+            case RuntimePlatform.WindowsPlayer when filename.EndsWith(WindowsModelExtension):
+                return true;
+            case RuntimePlatform.WindowsPlayer when filename.EndsWith(LinuxModelExtension) || filename.EndsWith(MacModelExtension):
+                return false;
+            case RuntimePlatform.LinuxPlayer when filename.EndsWith(LinuxModelExtension):
+                return true;
+            case RuntimePlatform.LinuxPlayer when filename.EndsWith(WindowsModelExtension) || filename.EndsWith(MacModelExtension):
+                return false;
+            case RuntimePlatform.OSXPlayer when filename.EndsWith(MacModelExtension):
+                return true;
+            case RuntimePlatform.OSXPlayer when filename.EndsWith(WindowsModelExtension) || filename.EndsWith(LinuxModelExtension):
+                return false;
+            default:
+                // If the model has no platform indicator just say "yes" anyways
+                return true;
+        }
+    }
     public static HasteClone LocalClone { get; internal set; }
 
     private static readonly Dictionary<int, RegisteredSkin> RegisteredSkins = new();
@@ -138,7 +180,7 @@ public class AethaModelSwap
 
     public static void LoadSkins(string directory)
     {
-        foreach (var path in Directory.GetFiles(directory).Where(x => x.Contains(".hastemodel")))
+        foreach (var path in Directory.GetFiles(directory).Where(IsCompatiblePlatformModel))
         {
             Debug.Log($"Loading model bundle {path}");
             var bundle = AssetBundle.LoadFromFile(path);

@@ -3,11 +3,14 @@
 This mod is a base for replacing the default Zoe model in Haste with user-imported models. Adjustments are done when the model is imported to match closely to the Zoe skeleton rig, then the model will update to match Zoe's animations. Some further configurable adjustments to arm, hand, and head angles. Then IK handles placing the feet to try and maintain a stride that matches Zoe's.
 
 ## Creating models
+
+[Here's the step-by-step guide!](Guides/StepByStep.md)
+
 Models are exported/imported via Unity Asset Bundles. The asset bundle must have the .hastemodel filename extension. The Unity version shouldn't matter too much, but I tested with 2022.x and 6000.x. To be a valid model, the prefab name must have a number suffix (eg: Aetha.32100) to indicate which skin ID it uses. This should be totally unique otherwise it will fail to load. The model must also have an animator component with a humanoid avatar set.
 
 There is a script for exporting the asset bundles included in this repository. Make sure BuildAssetBundles.cs is inside of a folder called Editor when putting it in Unity.
 
-The UI icon should be a square .png file, named the same as the prefab (eg: Aetha.32100.png)
+The UI icon should be a small square (256x256) .png file, named the same as the prefab (eg: Aetha.32100.png)
 
 The configuration file can be created in game using the configuration interface (Settings -> General -> Open Model Editor)
 

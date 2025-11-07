@@ -48,10 +48,10 @@ public class ModelParamsEditor : MonoBehaviour
 
     static void InitializeEditorUI()
     {
-        var bundle = AssetBundle.LoadFromFile(AethaModelSwap.EditorAssetBundlePath);
+        var bundle = AssetBundle.LoadFromFile(AethaModelSwap.EditorAssetBundlePath());
         if (bundle == null)
         {
-            Debug.Log($"Failed to load bundle {AethaModelSwap.EditorAssetBundlePath}");
+            Debug.Log($"Failed to load bundle {AethaModelSwap.EditorAssetBundlePath()}");
             return;
         }
         var editorPrefab = bundle.LoadAsset<GameObject>(PrefabName);
