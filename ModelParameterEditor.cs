@@ -125,6 +125,7 @@ public class ModelParamsEditor : MonoBehaviour
         AddSliderField("Foot Angle", 0f, -45f, 45f, x => EditorParams.footAngle = x);
         AddSliderField("Head Angle", 0f, -45f, 45f, x => EditorParams.headAngleOffset = x);
         AddSliderField("Arm Angle", 0f, -45f, 45f, x => EditorParams.armAngleOffset = x);
+        AddSliderField("Spine Angle", 0f, -45f, 45f, x => EditorParams.spineAngleOffset = x);
         AddSliderField("Hand Angle", 0f, -45f, 45f, x => EditorParams.handAngleOffset = x);
         AddSeparator();
         AddToggleField("Replace Standard materials", false, x =>
@@ -194,6 +195,7 @@ public class ModelParamsEditor : MonoBehaviour
             EditorParams.footAngle,
             EditorParams.headAngleOffset,
             EditorParams.armAngleOffset,
+            EditorParams.spineAngleOffset,
             EditorParams.handAngleOffset);
         SetBools(EditorParams.replaceStandardShader);
     }

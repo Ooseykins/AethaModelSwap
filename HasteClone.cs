@@ -302,8 +302,21 @@ public class HasteClone : MonoBehaviour
         RotateDestHands();
         SetIKHandles();
         
+        // Bend the clone's spine
+        var spineBones = new List<Transform> { _destAnimator.GetBoneTransform(HumanBodyBones.Spine), _destAnimator.GetBoneTransform(HumanBodyBones.Chest), _destAnimator.GetBoneTransform(HumanBodyBones.UpperChest) };
+        spineBones.RemoveAll(x => !x);
+        foreach (var t in spineBones)
+        {
+            t.Rotate(t.right, modelIKParameters.spineAngleOffset / spineBones.Count, Space.World);
+        }
+        
         // Tilt the clone's head up or down
-        _destAnimator.GetBoneTransform(HumanBodyBones.Head).Rotate(_sourceHips.right, modelIKParameters.headAngleOffset, Space.World);
+        var head = _destAnimator.GetBoneTransform(HumanBodyBones.Head);
+        if(head)
+        {
+            head.Rotate(head.right, modelIKParameters.headAngleOffset, Space.World);
+        }
+        
 
         _destRoot.localScale = Vector3.one * (modelIKParameters.scale * _instanceScale);
     }

@@ -21,6 +21,7 @@ public class ModelIKParameters
     public float footAngle = 0f;
     public float armAngleOffset = 0f;
     public float handAngleOffset = 0f;
+    public float spineAngleOffset = 0f;
     public float headAngleOffset = 0f;
 
     public bool replaceStandardShader = false;
