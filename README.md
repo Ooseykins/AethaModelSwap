@@ -2,6 +2,11 @@
 # Aetha Model Swap
 This mod is a base for replacing the default Zoe model in Haste with user-imported models. Adjustments are done when the model is imported to match closely to the Zoe skeleton rig, then the model will update to match Zoe's animations. Some further configurable adjustments to arm, hand, and head angles. Then IK handles placing the feet to try and maintain a stride that matches Zoe's.
 
+## On the Steam Workshop
+The base mod: https://steamcommunity.com/sharedfiles/filedetails/?id=3508742571
+
+Some example models: https://steamcommunity.com/sharedfiles/filedetails/?id=3599240067
+
 ## Creating models
 
 [Here's the step-by-step guide!](Guides/StepByStep.md)
