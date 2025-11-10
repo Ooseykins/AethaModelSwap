@@ -24,9 +24,11 @@ public class ModelIKParameters
     public float spineAngleOffset = 0f;
     public float headAngleOffset = 0f;
 
+    public float eyeMovement = 0f;
+
     public bool replaceStandardShader = false;
-    
-    public static ModelIKParameters LoadModelIKParameters(string path)
+
+    public static ModelIKParameters LoadModelIKParameters(string path, bool setSavePath = false)
     {
         ModelIKParameters modelIKParameters = null;
         if (File.Exists(path))
@@ -34,6 +36,10 @@ public class ModelIKParameters
             modelIKParameters = JsonConvert.DeserializeObject<ModelIKParameters>(File.ReadAllText(path));
         }
         modelIKParameters ??= new ModelIKParameters();
+        if (setSavePath)
+        {
+            modelIKParameters.savePath = path;
+        }
         return modelIKParameters;
     }
     

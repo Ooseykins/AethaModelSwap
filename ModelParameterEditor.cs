@@ -127,6 +127,7 @@ public class ModelParamsEditor : MonoBehaviour
         AddSliderField("Arm Angle", 0f, -45f, 45f, x => EditorParams.armAngleOffset = x);
         AddSliderField("Spine Angle", 0f, -45f, 45f, x => EditorParams.spineAngleOffset = x);
         AddSliderField("Hand Angle", 0f, -45f, 45f, x => EditorParams.handAngleOffset = x);
+        AddSliderField("Eye Movement", 0f, 0f, 1f, x => EditorParams.eyeMovement = x);
         AddSeparator();
         AddToggleField("Replace Standard materials", false, x =>
         {
@@ -152,7 +153,7 @@ public class ModelParamsEditor : MonoBehaviour
     void Reset()
     {
         if (!AethaModelSwap.LocalClone || string.IsNullOrEmpty(AethaModelSwap.LocalClone.modelIKParameters.savePath)) return;
-        AethaModelSwap.LocalClone.modelIKParameters = ModelIKParameters.LoadModelIKParameters(AethaModelSwap.LocalClone.modelIKParameters.savePath);
+        AethaModelSwap.LocalClone.modelIKParameters = ModelIKParameters.LoadModelIKParameters(AethaModelSwap.LocalClone.modelIKParameters.savePath, true);
         ResetFields();
     }
 
@@ -197,7 +198,8 @@ public class ModelParamsEditor : MonoBehaviour
             EditorParams.headAngleOffset,
             EditorParams.armAngleOffset,
             EditorParams.spineAngleOffset,
-            EditorParams.handAngleOffset);
+            EditorParams.handAngleOffset,
+            EditorParams.eyeMovement);
         SetBools(EditorParams.replaceStandardShader);
     }
 

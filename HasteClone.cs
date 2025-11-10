@@ -12,7 +12,7 @@ public class HasteClone : MonoBehaviour
 {
     // Zoe model's measurements
     private const float ZoePrefabScale = 0.02f;
-    private const float ZoeFootIKHeightOffset = -0.25f;
+    private const float ZoeFootIKHeightOffset = -0.3f;
     private static float _zoeStanceWidth;
     private static float _zoeHipHeight;
     private static float _zoeArmLength;
@@ -31,7 +31,12 @@ public class HasteClone : MonoBehaviour
 
     // For translating the base Zoe model's bone rotations to the imported model
     private readonly List<(Transform source, Transform dest)> _correctiveBones = new();
+    private readonly Dictionary<HumanBodyBones, Transform> _sourceBones = new();
+    private readonly Dictionary<HumanBodyBones, Transform> _destBones = new();
     
+    // Lookup for non-humanoid animators
+    private Dictionary<HumanBodyBones, string> _boneNameTable = null;
+
     // For preventing bones drifting away due to some inaccuracies
     private readonly Dictionary<Transform, Vector3> _initialPositions = new();
 
@@ -46,6 +51,12 @@ public class HasteClone : MonoBehaviour
     private IKInstance _ikFootRight;
     private IKInstance _ikHandLeft;
     private IKInstance _ikHandRight;
+    
+    // Store eye references so we can interpolate their rotations
+    private Transform _destEyeLeft;
+    private Transform _destEyeRight;
+    private Quaternion _destEyeStartRotLeft;
+    private Quaternion _destEyeStartRotRight;
 
     // Animator of the instantiated clone, used for getting bone references
     private Animator _destAnimator;
@@ -53,10 +64,12 @@ public class HasteClone : MonoBehaviour
     public ModelIKParameters modelIKParameters = new ();
     public int SkinIndex { get; private set; }
     
-    public void Setup(Transform sourceRoot, Transform destRoot, int index)
+    public void Setup(Transform sourceRoot, Transform destRoot, int index, Dictionary<HumanBodyBones, string> boneNames = null)
     {
         Debug.Log($"Setting up a HasteClone copying {sourceRoot} to {destRoot}");
         SkinIndex = index;
+
+        _boneNameTable = boneNames;
 
         _sourceRoot = sourceRoot;
         _sourceHips = GetSourceBoneTransform(HumanBodyBones.Hips, _sourceRoot);
@@ -66,8 +79,11 @@ public class HasteClone : MonoBehaviour
         destRoot.rotation = Quaternion.identity;
         _destRoot.localScale = Vector3.one;
         _destAnimator = _destRoot.GetComponentInChildren<Animator>();
-        _destAnimator.enabled = false;
-        _destHips = _destAnimator.GetBoneTransform(HumanBodyBones.Hips);
+        if (_destAnimator && _destAnimator.avatar && _destAnimator.isHuman)
+        {
+            _destAnimator.enabled = false;
+        }
+        _destHips = GetDestBoneTransform(HumanBodyBones.Hips);
         _instanceScale = _sourceHips.lossyScale.x / ZoePrefabScale;
         
         SetMaterials();
@@ -90,27 +106,28 @@ public class HasteClone : MonoBehaviour
 
         _ikFootLeft = AddLimbIK(
             GetSourceBoneTransform(HumanBodyBones.LeftToes, sourceRoot), 
-            _destAnimator.GetBoneTransform(HumanBodyBones.LeftFoot), 
+            GetDestBoneTransform(HumanBodyBones.LeftFoot), 
             _sourceHips, 
             _destHips);
         _ikFootRight = AddLimbIK(
             GetSourceBoneTransform(HumanBodyBones.RightToes, sourceRoot), 
-            _destAnimator.GetBoneTransform(HumanBodyBones.RightFoot), 
+            GetDestBoneTransform(HumanBodyBones.RightFoot), 
             _sourceHips, 
             _destHips);
         _ikHandLeft = AddLimbIK(
             GetSourceBoneTransform(HumanBodyBones.LeftHand, sourceRoot), 
-            _destAnimator.GetBoneTransform(HumanBodyBones.LeftHand), 
+            GetDestBoneTransform(HumanBodyBones.LeftHand), 
             GetSourceBoneTransform(HumanBodyBones.LeftUpperArm, sourceRoot), 
-            _destAnimator.GetBoneTransform(HumanBodyBones.LeftUpperArm));
+            GetDestBoneTransform(HumanBodyBones.LeftUpperArm));
         _ikHandRight = AddLimbIK(
             GetSourceBoneTransform(HumanBodyBones.RightHand, sourceRoot), 
-            _destAnimator.GetBoneTransform(HumanBodyBones.RightHand), 
+            GetDestBoneTransform(HumanBodyBones.RightHand), 
             GetSourceBoneTransform(HumanBodyBones.RightUpperArm, sourceRoot), 
-            _destAnimator.GetBoneTransform(HumanBodyBones.RightUpperArm));
+            GetDestBoneTransform(HumanBodyBones.RightUpperArm));
         
         // Attach the clone to the parent, so it works in SkinPreview3d
         _destRoot.parent = _sourceRoot.root;
+        destRoot.gameObject.SetActive(true);
     }
 
     // Allow replacing standard shader with the tone-dot character shader
@@ -172,8 +189,8 @@ public class HasteClone : MonoBehaviour
         prefabHeadTransform.rotation = Quaternion.Euler(21f, 0f, 0f);
         
         // Fix the imported model to match Zoe's A-Pose
-        _destAnimator.GetBoneTransform(HumanBodyBones.LeftUpperArm).Rotate(Vector3.forward, (_measureArmAngle-_zoeArmAngle), Space.World);
-        _destAnimator.GetBoneTransform(HumanBodyBones.RightUpperArm).Rotate(Vector3.forward, -(_measureArmAngle-_zoeArmAngle), Space.World);
+        GetDestBoneTransform(HumanBodyBones.LeftUpperArm).Rotate(Vector3.forward, (_measureArmAngle-_zoeArmAngle), Space.World);
+        GetDestBoneTransform(HumanBodyBones.RightUpperArm).Rotate(Vector3.forward, -(_measureArmAngle-_zoeArmAngle), Space.World);
 
         _sourceHips.rotation = Quaternion.identity;
         
@@ -196,15 +213,30 @@ public class HasteClone : MonoBehaviour
                 Debug.Log($"Source has no bone: {bone}");
                 continue;
             }
-            var destBone = _destAnimator.GetBoneTransform(bone);
+            var destBone = GetDestBoneTransform(bone);
             if (!destBone)
             {
                 // This case is OK, some bones are optional in Unity, it may make the pose a little bit off though
                 Debug.Log($"Destination has no bone: {bone}");
                 continue;
             }
+            
+            _sourceBones.Add(bone, sourceBone);
+            _destBones.Add(bone, destBone);
 
             _initialPositions[destBone] = destBone.localPosition;
+
+            switch (bone)
+            {
+                case HumanBodyBones.LeftEye:
+                    _destEyeLeft = destBone;
+                    _destEyeStartRotLeft = destBone.localRotation;
+                    break;
+                case HumanBodyBones.RightEye:
+                    _destEyeRight = destBone;
+                    _destEyeStartRotRight = destBone.localRotation;
+                    break;
+            }
 
             if (sourceBone != _sourceHips)
             {
@@ -269,12 +301,6 @@ public class HasteClone : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        if (!_destAnimator || !_destAnimator.avatar || !_destAnimator.isHuman)
-        {
-            Debug.Log("HasteClone destroyed due to broken animator");
-            Destroy(gameObject);
-            return;
-        }
 
         _destRoot.localScale = Vector3.one;
         _destRoot.rotation = _sourceHips.rotation;
@@ -301,23 +327,32 @@ public class HasteClone : MonoBehaviour
         SetBoneRotations();
         RotateDestHands();
         SetIKHandles();
-        
+
         // Bend the clone's spine
-        var spineBones = new List<Transform> { _destAnimator.GetBoneTransform(HumanBodyBones.Spine), _destAnimator.GetBoneTransform(HumanBodyBones.Chest), _destAnimator.GetBoneTransform(HumanBodyBones.UpperChest) };
-        spineBones.RemoveAll(x => !x);
+        var spineBones = new List<Transform>();
+        if (_destBones.TryGetValue(HumanBodyBones.Spine, out var spine))
+        {
+            spineBones.Add(spine);
+        }
+        if (_destBones.TryGetValue(HumanBodyBones.Chest, out var chest))
+        {
+            spineBones.Add(chest);
+        }
+        if (_destBones.TryGetValue(HumanBodyBones.UpperChest, out var upperChest))
+        {
+            spineBones.Add(upperChest);
+        }
         foreach (var t in spineBones)
         {
             t.Rotate(t.right, modelIKParameters.spineAngleOffset / spineBones.Count, Space.World);
         }
         
         // Tilt the clone's head up or down
-        var head = _destAnimator.GetBoneTransform(HumanBodyBones.Head);
-        if(head)
+        if(_destBones.TryGetValue(HumanBodyBones.Head, out var head))
         {
             head.Rotate(head.right, modelIKParameters.headAngleOffset, Space.World);
         }
         
-
         _destRoot.localScale = Vector3.one * (modelIKParameters.scale * _instanceScale);
     }
 
@@ -334,6 +369,19 @@ public class HasteClone : MonoBehaviour
                 Debug.Log("HasteClone destroyed due to missing pair");
                 Destroy(gameObject);
                 return;
+            }
+
+            if (entry.dest == _destEyeLeft)
+            {
+                entry.dest.localRotation = _destEyeStartRotLeft;
+                entry.dest.rotation = Quaternion.Slerp(entry.dest.rotation, entry.source.rotation, modelIKParameters.eyeMovement);
+                continue;
+            }
+            if (entry.dest == _destEyeRight)
+            {
+                entry.dest.localRotation = _destEyeStartRotRight;
+                entry.dest.rotation = Quaternion.Slerp(entry.dest.rotation, entry.source.rotation, modelIKParameters.eyeMovement);
+                continue;
             }
             entry.dest.rotation = entry.source.rotation;
         }
@@ -420,14 +468,14 @@ public class HasteClone : MonoBehaviour
     private void MeasureAvatar()
     {
         // Imported avatars should be in an A-Pose or T-Pose when instantiated
-        var leftFoot = _destAnimator.GetBoneTransform(HumanBodyBones.LeftFoot).position;
-        var rightFoot = _destAnimator.GetBoneTransform(HumanBodyBones.RightFoot).position;
+        var leftFoot = GetDestBoneTransform(HumanBodyBones.LeftFoot).position;
+        var rightFoot = GetDestBoneTransform(HumanBodyBones.RightFoot).position;
         var footCenter = (leftFoot + rightFoot) / 2f;
-        var hipsTransform = _destAnimator.GetBoneTransform(HumanBodyBones.Hips);
+        var hipsTransform = GetDestBoneTransform(HumanBodyBones.Hips);
         var hips = hipsTransform.position;
-        var leftHand = _destAnimator.GetBoneTransform(HumanBodyBones.LeftHand).position;
-        var leftUpperArm = _destAnimator.GetBoneTransform(HumanBodyBones.LeftUpperArm).position;
-        var rightUpperArm = _destAnimator.GetBoneTransform(HumanBodyBones.RightUpperArm).position;
+        var leftHand = GetDestBoneTransform(HumanBodyBones.LeftHand).position;
+        var leftUpperArm = GetDestBoneTransform(HumanBodyBones.LeftUpperArm).position;
+        var rightUpperArm = GetDestBoneTransform(HumanBodyBones.RightUpperArm).position;
         var shoulderCenter = (leftUpperArm + rightUpperArm) / 2f;
         
         // Distance between feet
@@ -485,6 +533,24 @@ public class HasteClone : MonoBehaviour
         Debug.Log($"Automatic Zoe measurements: Stance:{_zoeStanceWidth}, Height:{_zoeHipHeight}, ArmLength:{_zoeArmLength}, TorsoLength:{_zoeTorsoLength}, ArmAngle:{_zoeArmAngle}");
     }
     
+    // Get the bone of the imported model
+    private Transform GetDestBoneTransform(HumanBodyBones bone)
+    {
+        if (_destAnimator && _destAnimator.avatar && _destAnimator.isHuman)
+        {
+            return _destAnimator.GetBoneTransform(bone);
+        }
+        if (_boneNameTable == null)
+        {
+            return null;
+        }
+        if (_boneNameTable.TryGetValue(bone, out var boneName) && !string.IsNullOrEmpty(boneName))
+        {
+            return FindRecursive(boneName, _destRoot);
+        }
+        return null;
+    }
+    
     // Recursively find the bone on the Zoe model, either from the prefab or the active player
     private static Transform GetSourceBoneTransform(HumanBodyBones bone, Transform root)
     {
@@ -496,7 +562,7 @@ public class HasteClone : MonoBehaviour
         return FindRecursive(sourceName, root);
     }
 
-    private static Transform FindRecursive(string search, Transform t)
+    public static Transform FindRecursive(string search, Transform t)
     {
         if (t.name.Contains(search))
         {
@@ -546,10 +612,9 @@ public class HasteClone : MonoBehaviour
             case HumanBodyBones.RightHand: return "Hand_R";
             case HumanBodyBones.LeftToes: return "Toe_L1";
             case HumanBodyBones.RightToes: return "Toe_R1";
-            case HumanBodyBones.LeftEye: return "Eye_L";
-            case HumanBodyBones.RightEye: return "Eye_R";
-            /*
-            case HumanBodyBones.Jaw:
+            case HumanBodyBones.LeftEye: return "Eye_l";
+            case HumanBodyBones.RightEye: return "Eye_r";
+            case HumanBodyBones.Jaw: return "";
             case HumanBodyBones.LeftThumbProximal: return "Hip.003_R.007";
             case HumanBodyBones.LeftThumbIntermediate: return "Hip.003_R.008";
             case HumanBodyBones.LeftThumbDistal: return "Hip.003_R.009";
@@ -581,7 +646,6 @@ public class HasteClone : MonoBehaviour
             case HumanBodyBones.RightLittleIntermediate: return "Hip.003_L.014";
             case HumanBodyBones.RightLittleDistal: return "Hip.003_L.015";
             case HumanBodyBones.LastBone:
-            */
             default:
                 return "";
         }
@@ -600,7 +664,7 @@ public class HasteClone : MonoBehaviour
 
     // Helper function for just logging a transform hierarchy
     // Zoe's skeleton is very weird so this can help figure out which bones are connected where
-    private static void LogTransformHierarchy(Transform t, string gap = "")
+    public static void LogTransformHierarchy(Transform t, string gap = "")
     {
         Debug.Log(gap+t.name);
         for (int j = 0; j < t.name.Length; j++)

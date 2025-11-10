@@ -72,6 +72,7 @@ public class AethaModelSwap
         public Func<ModelIKParameters> modelIKParameters;
         public Func<GameObject> loadPrefab;
         public GameObject cachedPrefab;
+        public Dictionary<HumanBodyBones, string> boneNames;
     }
 
     public static bool HasSkin(int index) => RegisteredSkins.ContainsKey(index);
@@ -247,8 +248,7 @@ public class AethaModelSwap
                     () =>
                     {
                         var modelIKParametersPath = $"{regDirectory}\\{regName}.json";
-                        var modelIKParameters = ModelIKParameters.LoadModelIKParameters(modelIKParametersPath);
-                        modelIKParameters.savePath = modelIKParametersPath;
+                        var modelIKParameters = ModelIKParameters.LoadModelIKParameters(modelIKParametersPath, true);
                         return modelIKParameters;
                     }, 
                     () =>
@@ -279,13 +279,13 @@ public class AethaModelSwap
     }
 
     // For other mod devs, this is a simpler way to just register a skin
-    public static void RegisterSkin(int index, string name, Sprite sprite, ModelIKParameters modelIKParameters, GameObject prefab)
+    public static void RegisterSkin(int index, string name, Sprite sprite, ModelIKParameters modelIKParameters, GameObject prefab, Dictionary<HumanBodyBones, string> boneNames = null)
     {
-        RegisterSkin(index, name, sprite, () => modelIKParameters, () => prefab);
+        RegisterSkin(index, name, sprite, () => modelIKParameters, () => prefab, boneNames);
     }
 
     // Passing a function in here to get the prefab allows it to lazily load
-    public static void RegisterSkin(int index, string name, Sprite sprite, Func<ModelIKParameters> modelIKParameters, Func<GameObject> prefab)
+    public static void RegisterSkin(int index, string name, Sprite sprite, Func<ModelIKParameters> modelIKParameters, Func<GameObject> prefab, Dictionary<HumanBodyBones, string> boneNames = null)
     {
         if (RegisteredSkins.ContainsKey(index))
         {
@@ -298,6 +298,7 @@ public class AethaModelSwap
             sprite = sprite,
             modelIKParameters = modelIKParameters,
             loadPrefab = prefab,
+            boneNames = boneNames,
         };
 
         Debug.Log($"Successfully registered skin {index}: {name}");
@@ -408,7 +409,7 @@ public class AethaModelSwap
         var newClone = newObj.AddComponent<HasteClone>();
         newClone.name = skin.name;
         newClone.modelIKParameters = skin.modelIKParameters?.Invoke();
-        newClone.Setup(instance, newObj.transform, index);
+        newClone.Setup(instance, newObj.transform, index, skin.boneNames);
         
         if (isLocalPlayer)
         {
