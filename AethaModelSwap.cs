@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using Landfall.Haste;
 using Zorro.Core.CLI;
 using Object = UnityEngine.Object;
@@ -16,21 +15,6 @@ namespace AethaModelSwapMod;
 public class AethaModelSwap
 {
     private const string Guid = "Aetha.ModelSwap";
-    private static string AssemblyDirectory => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-    public static string EditorAssetBundlePath() {
-        switch(Application.platform)
-        {
-            case RuntimePlatform.WindowsPlayer:
-                return $"{AssemblyDirectory}\\modeleditorui.windows.assetbundle";
-            case RuntimePlatform.LinuxPlayer:
-                return $"{AssemblyDirectory}\\modeleditorui.linux.assetbundle";
-            case RuntimePlatform.OSXPlayer:
-                return $"{AssemblyDirectory}\\modeleditorui.mac.assetbundle";
-            default:
-                return $"{AssemblyDirectory}\\modeleditorui.windows.assetbundle";
-        }
-    }
-
     private const string WindowsModelExtension = ".windows.hastemodel";
     private const string LinuxModelExtension = ".linux.hastemodel";
     private const string MacModelExtension = ".mac.hastemodel";

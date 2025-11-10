@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using Landfall.Haste;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,6 +14,21 @@ public class ModelParamsEditor : MonoBehaviour
     const string GizmoName = "GizmoPrefab";
     private const string InputFieldFormat = "0.00";
     private const float InputFieldRounding = 100f;
+    
+    private static string AssemblyDirectory => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+    private static string EditorAssetBundlePath() {
+        switch(Application.platform)
+        {
+            case RuntimePlatform.WindowsPlayer:
+                return $"{AssemblyDirectory}\\modeleditorui.windows.assetbundle";
+            case RuntimePlatform.LinuxPlayer:
+                return $"{AssemblyDirectory}\\modeleditorui.linux.assetbundle";
+            case RuntimePlatform.OSXPlayer:
+                return $"{AssemblyDirectory}\\modeleditorui.mac.assetbundle";
+            default:
+                return $"{AssemblyDirectory}\\modeleditorui.windows.assetbundle";
+        }
+    }
     
     private static ModelParamsEditor _instance;
     static ModelParamsEditor Instance
@@ -48,10 +65,10 @@ public class ModelParamsEditor : MonoBehaviour
 
     static void InitializeEditorUI()
     {
-        var bundle = AssetBundle.LoadFromFile(AethaModelSwap.EditorAssetBundlePath());
+        var bundle = AssetBundle.LoadFromFile(EditorAssetBundlePath());
         if (bundle == null)
         {
-            Debug.Log($"Failed to load bundle {AethaModelSwap.EditorAssetBundlePath()}");
+            Debug.Log($"Failed to load bundle {EditorAssetBundlePath()}");
             return;
         }
         var editorPrefab = bundle.LoadAsset<GameObject>(PrefabName);
