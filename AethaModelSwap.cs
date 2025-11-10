@@ -66,6 +66,8 @@ public class AethaModelSwap
     static AethaModelSwap()
     {
         ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action(ModelParamsEditor.OpenEditor).Method));
+        ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action<int>(SetSkin).Method));
+        
         // Load skins from all mod directories (including this one)
         foreach (var item in Modloader.LoadedItemDirectories)
         {
@@ -99,10 +101,6 @@ public class AethaModelSwap
             SkinManager.HeadSkin = SkinManager.Skin.Default;
             FactSystem.SetFact(SkinManager.EquippedSkinBodyFact, (float) SkinManager.Skin.Default);
             FactSystem.SetFact(SkinManager.EquippedSkinHeadFact, (float) SkinManager.Skin.Default);
-            if (Player.localPlayer && PlayerCharacter.localPlayer.refs != null && PlayerCharacter.localPlayer.refs.playerSkinSetter)
-            {
-                SkinManager.SetBodySkin(SkinManager.Skin.Default);
-            }
         }
     }
 
@@ -292,7 +290,6 @@ public class AethaModelSwap
     // Call this again if your mod registers skins later
     public static void RegisterToSkinManager(SkinDatabase instance)
     {
-        ValidateLocalSkin();
         // Instantiate new skin database entries
         // These are scriptable objects so we use the default skin as a base
         Dictionary<int, SkinDatabaseEntry> newEntries = new();

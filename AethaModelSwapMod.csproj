@@ -110,6 +110,7 @@ copy /y AethaModelSwapMod.dll ..\..\Plugin\AethaModelSwapMod.dll</PostBuildEvent
         <Compile Include="Patches\SkinDatabasePatches.cs" />
         <Compile Include="Patches\SkinManagerPatches.cs" />
         <Compile Include="Patches\SkinSelectionListEntryPatches.cs" />
+        <Compile Include="Patches\SkinSelectionUIPatches.cs" />
         <Compile Include="Patches\SkinSetterPatches.cs" />
         <Compile Include="SimpleLimbIK.cs" />
         <Compile Include="ModelIKParameters.cs" />
