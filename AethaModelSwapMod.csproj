@@ -33,8 +33,7 @@
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
     <PropertyGroup>
-      <PostBuildEvent>copy /y 0Harmony.dll ..\..\Plugin\0Harmony.dll
-copy /y AethaModelSwapMod.dll ..\..\Plugin\AethaModelSwapMod.dll</PostBuildEvent>
+      <PostBuildEvent>copy /y AethaModelSwapMod.dll ..\..\Plugin\AethaModelSwapMod.dll</PostBuildEvent>
     </PropertyGroup>
     <ItemGroup>
         <Reference Include="0Harmony, Version=2.3.6.0, Culture=neutral, processorArchitecture=MSIL">

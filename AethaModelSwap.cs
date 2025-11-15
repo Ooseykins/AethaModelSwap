@@ -67,6 +67,7 @@ public class AethaModelSwap
     {
         ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action(ModelParamsEditor.OpenEditor).Method));
         ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action<int>(SetSkin).Method));
+        ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action(SpawnBasePoseOnPlayer).Method));
         
         // Load skins from all mod directories (including this one)
         foreach (var item in Modloader.LoadedItemDirectories)
@@ -361,6 +362,29 @@ public class AethaModelSwap
             }
         }
         return null;
+    }
+    
+    private static void SpawnBasePoseOnPlayer()
+    {
+        if (!LocalClone)
+        {
+            Debug.LogError($"No local clone set");
+            return;
+        }
+        if (!HasSkin((int)SkinManager.BodySkin))
+        {
+            Debug.LogError($"No skin for {(int)SkinManager.BodySkin}");
+            return;
+        }
+        var skin = RegisteredSkins[(int)SkinManager.BodySkin];
+        var prefab = skin.cachedPrefab;
+        if (!prefab)
+        {
+            Debug.LogError($"Prefab not set for {(int)SkinManager.BodySkin}");
+            return;
+        }
+        var newObj = Object.Instantiate(prefab, LocalClone.transform.position, Quaternion.identity, null);
+        newObj.SetActive(true);
     }
 
     // Instantiate a skin, 

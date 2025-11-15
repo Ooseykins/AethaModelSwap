@@ -268,6 +268,10 @@ public class HasteClone : MonoBehaviour
         destNormalized.parent = ikTarget;
         destNormalized.localPosition = Vector3.zero;
         destNormalized.rotation = Quaternion.identity;
+        var destAnchorNormalized = new GameObject($"Normalized: {destAnchor}").transform;
+        destAnchorNormalized.parent = destAnchor;
+        destAnchorNormalized.localPosition = Vector3.zero;
+        destAnchorNormalized.rotation = Quaternion.identity;
         return new IKInstance()
         {
             sourceBone = sourceBone,
@@ -277,6 +281,7 @@ public class HasteClone : MonoBehaviour
             destAnchor = destAnchor,
             sourceAnchor = sourceAnchor,
             destNormalized = destNormalized,
+            destAnchorNormalized = destAnchorNormalized,
             simpleLimbIK = ik,
         };
     }
@@ -290,6 +295,7 @@ public class HasteClone : MonoBehaviour
         public Transform sourceAnchor;
         public Transform destAnchor;
         public Transform destNormalized;
+        public Transform destAnchorNormalized;
         public SimpleLimbIK simpleLimbIK;
     }
 
@@ -461,7 +467,7 @@ public class HasteClone : MonoBehaviour
 
         void MoveIKHint(IKInstance instance, Vector3 offset)
         {
-            instance.ikHint.position = _destHips.TransformPoint(offset);
+            instance.ikHint.position = instance.destAnchorNormalized.TransformPoint(offset);
         }
     }
     
