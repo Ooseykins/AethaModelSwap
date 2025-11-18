@@ -24,7 +24,7 @@ Now drag your model into the Scene tab and reset it's Transform by right clickin
 
 ![](StepByStepPictures/4AddToScene.png)
 
-Name the game object in the inspector to YourModelName.SomeNumber like in my example "X Bot.38540". The number needs to be unique, it identifies your model against all others. You can pick anything between 100 and 2,000,000,000 or so. The name does not need to be unique, but it's the name you'll see in the skin selection screen in-game.
+Name the game object in the inspector to YourModelName.SomeNumber like in my example "X Bot.38540". The number needs to be unique, it identifies your model against all others. You can pick anything between 100 and 16,000,000 or so. The name does not need to be unique, but it's the name you'll see in the skin selection screen in-game.
 
 Drag the model from the Hierarchy tab into the Project tab to create a prefab.
 
