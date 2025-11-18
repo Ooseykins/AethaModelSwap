@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using Landfall.Haste;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace AethaModelSwapMod;
@@ -165,6 +166,36 @@ public class ModelParamsEditor : MonoBehaviour
         });
         
         ResetFields();
+    }
+    
+    private Transform SelectUnderCursor()
+    {
+        if (!AethaModelSwap.LocalClone || !_instance)
+        {
+            return null;
+        }
+        Transform targetBone = null;
+        var dist = float.MaxValue;
+        foreach (var t in AethaModelSwap.LocalClone.GetComponentsInChildren<Transform>())
+        {
+            if (!Camera.main)
+            {
+                continue;
+            }
+            var pos = Camera.main.WorldToScreenPoint(t.position);
+            pos = new Vector3(pos.x, pos.y, 0);
+            var newDist = Vector3.Distance(Mouse.current.position.ReadValue(), pos);
+            if (newDist < dist)
+            {
+                targetBone = t;
+                dist = newDist;
+            }
+        }
+        if (targetBone)
+        {
+            SetGizmo("CursorBone", targetBone.position, targetBone.rotation, 0.3f);
+        }
+        return targetBone;
     }
 
     void Reset()

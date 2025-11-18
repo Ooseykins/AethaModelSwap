@@ -13,5 +13,9 @@ public class SkinSelectionUIPatches
     public static void Prefix()
     {
         AethaModelSwap.ValidateLocalSkin();
+        if (ModelParamsEditor.IsEditorOpen)
+        {
+            ModelParamsEditor.ExitEditor();
+        }
     }
 }

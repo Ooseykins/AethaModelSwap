@@ -57,6 +57,7 @@ public class AethaModelSwap
         public Func<GameObject> loadPrefab;
         public GameObject cachedPrefab;
         public Dictionary<HumanBodyBones, string> boneNames;
+        public Func<AnimationParameters> animationParameters;
     }
 
     public static bool HasSkin(int index) => RegisteredSkins.ContainsKey(index);
@@ -68,6 +69,8 @@ public class AethaModelSwap
         ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action(ModelParamsEditor.OpenEditor).Method));
         ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action<int>(SetSkin).Method));
         ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action(SpawnBasePoseOnPlayer).Method));
+        
+        HubCharacters.RegisterAllSkins();
         
         // Load skins from all mod directories (including this one)
         foreach (var item in Modloader.LoadedItemDirectories)
@@ -180,19 +183,19 @@ public class AethaModelSwap
                 var anim = prefab.GetComponentInChildren<Animator>();
                 if (!anim)
                 {
-                    Debug.Log($"No animator on prefab {prefab.name}");
+                    Debug.LogError($"No animator on prefab {prefab.name}");
                     continue;
                 }
                 if (!anim.avatar || !anim.avatar.isHuman)
                 {
-                    Debug.Log($"No human avatar on prefab {prefab.name}");
+                    Debug.LogError($"No human avatar on prefab {prefab.name}");
                     continue;
                 }
 
                 var splitPoint = prefab.name.LastIndexOf('.');
                 if (splitPoint <= -1)
                 {
-                    Debug.Log($"Bad prefab naming for {prefab.name}, format should be Name.Number like Aetha.41");
+                    Debug.LogError($"Bad prefab naming for {prefab.name}, format should be Name.Number like Aetha.41");
                     continue;
                 }
                 var prefabName = prefab.name.Substring(0, splitPoint);
@@ -200,22 +203,29 @@ public class AethaModelSwap
                 
                 if (string.IsNullOrEmpty(prefabName) || string.IsNullOrEmpty(prefabIndex))
                 {
-                    Debug.Log($"Bad prefab naming for {prefab.name}, format should be Name.Number like Aetha.41");
+                    Debug.LogError($"Bad prefab naming for {prefab.name}, format should be Name.Number like Aetha.41");
                     continue;
                 }
                 if (!int.TryParse(prefabIndex, out var index))
                 {
-                    Debug.Log($"Could not parse index number for {prefab.name}");
+                    Debug.LogError($"Could not parse index number for {prefab.name}");
                     continue;
                 }
                 if (Enum.IsDefined(typeof(SkinManager.Skin), index))
                 {
-                    Debug.Log($"Skin enum value index {index} is already defined by {(SkinManager.Skin)index}");
+                    Debug.LogError($"Skin enum value index {index} is already defined by {(SkinManager.Skin)index}");
+                    continue;
+                }
+
+                var asFloat = (float)index;
+                if (index is < 0 or > 16777216 || (int)asFloat != index)
+                {
+                    Debug.Log($"Skin index {index} outside precision bounds of float, keep within 0 to 16777216");
                     continue;
                 }
                 if (RegisteredSkins.ContainsKey(index))
                 {
-                    Debug.Log($"Skin prefabs already contains index {index}");
+                    Debug.LogError($"Skin prefabs already contains index {index}");
                     continue;
                 }
 
@@ -268,7 +278,7 @@ public class AethaModelSwap
     }
 
     // Passing a function in here to get the prefab allows it to lazily load
-    public static void RegisterSkin(int index, string name, Sprite sprite, Func<ModelIKParameters> modelIKParameters, Func<GameObject> prefab, Dictionary<HumanBodyBones, string> boneNames = null)
+    public static void RegisterSkin(int index, string name, Sprite sprite, Func<ModelIKParameters> modelIKParameters, Func<GameObject> prefab, Dictionary<HumanBodyBones, string> boneNames = null, Func<AnimationParameters> animationParameters = null)
     {
         if (RegisteredSkins.ContainsKey(index))
         {
@@ -282,6 +292,7 @@ public class AethaModelSwap
             modelIKParameters = modelIKParameters,
             loadPrefab = prefab,
             boneNames = boneNames,
+            animationParameters = animationParameters,
         };
 
         Debug.Log($"Successfully registered skin {index}: {name}");
@@ -384,6 +395,10 @@ public class AethaModelSwap
             return;
         }
         var newObj = Object.Instantiate(prefab, LocalClone.transform.position, Quaternion.identity, null);
+        foreach (var animator in newObj.GetComponentsInChildren<Animator>(true))
+        {
+            animator.enabled = false;
+        }
         newObj.SetActive(true);
     }
 
@@ -414,7 +429,7 @@ public class AethaModelSwap
         var newClone = newObj.AddComponent<HasteClone>();
         newClone.name = skin.name;
         newClone.modelIKParameters = skin.modelIKParameters?.Invoke();
-        newClone.Setup(instance, newObj.transform, index, skin.boneNames);
+        newClone.Setup(instance, newObj.transform, index, skin.boneNames, skin.animationParameters?.Invoke());
         
         if (isLocalPlayer)
         {

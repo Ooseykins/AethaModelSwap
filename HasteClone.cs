@@ -30,15 +30,20 @@ public class HasteClone : MonoBehaviour
     private float _instanceScale;
 
     // For translating the base Zoe model's bone rotations to the imported model
-    private readonly List<(Transform source, Transform dest)> _correctiveBones = new();
-    private readonly Dictionary<HumanBodyBones, Transform> _sourceBones = new();
+    private Transform _correctiveHips;
+    private List<(Transform source, Transform dest)> _correctiveBones = new();
     private readonly Dictionary<HumanBodyBones, Transform> _destBones = new();
     
     // Lookup for non-humanoid animators
     private Dictionary<HumanBodyBones, string> _boneNameTable = null;
 
-    // For preventing bones drifting away due to some inaccuracies
-    private readonly Dictionary<Transform, Vector3> _initialPositions = new();
+    // For preventing bones drifting away due to some inaccuracies and reset to base pose for animation
+    private readonly Dictionary<Transform, (Vector3 localPosition, Quaternion localRotation)> _initialTransforms = new();
+    private readonly HashSet<Transform> _animatedBones = new();
+    private readonly Dictionary<Transform, (Vector3 localPosition, Quaternion localRotation)> _animatedTransforms = new();
+    private float _smoothedIdleWeight;
+    private const float SmoothIdleTime = 0.35f;
+    private AnimationParameters _animationParameters;
 
     // For positioning the instantiated model
     private Transform _sourceRoot;
@@ -60,11 +65,13 @@ public class HasteClone : MonoBehaviour
 
     // Animator of the instantiated clone, used for getting bone references
     private Animator _destAnimator;
+    private Animator _sourceAnimator;
 
     public ModelIKParameters modelIKParameters = new ();
+
     public int SkinIndex { get; private set; }
     
-    public void Setup(Transform sourceRoot, Transform destRoot, int index, Dictionary<HumanBodyBones, string> boneNames = null)
+    public void Setup(Transform sourceRoot, Transform destRoot, int index, Dictionary<HumanBodyBones, string> boneNames = null, AnimationParameters animationParameters = null)
     {
         Debug.Log($"Setting up a HasteClone copying {sourceRoot} to {destRoot}");
         SkinIndex = index;
@@ -73,16 +80,14 @@ public class HasteClone : MonoBehaviour
 
         _sourceRoot = sourceRoot;
         _sourceHips = GetSourceBoneTransform(HumanBodyBones.Hips, _sourceRoot);
+        _sourceAnimator = _sourceRoot.root.GetComponentInChildren<Animator>();
+        _animationParameters = animationParameters;
 
         // Clone should be scaled at 1 while posing and calculating measurements
         _destRoot = destRoot;
         destRoot.rotation = Quaternion.identity;
         _destRoot.localScale = Vector3.one;
         _destAnimator = _destRoot.GetComponentInChildren<Animator>();
-        if (_destAnimator && _destAnimator.avatar && _destAnimator.isHuman)
-        {
-            _destAnimator.enabled = false;
-        }
         _destHips = GetDestBoneTransform(HumanBodyBones.Hips);
         _instanceScale = _sourceHips.lossyScale.x / ZoePrefabScale;
         
@@ -103,6 +108,21 @@ public class HasteClone : MonoBehaviour
         }
 
         AddCorrectiveBones();
+
+        if (animationParameters != null)
+        {
+            foreach (var t in _destRoot.GetComponentsInChildren<Transform>(true))
+            {
+                if (_destBones.Values.Contains(t))
+                {
+                    continue;
+                }
+                if (animationParameters.animatedBoneNames.Contains(t.name))
+                {
+                    _animatedBones.Add(t);
+                }
+            }
+        }
 
         _ikFootLeft = AddLimbIK(
             GetSourceBoneTransform(HumanBodyBones.LeftToes, sourceRoot), 
@@ -128,6 +148,19 @@ public class HasteClone : MonoBehaviour
         // Attach the clone to the parent, so it works in SkinPreview3d
         _destRoot.parent = _sourceRoot.root;
         destRoot.gameObject.SetActive(true);
+        
+        // Set animator params
+        if (_destAnimator)
+        {
+            _destAnimator.enabled = _animatedBones is { Count: > 0 };
+            _destAnimator.applyRootMotion = false;
+            _destAnimator.updateMode = AnimatorUpdateMode.Normal;
+            _destAnimator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+            if (_animationParameters is { playAnimation: >= 0 })
+            {
+                _destAnimator.SetInteger("Act", _animationParameters.playAnimation);
+            }
+        }
     }
 
     // Allow replacing standard shader with the tone-dot character shader
@@ -221,10 +254,7 @@ public class HasteClone : MonoBehaviour
                 continue;
             }
             
-            _sourceBones.Add(bone, sourceBone);
             _destBones.Add(bone, destBone);
-
-            _initialPositions[destBone] = destBone.localPosition;
 
             switch (bone)
             {
@@ -248,7 +278,23 @@ public class HasteClone : MonoBehaviour
             correctiveBone.rotation = destBone.rotation;
             correctiveBone.parent = sourceBone;
             _correctiveBones.Add((correctiveBone, destBone));
+
+            if (bone == HumanBodyBones.Hips)
+            {
+                _correctiveHips = correctiveBone;
+            }
         }
+
+        foreach (var bone in _destRoot.GetComponentsInChildren<Transform>())
+        {
+            if (bone != _destRoot && bone != _destHips)
+            {
+                _initialTransforms[bone] = (bone.localPosition, bone.localRotation);
+            }
+        }
+
+        // Ensure the bones are in the correct hierarchy order so they don't influence each other wrongly
+        _correctiveBones = _correctiveBones.OrderBy(x => GetHierarchyDepth(x.dest)).ToList();
 
         // Return the prefab rotations to original, in case that could break something
         prefabBodyTransform.rotation = prefabBodyRotation;
@@ -307,13 +353,64 @@ public class HasteClone : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+        if (!_sourceAnimator)
+        {
+            Debug.Log("HasteClone destroyed due to missing animator");
+            Destroy(gameObject);
+            return;
+        }
 
         _destRoot.localScale = Vector3.one;
         _destRoot.rotation = _sourceHips.rotation;
         _destRoot.position = _sourceHips.position;
+
+        // If we have an enabled animator, do some idle animation blending
+        var idleAnimationWeight = 0f;
+        if (_destAnimator && _destAnimator.enabled && !(_animationParameters is { disableIdle: true }))
+        {
+            // Get the actual idle animation weight, it is a sum of multiple clips possibly
+            idleAnimationWeight = _sourceAnimator.GetCurrentAnimatorClipInfo(0)
+                .Where(x => x.clip.name.Contains("Idle"))
+                .Sum(x => x.weight);
+
+            // If we're idle, smoothly blend into the idle animation over time
+            if (idleAnimationWeight > 0.5f)
+            {
+                _smoothedIdleWeight += Time.deltaTime / SmoothIdleTime;
+            }
+            else
+            {
+                _smoothedIdleWeight -= Time.deltaTime / SmoothIdleTime;
+            }
+            _smoothedIdleWeight = Mathf.Clamp01(_smoothedIdleWeight);
+            idleAnimationWeight = Mathf.SmoothStep(0f, 1f, _smoothedIdleWeight);
+
+            // If we're all the way into the idle animation we don't need to do any more interpolation etc
+            if (idleAnimationWeight >= 1f)
+            {
+                SetHipPosition();
+                _destHips.rotation = _correctiveHips.rotation;
+                if (_animationParameters != null)
+                {
+                    _destHips.localPosition += _animationParameters.offsetPosition;
+                    _destHips.localRotation *= _animationParameters.offsetRotation;
+                }
+                _destRoot.localScale = Vector3.one * (modelIKParameters.scale * _instanceScale);
+                return;
+            }
         
+            // If we're idle, store the current (animated) transformations to blend into later
+            if (_destAnimator && _destAnimator.enabled && idleAnimationWeight > 0)
+            {
+                foreach (var bone in _initialTransforms.Keys)
+                {
+                    _animatedTransforms[bone] = (bone.localPosition, bone.localRotation);
+                }
+            }
+        }
+
         // Prevent bones from drifting away due to small errors by setting them back to their initial positions
-        foreach (var kvp in _initialPositions)
+        foreach (var kvp in _initialTransforms)
         {
             if (!kvp.Key)
             {
@@ -321,14 +418,15 @@ public class HasteClone : MonoBehaviour
                 Destroy(gameObject);
                 return;
             }
-            kvp.Key.localPosition = kvp.Value;
+            if (_animatedBones.Contains(kvp.Key))
+            {
+                continue;
+            }
+            kvp.Key.localPosition = kvp.Value.localPosition;
+            kvp.Key.localRotation = kvp.Value.localRotation;
         }
-        
-        // Match hip position of the two models, then offset the clone upwards
-        var up = _sourceHips.up;
-        var offsetAmount = (_measureHipHeight * modelIKParameters.scale) + modelIKParameters.verticalOffset;
-        _destHips.position = _sourceHips.position - (up * _zoeHipHeight) + (up * offsetAmount);
-        
+
+        SetHipPosition();
         RotateSourceArms();
         SetBoneRotations();
         RotateDestHands();
@@ -350,16 +448,40 @@ public class HasteClone : MonoBehaviour
         }
         foreach (var t in spineBones)
         {
-            t.Rotate(t.right, modelIKParameters.spineAngleOffset / spineBones.Count, Space.World);
+            t.Rotate(_sourceHips.right, modelIKParameters.spineAngleOffset / spineBones.Count, Space.World);
         }
         
         // Tilt the clone's head up or down
         if(_destBones.TryGetValue(HumanBodyBones.Head, out var head))
         {
-            head.Rotate(head.right, modelIKParameters.headAngleOffset, Space.World);
+            head.Rotate(_sourceHips.right, modelIKParameters.headAngleOffset, Space.World);
         }
         
+        _destHips.rotation = _correctiveHips.rotation;
         _destRoot.localScale = Vector3.one * (modelIKParameters.scale * _instanceScale);
+
+        // If the player is idle, pose them back into their idle animation
+        if (_destAnimator && _destAnimator.enabled && idleAnimationWeight > 0)
+        {
+            foreach (var kvp in _animatedTransforms)
+            {
+                kvp.Key.localPosition = Vector3.Lerp(kvp.Key.localPosition, kvp.Value.localPosition, idleAnimationWeight);
+                kvp.Key.localRotation = Quaternion.Slerp(kvp.Key.localRotation, kvp.Value.localRotation, idleAnimationWeight);
+            }
+            if (_animationParameters != null)
+            {
+                _destHips.localPosition += _animationParameters.offsetPosition * idleAnimationWeight;
+                _destHips.localRotation *= Quaternion.Slerp(Quaternion.identity, _animationParameters.offsetRotation, idleAnimationWeight);
+            }
+        }
+    }
+
+    private void SetHipPosition()
+    {
+        // Match hip position of the two models, then offset the clone upwards
+        var up = _sourceHips.up;
+        var offsetAmount = (_measureHipHeight * modelIKParameters.scale) + modelIKParameters.verticalOffset;
+        _destHips.position = _sourceHips.position - (up * _zoeHipHeight) + (up * offsetAmount);
     }
 
     // Copy bone rotations from the source to the destination
@@ -376,7 +498,7 @@ public class HasteClone : MonoBehaviour
                 Destroy(gameObject);
                 return;
             }
-
+            // Allow eyes to interpolate their rotations, since Zoe's eyes move a lot
             if (entry.dest == _destEyeLeft)
             {
                 entry.dest.localRotation = _destEyeStartRotLeft;
@@ -540,7 +662,7 @@ public class HasteClone : MonoBehaviour
     }
     
     // Get the bone of the imported model
-    private Transform GetDestBoneTransform(HumanBodyBones bone)
+    private Transform GetDestBoneTransform(HumanBodyBones bone, bool strict = true)
     {
         if (_destAnimator && _destAnimator.avatar && _destAnimator.isHuman)
         {
@@ -552,13 +674,13 @@ public class HasteClone : MonoBehaviour
         }
         if (_boneNameTable.TryGetValue(bone, out var boneName) && !string.IsNullOrEmpty(boneName))
         {
-            return FindRecursive(boneName, _destRoot);
+            return FindRecursive(boneName, _destRoot, strict);
         }
         return null;
     }
     
     // Recursively find the bone on the Zoe model, either from the prefab or the active player
-    private static Transform GetSourceBoneTransform(HumanBodyBones bone, Transform root)
+    private static Transform GetSourceBoneTransform(HumanBodyBones bone, Transform root, bool strict = false)
     {
         var sourceName = GetSourceBoneName(bone);
         if (string.IsNullOrEmpty(sourceName))
@@ -568,10 +690,18 @@ public class HasteClone : MonoBehaviour
         return FindRecursive(sourceName, root);
     }
 
-    public static Transform FindRecursive(string search, Transform t)
+    public static Transform FindRecursive(string search, Transform t, bool strict = false)
     {
-        if (t.name.Contains(search))
+        if(t.name == search)
         {
+            return t;
+        }
+        if (t.name.Contains(search) && !strict)
+        {
+            if (t.name != search)
+            {
+                Debug.Log($"FindRecursive: [{search}] found as [{t.name}]");
+            }
             return t;
         }
         var initialFind = t.Find(search);
@@ -581,13 +711,25 @@ public class HasteClone : MonoBehaviour
         }
         for (int i = 0; i < t.childCount; i++)
         {
-            var find = FindRecursive(search, t.GetChild(i));
+            var find = FindRecursive(search, t.GetChild(i), strict);
             if (find)
             {
                 return find;
             }
         }
         return null;
+    }
+
+    static int GetHierarchyDepth(Transform t)
+    {
+        int depth = 0;
+        var currentTransform = t;
+        while (currentTransform.parent)
+        {
+            depth++;
+            currentTransform = currentTransform.parent;
+        }
+        return depth;
     }
 
     // Translate HumanBodyBones of a humanoid animator to Zoe's bone transform name
