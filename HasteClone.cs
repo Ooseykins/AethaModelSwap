@@ -409,23 +409,7 @@ public class HasteClone : MonoBehaviour
             }
         }
 
-        // Prevent bones from drifting away due to small errors by setting them back to their initial positions
-        foreach (var kvp in _initialTransforms)
-        {
-            if (!kvp.Key)
-            {
-                Debug.Log("HasteClone destroyed due to missing dest bone");
-                Destroy(gameObject);
-                return;
-            }
-            if (_animatedBones.Contains(kvp.Key))
-            {
-                continue;
-            }
-            kvp.Key.localPosition = kvp.Value.localPosition;
-            kvp.Key.localRotation = kvp.Value.localRotation;
-        }
-
+        ForceBasePose();
         SetHipPosition();
         RotateSourceArms();
         SetBoneRotations();
@@ -473,6 +457,25 @@ public class HasteClone : MonoBehaviour
                 _destHips.localPosition += _animationParameters.offsetPosition * idleAnimationWeight;
                 _destHips.localRotation *= Quaternion.Slerp(Quaternion.identity, _animationParameters.offsetRotation, idleAnimationWeight);
             }
+        }
+    }
+
+    private void ForceBasePose()
+    {
+        foreach (var kvp in _initialTransforms)
+        {
+            if (!kvp.Key)
+            {
+                Debug.Log("HasteClone destroyed due to missing dest bone");
+                Destroy(gameObject);
+                return;
+            }
+            if (_animatedBones.Contains(kvp.Key))
+            {
+                continue;
+            }
+            kvp.Key.localPosition = kvp.Value.localPosition;
+            kvp.Key.localRotation = kvp.Value.localRotation;
         }
     }
 

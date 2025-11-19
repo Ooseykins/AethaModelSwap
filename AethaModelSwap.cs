@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Landfall.Haste;
+using UnityEngine.Localization;
 using Zorro.Core.CLI;
 using Object = UnityEngine.Object;
 
@@ -52,6 +53,7 @@ public class AethaModelSwap
     private class RegisteredSkin
     {
         public string name;
+        public LocalizedString localizedName;
         public Sprite sprite;
         public Func<ModelIKParameters> modelIKParameters;
         public Func<GameObject> loadPrefab;
@@ -278,7 +280,7 @@ public class AethaModelSwap
     }
 
     // Passing a function in here to get the prefab allows it to lazily load
-    public static void RegisterSkin(int index, string name, Sprite sprite, Func<ModelIKParameters> modelIKParameters, Func<GameObject> prefab, Dictionary<HumanBodyBones, string> boneNames = null, Func<AnimationParameters> animationParameters = null)
+    public static void RegisterSkin(int index, string name, Sprite sprite, Func<ModelIKParameters> modelIKParameters, Func<GameObject> prefab, Dictionary<HumanBodyBones, string> boneNames = null, Func<AnimationParameters> animationParameters = null, LocalizedString localizedName = null)
     {
         if (RegisteredSkins.ContainsKey(index))
         {
@@ -288,6 +290,7 @@ public class AethaModelSwap
         RegisteredSkins[index] = new RegisteredSkin
         {
             name = name,
+            localizedName = localizedName ?? new UnlocalizedString(name),
             sprite = sprite,
             modelIKParameters = modelIKParameters,
             loadPrefab = prefab,
@@ -308,7 +311,7 @@ public class AethaModelSwap
         foreach (var skin in RegisteredSkins)
         {
             var newEntry = Object.Instantiate(instance.Skins[0]);
-            newEntry.Name = new UnlocalizedString(skin.Value.name);
+            newEntry.Name = skin.Value.localizedName;
             newEntry.Skin = (SkinManager.Skin)skin.Key;
             newEntry.BodyPrefab = instance.GetSkin(0).BodyPrefab;
             newEntry.HeadPrefab = instance.GetSkin(0).HeadPrefab;

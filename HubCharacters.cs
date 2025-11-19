@@ -32,13 +32,36 @@ public static class HubCharacters
 
     public static void RegisterAllSkins()
     {
+        
+        /* All the loc guids
+        Leader|a0fc5dc1-b8e5-1564-9a83-581fdfd9b045|22074061722697728
+        Wraith|a0fc5dc1-b8e5-1564-9a83-581fdfd9b045|22073954092662784
+        Sage|a0fc5dc1-b8e5-1564-9a83-581fdfd9b045|22073643676418048
+        Captain|a0fc5dc1-b8e5-1564-9a83-581fdfd9b045|22073701830443008
+        Keeper|a0fc5dc1-b8e5-1564-9a83-581fdfd9b045|22074025861398528
+        Grunt|a0fc5dc1-b8e5-1564-9a83-581fdfd9b045|22074176738902016
+        Researcher|a0fc5dc1-b8e5-1564-9a83-581fdfd9b045|22073786869956608
+        AnimalFashion|44065c2a-82b7-be04-c881-aec850e8c32a|2801620542504960
+        Heir|a0fc5dc1-b8e5-1564-9a83-581fdfd9b045|22073612047171584
+         */
         _characterInfos.Add(new CharacterInfo()
         {
             name = "Captain",
             fileName = "Captain",
-            localizedName = new LocalizedString("TableReference","TableReferenceEntry"),
+            localizedName = new LocalizedString(new Guid("a0fc5dc1-b8e5-1564-9a83-581fdfd9b045"),22073701830443008),
             skinIndex = BaseIndex + 1,
             boneNameFunction = GetCaptainBoneName,
+            adjustmentsFunction = x =>
+            {
+                var capeChains = Bone("Cape.001").gameObject.AddComponent<BasicBoneChain>();
+                capeChains.gravity = new Vector3(0f, -9.81f, 0f);
+                capeChains.maxAngle = 25f;
+                capeChains.maxSpeed = 12f;
+                capeChains.AddConstraintPlane(Bone("Spine_2"), new Vector3(0f, 0.15f, -1f).normalized, new Vector3(0f, 0.3f, -0.3f));
+                capeChains.AddChainFromRoot(Bone("Cape.005"));
+                capeChains.AddChainFromRoot(Bone("Cape.011"));
+                Transform Bone(string name) => HasteClone.FindRecursive(name, x.transform, true);
+            },
             animatedBoneRoots = new []
             {
                 "Head",
@@ -53,13 +76,24 @@ public static class HubCharacters
         {
             name = "Sage",
             fileName = "Daro",
-            localizedName = new UnlocalizedString("Daro"),
+            localizedName = new LocalizedString(new Guid("a0fc5dc1-b8e5-1564-9a83-581fdfd9b045"),22073643676418048),
             skinIndex = BaseIndex + 2,
             boneNameFunction = GetDaroBoneName,
             adjustmentsFunction = x => 
             {
+                // She has fully modeled arms under her sleeves so I scale them down to zero to hide them, TF2 style
                 HasteClone.FindRecursive("Arm_L", x.transform).localScale = Vector3.zero;
                 HasteClone.FindRecursive("Arm_R", x.transform).localScale = Vector3.zero;
+                
+                // This sucks.
+                var skirtChains = x.gameObject.AddComponent<BasicBoneChain>();
+                skirtChains.gravity = new Vector3(0f, -9.81f, 0f);
+                skirtChains.maxAngle = 25f;
+                skirtChains.maxSpeed = 12f;
+                skirtChains.AddChainFromEnd(Bone("Bone.016_end"), 4);
+                skirtChains.AddChainFromEnd(Bone("Bone.005_L.008_end"),4);
+                skirtChains.AddChainFromEnd(Bone("Bone.005_R.010_end"),4);
+                Transform Bone(string name) => HasteClone.FindRecursive(name, x.transform, true);
             },
             animatedBoneRoots = new[]
             {
@@ -74,9 +108,29 @@ public static class HubCharacters
         {
             name = "Heir",
             fileName = "Niada",
-            localizedName = new UnlocalizedString("Niada"),
+            localizedName = new LocalizedString(new Guid("a0fc5dc1-b8e5-1564-9a83-581fdfd9b045"),22073612047171584),
             skinIndex = BaseIndex + 3,
             boneNameFunction = GetCaptainBoneName, // shared bone names
+            adjustmentsFunction = x =>
+            {
+                // Front braids
+                var hairChains = x.AddComponent<BasicBoneChain>();
+                hairChains.gravity = new Vector3(0f, -9.81f, 0f);
+                hairChains.maxAngle = 25f;
+                hairChains.maxSpeed = 12f;
+                hairChains.AddConstraintPlane(Bone("Spine_3"), new Vector3(0f, 0.3f, 1f).normalized, new Vector3(0f, 0.07f, 0.12f));
+                hairChains.AddChainFromRoot(Bone("Hip.031_R.009"));
+                hairChains.AddChainFromRoot(Bone("Hip.031_L.009"));
+                
+                // Blue cape
+                var capeChains = Bone("Cape.001").gameObject.AddComponent<BasicBoneChain>();
+                capeChains.gravity = new Vector3(0f, -9.81f, 0f);
+                capeChains.maxAngle = 25f;
+                capeChains.maxSpeed = 12f;
+                capeChains.AddConstraintPlane(Bone("Spine_3"), new Vector3(0f, 0.1f, -1f).normalized, new Vector3(0f, 0f, -0.16f));
+                capeChains.AddChainFromRoot(Bone("Cape.003"));
+                Transform Bone(string name) => HasteClone.FindRecursive(name, x.transform, true);
+            },
             animatedBoneRoots = new[]
             {
                 "Head",
@@ -90,9 +144,60 @@ public static class HubCharacters
         {
             name = "BL_Keeper_Riza",
             fileName = "Riza",
-            localizedName = new UnlocalizedString("Riza"),
+            localizedName = new LocalizedString(new Guid("a0fc5dc1-b8e5-1564-9a83-581fdfd9b045"),22074025861398528),
             skinIndex = BaseIndex + 4,
             boneNameFunction = GetRizaBoneName,
+            adjustmentsFunction = x =>
+            {
+                // Welcome the cHaOs ZoNe
+                var leftLeg = Bone("thigh.L");
+                var rightLeg = Bone("thigh.R");
+
+                Vector3 frontNormals = new Vector3(0, -0.1f, -1f).normalized;
+                Vector3 backNormals = new Vector3(0, -0.1f, 1f).normalized;
+                Vector3 leftNormals = new Vector3(-1f, -0.2f, 0f).normalized;
+                Vector3 rightNormals = new Vector3(1f, -0.5f, 0f).normalized;
+
+                var frontCenter = AddSkirtFlap("skirt1.001", leftLeg, frontNormals, new Vector3(0,0,-0.1f)); // Front center
+                frontCenter.AddConstraintPlane(rightLeg, frontNormals, new Vector3(0,0,-0.1f));
+                AddSkirtFlap("skirt2.001.L", leftLeg, frontNormals - Vector3.right * 0.1f, new Vector3(0,0,-0.15f)).maxAngle = 90f; // Front left
+                AddSkirtFlap("skirt2.001.R", rightLeg, frontNormals + Vector3.right * 0.1f, new Vector3(0,0,-0.15f)).maxAngle = 90f; // Front right
+                
+                var backCenter = AddSkirtFlap("skirt5.001", leftLeg, backNormals, new Vector3(0,0,0.075f)); // Back center
+                backCenter.AddConstraintPlane(rightLeg, backNormals, new Vector3(0,0,0.075f));
+                AddSkirtFlap("skirt4.001.L", leftLeg, backNormals - Vector3.right * 0.2f, new Vector3(0,0,0)); // Back left
+                AddSkirtFlap("skirt4.001.R", rightLeg, backNormals + Vector3.right * 0.2f, new Vector3(0,0,0)); // Back right
+                
+                AddSkirtFlap("skirt3.001.L", leftLeg, leftNormals, new Vector3(-0.15f,0,0)); // Left side
+                var sideFlap = AddSkirtFlap("skirtFlapMaster.001", leftLeg, rightNormals, new Vector3(0.15f,0,0), false); // Big green right side
+                sideFlap.damping *= 0.5f;
+                sideFlap.gravity *= 1.25f;
+                sideFlap.planeForce = 3f;
+
+                BasicBoneChain AddSkirtFlap(string rootName, Transform planeTransform, Vector3 planeNormal, Vector3 planeOffset, bool single = true)
+                {
+                    var flap = Bone(rootName).gameObject.AddComponent<BasicBoneChain>();
+                    flap.gravity = new Vector3(0f, -9.81f, 0f);
+                    flap.maxAngle = 25f;
+                    flap.maxSpeed = 30f;
+                    flap.planeForce = 1.5f;
+                    if (single)
+                    {
+                        flap.AddSingleLink(flap.transform);
+                    }
+                    else
+                    {
+                        flap.AddChainFromRoot(flap.transform);
+                    }
+                    if (planeTransform)
+                    {
+                        flap.AddConstraintPlane(planeTransform, planeNormal, planeOffset);
+                    }
+                    flap.Init();
+                    return flap;
+                }
+                Transform Bone(string name) => HasteClone.FindRecursive(name, x.transform, true);
+            },
             animatedBoneRoots = new[]
             {
                 "head",
@@ -117,20 +222,28 @@ public static class HubCharacters
         {
             name = "BL_Ava",
             fileName = "Ava",
-            localizedName = new UnlocalizedString("Ava"),
+            localizedName = new LocalizedString(new Guid("a0fc5dc1-b8e5-1564-9a83-581fdfd9b045"),22074061722697728),
             skinIndex = BaseIndex + 5,
             boneNameFunction = GetAvaBoneName,
             animatedBoneRoots = new[]
             {
                 "Head",
                 "ThingimajigBelt.001",
+                "ava_hourglass",
+                "evilcoin_wobble",
+                "evilcoin_wobble_1",
+            },
+            animationParameters = new AnimationParameters()
+            {
+                offsetPosition = new Vector3(0f, 0f, 0f),
+                offsetRotation = Quaternion.Euler(-3f,0f,0f),
             },
         });
         _characterInfos.Add(new CharacterInfo()
         {
             name = "C_Researcher_Shop",
             fileName = "Gan",
-            localizedName = new UnlocalizedString("Gan"),
+            localizedName = new LocalizedString(new Guid("a0fc5dc1-b8e5-1564-9a83-581fdfd9b045"),22073786869956608),
             skinIndex = BaseIndex + 6,
             boneNameFunction = GetGanBoneName,
             animatedBoneRoots = new[]
@@ -148,7 +261,8 @@ public static class HubCharacters
         {
             var path = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\{c.fileName}.{c.skinIndex}.json";
             ModelIKParameters ModelIkParameters() => ModelIKParameters.LoadModelIKParameters(path, true);
-            AethaModelSwap.RegisterSkin(c.skinIndex, c.fileName, null, ModelIkParameters, () => GetModelPrefab(c.name), GetBoneDictionary(c.boneNameFunction), () => c.animationParameters);
+            var spritePath = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\{c.fileName}.{c.skinIndex}.png";
+            AethaModelSwap.RegisterSkin(c.skinIndex, c.fileName, AethaModelSwap.LoadSprite(spritePath), ModelIkParameters, () => GetModelPrefab(c.name), GetBoneDictionary(c.boneNameFunction), () => c.animationParameters, c.localizedName);
         }
         if (SkinDatabase.me)
         {
@@ -174,11 +288,13 @@ public static class HubCharacters
             Debug.LogError($"Unable to load model: {name}");
             return null;
         }
+        info.cachedObject.SetActive(true);
         info.adjustmentsFunction?.Invoke(info.cachedObject);
         if (info.animatedBoneRoots != null && info.animationParameters != null)
         {
             info.animationParameters.animatedBoneNames = GetAnimatedBones(info.cachedObject.transform, info.animatedBoneRoots);
         }
+        info.cachedObject.SetActive(false);
         return info.cachedObject;
     }
 
@@ -213,6 +329,10 @@ public static class HubCharacters
         {
             if (c.name is "riza_ipad" or "riza_pen" or "spear (1)")
             {
+                if (c is Renderer renderer)
+                {
+                    renderer.enabled = false;
+                }
                 c.gameObject.SetActive(false);
             }
             if (c is Animator animator)
