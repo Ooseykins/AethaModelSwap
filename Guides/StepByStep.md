@@ -74,6 +74,18 @@ The in-game scale slider just not cutting it? In the Import Settings for your mo
 
 ![](StepByStepPictures/301SetTheScaling.png)
 
+## My model is bending the wrong way!
+
+Ensure your model's rig is humanoid and the bones are assigned correctly. In the Import Settings for your model in Unity: go to the rig section and click "Configure". Here you can assign all of the bones for your rig manually. Some models don't have bone names that Unity can figure out on it's own. Just drag the bone from the hierarchy on the left to the correct mapping on the right.
+
+Clicking on a bone in the 3D Scene view will highlight it in the hierarchy. You can enter rotation mode (default hotkey E) to rotate a bone to test which bones bend what parts.
+
+If you've messed up the pose of your model you can reset it with the Pose dropdown menu in the Inspector tab.
+
+Bones in the Inspector on the right will be marked with a solid or dotted circle. Dotted circles are optional, the mod will work fine if you don't include them.
+
+![](StepByStepPictures/302FixingTheAvatar.png)
+
 ## I can't turn off "Replace Standard materials"
 
 This is due to an optimization of the model materials. Uncheck the box, save the configuration, then restart the game. The model should now have it's base materials.
