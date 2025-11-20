@@ -36,14 +36,14 @@
       <PostBuildEvent>copy /y AethaModelSwapMod.dll ..\..\Plugin\AethaModelSwapMod.dll</PostBuildEvent>
     </PropertyGroup>
     <ItemGroup>
-        <Reference Include="0Harmony, Version=2.3.6.0, Culture=neutral, processorArchitecture=MSIL">
-          <HintPath>packages\Lib.Harmony.2.3.6\lib\net48\0Harmony.dll</HintPath>
-        </Reference>
         <Reference Include="Assembly-CSharp">
           <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\Assembly-CSharp.dll</HintPath>
         </Reference>
         <Reference Include="com.rlabrecque.steamworks.net">
           <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\com.rlabrecque.steamworks.net.dll</HintPath>
+        </Reference>
+        <Reference Include="Haste.Mmhooks">
+          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\Haste.Mmhooks.dll</HintPath>
         </Reference>
         <Reference Include="Landfall.Modding">
           <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\Landfall.Modding.dll</HintPath>
@@ -108,23 +108,13 @@
         <Compile Include="BasicBoneChain.cs" />
         <Compile Include="HasteClone.cs" />
         <Compile Include="HubCharacters.cs" />
-        <Compile Include="Patches\EscapeMenuMainPagePatches.cs" />
-        <Compile Include="Patches\EscapeMenuPatches.cs" />
-        <Compile Include="Patches\PlayerCharacterPatches.cs" />
-        <Compile Include="Patches\PlayerPatches.cs" />
-        <Compile Include="Patches\SkinDatabasePatches.cs" />
-        <Compile Include="Patches\SkinManagerPatches.cs" />
-        <Compile Include="Patches\SkinSelectionListEntryPatches.cs" />
-        <Compile Include="Patches\SkinSelectionUIPatches.cs" />
+        <Compile Include="Patches\GeneralPatches.cs" />
         <Compile Include="Patches\SkinSetterPatches.cs" />
         <Compile Include="SimpleLimbIK.cs" />
         <Compile Include="ModelIKParameters.cs" />
         <Compile Include="ModelParameterEditor.cs" />
         <Compile Include="Settings.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
-    </ItemGroup>
-    <ItemGroup>
-      <None Include="packages.config" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,78 +1,72 @@
 ﻿using System.Reflection;
-using HarmonyLib;
-using Landfall.Haste;
 using Unity.Mathematics;
 using UnityEngine;
 
 namespace AethaModelSwapMod.Patches;
 
-[HarmonyPatch(typeof(PlayerSkinSetter))]
-public class SkinSetterPatches
+public static class SkinSetterPatches
 {
-    [HarmonyPrefix]
-    [HarmonyPatch("SetHipAndNeckVisuals")]
-    private static void SetHipAndNeckVisuals(PlayerSkinSetter __instance, SkinManager.Skin skin, ref SkinManager.Skin neckSkin)
+    public static void Patch()
     {
-        if (AethaModelSwap.HasSkin((int)skin))
+        On.PlayerSkinSetter.SetHipAndNeckVisuals += (orig, self, skin, neckSkin) =>
         {
-            neckSkin = skin;
-        }
-    }
+            if (AethaModelSwap.HasSkin((int)skin))
+            {
+                neckSkin = skin;
+            }
+            orig(self, skin, neckSkin);
+        };
 
-    [HarmonyPrefix]
-    [HarmonyPatch("SetNeckVisuals")]
-    private static void SetNeckVisualsPrefix(PlayerSkinSetter __instance, SkinManager.Skin skin)
-    {
-        // Set the neck's parent to null, cause it's about to be destroyed and we don't want two necks on the instantiated model
-        var currentNeck = GetCurrentNeck(__instance);
-        if (currentNeck)
+        On.PlayerSkinSetter.SetNeckVisuals += (orig, self, skin) =>
         {
-            currentNeck.transform.parent = null;
-        }
-    }
+            // Set the neck's parent to null, cause it's about to be destroyed and we don't want two necks on the instantiated model
+            var currentNeck = GetCurrentNeck(self);
+            if (currentNeck)
+            {
+                currentNeck.transform.parent = null;
+            }
+            
+            orig(self, skin);
+            
+            Debug.Log($"AethaModelSwap Postfix on {self}: switching to skin {(int)skin}");
 
-    [HarmonyPostfix]
-    [HarmonyPatch("SetNeckVisuals")]
-    private static void SetNeckVisualsPostfix(PlayerSkinSetter __instance, SkinManager.Skin skin)
-    {
-        Debug.Log($"AethaModelSwap Postfix on {__instance}: switching to skin {(int)skin}");
-
-        var currentHip = GetCurrentHip(__instance);
-        if (!currentHip)
-        {
-            Debug.LogError($"Something different went wrong with reflection, AethaModelSwap is NOT swapping to {skin}");
-            return;
-        }
+            var currentHip = GetCurrentHip(self);
+            if (!currentHip)
+            {
+                Debug.LogError($"Something different went wrong with reflection, AethaModelSwap is NOT swapping to {skin}");
+                return;
+            }
         
-        if (!AethaModelSwap.HasSkin((int)skin))
-        {
-            foreach (var r in currentHip.GetComponentsInChildren<SkinnedMeshRenderer>())
+            if (!AethaModelSwap.HasSkin((int)skin))
             {
-                r.enabled = true;
+                foreach (var r in currentHip.GetComponentsInChildren<SkinnedMeshRenderer>())
+                {
+                    r.enabled = true;
+                }
+                foreach (var r in currentHip.GetComponentsInChildren<Renderer>())
+                {
+                    r.enabled = true;
+                }
+                return;
             }
-            foreach (var r in currentHip.GetComponentsInChildren<Renderer>())
-            {
-                r.enabled = true;
-            }
-            return;
-        }
 
-        var clone = AethaModelSwap.InstantiateSkin(currentHip.transform, (int)skin, __instance.IsLocalPlayer);
+            var clone = AethaModelSwap.InstantiateSkin(currentHip.transform, (int)skin, self.IsLocalPlayer);
 
-        // This handles the SkinPreview3d layer setting logic for the clone
-        if (clone && __instance.transform.root.name == "GAME")
-        {
-            var preview = __instance.transform.root.GetComponentInChildren<SkinPreview3d>();
-            if (!preview) return;
-            var layer = math.tzcnt(preview.cam.cullingMask);
-            SetLayer(clone.transform);
-            void SetLayer(Transform tf)
+            // This handles the SkinPreview3d layer setting logic for the clone
+            if (clone && self.transform.root.name == "GAME")
             {
-                tf.gameObject.layer = layer;
-                for (int index = 0; index < tf.childCount; ++index)
-                    SetLayer(tf.GetChild(index));
+                var preview = self.transform.root.GetComponentInChildren<SkinPreview3d>();
+                if (!preview) return;
+                var layer = math.tzcnt(preview.cam.cullingMask);
+                SetLayer(clone.transform);
+                void SetLayer(Transform tf)
+                {
+                    tf.gameObject.layer = layer;
+                    for (int index = 0; index < tf.childCount; ++index)
+                        SetLayer(tf.GetChild(index));
+                }
             }
-        }
+        };
     }
 
     static GameObject GetCurrentHip(PlayerSkinSetter playerSkinSetter)

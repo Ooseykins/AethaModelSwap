@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
-using HarmonyLib;
 using Landfall.Modding;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using AethaModelSwapMod.Patches;
 using Landfall.Haste;
 using UnityEngine.Localization;
+using UnityEngine.SceneManagement;
 using Zorro.Core.CLI;
 using Object = UnityEngine.Object;
 
@@ -91,7 +92,17 @@ public class AethaModelSwap
                 }
             }
         };
-        new Harmony(Guid).PatchAll();
+
+        // Unload all bundles on the main menu
+        SceneManager.sceneLoaded += (scene, mode) =>
+        {
+            if (scene.name == "MainMenu")
+            {
+                UnloadAllBundles();
+            }
+        };
+        GeneralPatches.Patch();
+        SkinSetterPatches.Patch();
     }
 
     public static void ValidateLocalSkin()
