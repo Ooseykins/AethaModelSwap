@@ -8,6 +8,7 @@ namespace AethaModelSwapMod;
 
 // This class copies bone transforms from the Zoe model onto a humanoid model
 // It also handles IK to correct non-matching poses to fix things like foot positioning
+[DefaultExecutionOrder(-1)]
 public class HasteClone : MonoBehaviour
 {
     // Zoe model's measurements
@@ -33,7 +34,7 @@ public class HasteClone : MonoBehaviour
     private readonly Dictionary<HumanBodyBones, Transform> _destBones = new();
     
     // Lookup for non-humanoid animators
-    private Dictionary<HumanBodyBones, string> _boneNameTable = null;
+    private Dictionary<HumanBodyBones, string> _boneNameTable;
 
     // For preventing bones drifting away due to some inaccuracies and reset to base pose for animation
     private readonly Dictionary<Transform, (Vector3 localPosition, Quaternion localRotation)> _initialTransforms = new();
@@ -49,7 +50,6 @@ public class HasteClone : MonoBehaviour
     private Transform _sourceHips;
     private Transform _destHips;
     private Transform _sourceHead; // For multiplayer crown
-    private Transform _sourceHandRight; // For grapple
 
     // Instantiated transforms to use as ik targets
     private IKInstance _ikFootLeft;
@@ -97,12 +97,14 @@ public class HasteClone : MonoBehaviour
         }
         _instanceScale = _sourceHips.lossyScale.x / ZoePrefabScale;
         
+        // Player character, in case we need refs later
+        
+        
         // Replace materials with Haste's to make things look a bit nicer
         SetMaterials();
         
         // Store a reference to Zoe's head, for moving the multiplayer crown
         _sourceHead = GetSourceBoneTransform(HumanBodyBones.Head, _sourceRoot);
-        _sourceHandRight = GetSourceBoneTransform(HumanBodyBones.RightHand, _sourceRoot);
 
         // Measure Zoe and the imported avatar to create scaling values for posing
         MeasureZoe();
@@ -186,6 +188,29 @@ public class HasteClone : MonoBehaviour
             Debug.Log($"Clone component: {comp.name} of type {comp.GetType()}");
         }
         */
+
+        // Use the hand points of the destination instead of the source, if possible
+        var playerCharacter = _sourceRoot.GetComponentInParent<PlayerCharacter>();
+        if (playerCharacter)
+        {
+            if (_destBones.TryGetValue(HumanBodyBones.LeftHand, out var leftHand))
+            {
+                playerCharacter.refs.handLeft = leftHand;
+                foreach (var oldHandPoint in _sourceRoot.GetComponentsInChildren<HandPoint>().Where(x => !x.isRight))
+                {
+                    oldHandPoint.enabled = false;
+                }
+            }
+
+            if (_destBones.TryGetValue(HumanBodyBones.RightHand, out var rightHand))
+            {
+                playerCharacter.refs.handRight = rightHand;
+                foreach (var oldHandPoint in _sourceRoot.GetComponentsInChildren<HandPoint>().Where(x => x.isRight))
+                {
+                    oldHandPoint.enabled = false;
+                }
+            }
+        }
 
         // Disable renderers of the default skin, do this last in case something else goes wrong
         foreach (var renderer in _sourceRoot.GetComponentsInChildren<SkinnedMeshRenderer>())
@@ -454,7 +479,6 @@ public class HasteClone : MonoBehaviour
         RotateDestHands();
         SetIKHandles();
         SetHeadCrownPosition();
-        SetGrappleHandPosition();
 
         // Bend the clone's spine
         var spineBones = new List<Transform>();
@@ -601,14 +625,6 @@ public class HasteClone : MonoBehaviour
         }
     }
 
-    void SetGrappleHandPosition()
-    {
-        if (_destBones.TryGetValue(HumanBodyBones.RightHand, out var rightHand) && rightHand && _sourceHandRight)
-        {
-            _sourceHandRight.position = rightHand.position;
-        }
-    }
-    
     void SetIKHandles()
     {
         // If we are missing measurements it means we're missing some IK bones too
