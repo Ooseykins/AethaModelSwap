@@ -195,20 +195,14 @@ public class HasteClone : MonoBehaviour
         {
             if (_destBones.TryGetValue(HumanBodyBones.LeftHand, out var leftHand))
             {
-                playerCharacter.refs.handLeft = leftHand;
-                foreach (var oldHandPoint in _sourceRoot.GetComponentsInChildren<HandPoint>().Where(x => !x.isRight))
-                {
-                    oldHandPoint.enabled = false;
-                }
+                var newHandPoint = leftHand.gameObject.AddComponent<HandPoint>();
+                newHandPoint.isRight = false;
             }
 
             if (_destBones.TryGetValue(HumanBodyBones.RightHand, out var rightHand))
             {
-                playerCharacter.refs.handRight = rightHand;
-                foreach (var oldHandPoint in _sourceRoot.GetComponentsInChildren<HandPoint>().Where(x => x.isRight))
-                {
-                    oldHandPoint.enabled = false;
-                }
+                var newHandPoint = rightHand.gameObject.AddComponent<HandPoint>();
+                newHandPoint.isRight = true;
             }
         }
 
