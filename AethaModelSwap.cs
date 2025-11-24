@@ -196,13 +196,11 @@ public class AethaModelSwap
                 var anim = prefab.GetComponentInChildren<Animator>();
                 if (!anim)
                 {
-                    Debug.LogError($"No animator on prefab {prefab.name}");
-                    continue;
+                    Debug.LogWarning($"No animator on prefab {prefab.name}, continuing anyways");
                 }
                 if (!anim.avatar || !anim.avatar.isHuman)
                 {
-                    Debug.LogError($"No human avatar on prefab {prefab.name}");
-                    continue;
+                    Debug.LogWarning($"No human avatar on prefab {prefab.name}, continuing anyways");
                 }
 
                 var splitPoint = prefab.name.LastIndexOf('.');

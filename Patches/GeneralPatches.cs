@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Landfall.Haste;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace AethaModelSwapMod;
 
@@ -10,6 +13,7 @@ public static class GeneralPatches
     // For SkinSelectionListEntry patch
     private static SkinManager.Skin _selectedHead;
     private static SkinManager.Skin _selectedBody;
+    private static float _previewChangeTime;
     
     public static void Patch()
     {
@@ -43,6 +47,47 @@ public static class GeneralPatches
             orig(self, disconnected);
             ModelParamsEditor.ExitEditor();
         };
+
+        // Move the scrollbar in the skin selection screen and give it a new material
+        On.Landfall.Haste.SkinSelectionUI.Awake += (orig, self) =>
+        {
+            orig(self);
+            
+            // Get the base material from a button element of the UI
+            Material baseMaterial =
+                (from image in self.gameObject.GetComponentsInChildren<Image>(true)
+                    where image.material.name == "M_UI_ItemTooltip_UnlockScreenRow"
+                    select image.material).FirstOrDefault();
+
+            // Make new materials to replace the scrollbars
+            var bgMaterial = new Material(baseMaterial);
+            var handleMaterial = new Material(baseMaterial);
+            
+            var bgColor = new Color(0.0483f, 0.0495f, 0.0566f, 1);
+            var handleColor = new Color(0.0837f, 0.2672f, 0.3774f, 1);
+
+            foreach (var scrollbar in self.gameObject.GetComponentsInChildren<Scrollbar>(true))
+            {
+                var bg = scrollbar.GetComponent<Image>();
+                if (bg)
+                {
+                    bg.sprite = null;
+                    bg.color = bgColor;
+                    bg.material = bgMaterial;
+                }
+                var handle = scrollbar.targetGraphic.gameObject.GetComponent<Image>();
+                if (handle)
+                {
+                    handle.sprite = null;
+                    handle.color = handleColor;
+                    handle.material = handleMaterial;
+                }
+                if (scrollbar.direction is Scrollbar.Direction.BottomToTop or Scrollbar.Direction.TopToBottom)
+                {
+                    ((RectTransform)scrollbar.transform).anchoredPosition = new Vector2(-94f, 0f);
+                }
+            }
+        };
         
         // Make sure the user is a valid skin if they open the skin selection UI to prevent any index errors
         On.Landfall.Haste.SkinSelectionUI.RefreshUI += (orig, self) =>
@@ -52,6 +97,7 @@ public static class GeneralPatches
             {
                 ModelParamsEditor.ExitEditor();
             }
+            _previewChangeTime = Time.realtimeSinceStartup;
             orig(self);
         };
 
@@ -123,6 +169,8 @@ public static class GeneralPatches
                 return;
             }
             
+            _previewChangeTime = Time.realtimeSinceStartup;
+            
             // Set both if we already have most recently selected or are now selecting a ModelSwap skin
             var updateBoth = AethaModelSwap.HasSkin((int)_selectedBody) || AethaModelSwap.HasSkin((int)_selectedHead) || AethaModelSwap.HasSkin((int)self.skin.Skin);
 
@@ -160,6 +208,17 @@ public static class GeneralPatches
             setSkinInfo.Invoke(self, Array.Empty<object>());
             self.slot = prevSlot;
             // Does not call original method
+        };
+        
+        On.SkinPreview3d.Update += (orig, self) =>
+        {
+            self.rectTransform.sizeDelta = new Vector2(600, 700);
+            var angle = (Time.realtimeSinceStartup - _previewChangeTime) * 0.5f + (Mathf.PI * 0.5f);
+            const float radius = 10f;
+            self.cam.transform.localPosition = new Vector3(Mathf.Cos(angle) * radius, 2.5f, Mathf.Sin(angle) * radius);
+            self.cam.transform.LookAt(self.courierRoot.transform.position + new Vector3(0f, 2.5f, 0f));
+            //Debug.Log($"Preview size: {t.rect.width}x{t.rect.height}");
+            orig(self);
         };
 
 

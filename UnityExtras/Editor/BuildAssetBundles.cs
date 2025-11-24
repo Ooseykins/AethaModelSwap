@@ -52,10 +52,26 @@ namespace AethaModelSwapMod
                                      !x.EndsWith(".linux.hastemodel")))
             {
                 var newName = bundleName.Remove(bundleName.LastIndexOf('.')) + extension + ".hastemodel";
-                if(AssetDatabase.AssetPathExists($"Assets/AssetBundles/{bundleName}"))
+                var targetPath = $"Assets/AssetBundles/{bundleName}";
+#if UNITY_2023_1_OR_NEWER
+                if(AssetDatabase.AssetPathExists(targetPath))
                 {
                     AssetDatabase.CopyAsset($"Assets/AssetBundles/{bundleName}", $"Assets/AssetBundles/HasteModels/{newName}");
                 }
+                else{
+                    Debug.LogError($"Something went wrong with asset path: {targetPath}");
+                }
+#else
+                if (File.Exists(targetPath))
+                {
+                    AssetDatabase.CopyAsset($"Assets/AssetBundles/{bundleName}",
+                        $"Assets/AssetBundles/HasteModels/{newName}");
+                }
+                else
+                {
+                    Debug.LogError($"Something went wrong with file path: {targetPath}");
+                }
+#endif
             }
         }
     }

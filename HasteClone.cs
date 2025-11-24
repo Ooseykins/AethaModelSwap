@@ -20,11 +20,9 @@ public class HasteClone : MonoBehaviour
     private static float _zoeArmAngle;
 
     // This model's measurements
-    private float _measureStanceWidth;
-    private float _measureHipHeight;
-    private float _measureArmLength;
-    private float _measureTorsoLength;
-    private float _measureArmAngle;
+    private float _measureStanceWidth = -1f;
+    private float _measureHipHeight = -1f;
+    private float _measureArmAngle = -1f;
 
     // Scaling value to fix differences between the skin preview and instantiated
     private float _instanceScale;
@@ -50,6 +48,8 @@ public class HasteClone : MonoBehaviour
     private Transform _destRoot;
     private Transform _sourceHips;
     private Transform _destHips;
+    private Transform _sourceHead; // For multiplayer crown
+    private Transform _sourceHandRight; // For grapple
 
     // Instantiated transforms to use as ik targets
     private IKInstance _ikFootLeft;
@@ -89,23 +89,24 @@ public class HasteClone : MonoBehaviour
         _destRoot.localScale = Vector3.one;
         _destAnimator = _destRoot.GetComponentInChildren<Animator>();
         _destHips = GetDestBoneTransform(HumanBodyBones.Hips);
+        if (!_destHips)
+        {
+            Debug.LogError($"Model index {index} has no hips set on avatar");
+            Destroy(gameObject);
+            return;
+        }
         _instanceScale = _sourceHips.lossyScale.x / ZoePrefabScale;
         
+        // Replace materials with Haste's to make things look a bit nicer
         SetMaterials();
+        
+        // Store a reference to Zoe's head, for moving the multiplayer crown
+        _sourceHead = GetSourceBoneTransform(HumanBodyBones.Head, _sourceRoot);
+        _sourceHandRight = GetSourceBoneTransform(HumanBodyBones.RightHand, _sourceRoot);
 
         // Measure Zoe and the imported avatar to create scaling values for posing
         MeasureZoe();
         MeasureAvatar();
-
-        // Disable renderers of the default skin
-        foreach (var renderer in _sourceRoot.GetComponentsInChildren<SkinnedMeshRenderer>())
-        {
-            renderer.enabled = false;
-        }
-        foreach (var renderer in _sourceRoot.GetComponentsInChildren<MeshRenderer>())
-        {
-            renderer.enabled = false;
-        }
 
         AddCorrectiveBones();
 
@@ -124,27 +125,39 @@ public class HasteClone : MonoBehaviour
             }
         }
 
-        _ikFootLeft = AddLimbIK(
-            GetSourceBoneTransform(HumanBodyBones.LeftToes, sourceRoot), 
-            GetDestBoneTransform(HumanBodyBones.LeftFoot), 
-            _sourceHips, 
-            _destHips);
-        _ikFootRight = AddLimbIK(
-            GetSourceBoneTransform(HumanBodyBones.RightToes, sourceRoot), 
-            GetDestBoneTransform(HumanBodyBones.RightFoot), 
-            _sourceHips, 
-            _destHips);
-        _ikHandLeft = AddLimbIK(
-            GetSourceBoneTransform(HumanBodyBones.LeftHand, sourceRoot), 
-            GetDestBoneTransform(HumanBodyBones.LeftHand), 
-            GetSourceBoneTransform(HumanBodyBones.LeftUpperArm, sourceRoot), 
-            GetDestBoneTransform(HumanBodyBones.LeftUpperArm));
-        _ikHandRight = AddLimbIK(
-            GetSourceBoneTransform(HumanBodyBones.RightHand, sourceRoot), 
-            GetDestBoneTransform(HumanBodyBones.RightHand), 
-            GetSourceBoneTransform(HumanBodyBones.RightUpperArm, sourceRoot), 
-            GetDestBoneTransform(HumanBodyBones.RightUpperArm));
-        
+        if (GetDestBoneTransform(HumanBodyBones.LeftFoot))
+        {
+            _ikFootLeft = AddLimbIK(
+                GetSourceBoneTransform(HumanBodyBones.LeftToes, sourceRoot), 
+                GetDestBoneTransform(HumanBodyBones.LeftFoot), 
+                _sourceHips, 
+                _destHips);
+        }
+        if (GetDestBoneTransform(HumanBodyBones.RightFoot))
+        {
+            _ikFootRight = AddLimbIK(
+                GetSourceBoneTransform(HumanBodyBones.RightToes, sourceRoot), 
+                GetDestBoneTransform(HumanBodyBones.RightFoot), 
+                _sourceHips, 
+                _destHips);
+        }
+        if (GetDestBoneTransform(HumanBodyBones.LeftHand) && GetDestBoneTransform(HumanBodyBones.LeftUpperArm))
+        {
+            _ikHandLeft = AddLimbIK(
+                GetSourceBoneTransform(HumanBodyBones.LeftHand, sourceRoot), 
+                GetDestBoneTransform(HumanBodyBones.LeftHand), 
+                GetSourceBoneTransform(HumanBodyBones.LeftUpperArm, sourceRoot), 
+                GetDestBoneTransform(HumanBodyBones.LeftUpperArm));
+        }
+        if (GetDestBoneTransform(HumanBodyBones.RightHand) && GetDestBoneTransform(HumanBodyBones.RightUpperArm))
+        {
+            _ikHandRight = AddLimbIK(
+                GetSourceBoneTransform(HumanBodyBones.RightHand, sourceRoot),
+                GetDestBoneTransform(HumanBodyBones.RightHand),
+                GetSourceBoneTransform(HumanBodyBones.RightUpperArm, sourceRoot),
+                GetDestBoneTransform(HumanBodyBones.RightUpperArm));
+        }
+
         // Attach the clone to the parent, so it works in SkinPreview3d
         _destRoot.parent = _sourceRoot.root;
         destRoot.gameObject.SetActive(true);
@@ -160,6 +173,28 @@ public class HasteClone : MonoBehaviour
             {
                 _destAnimator.SetInteger("Act", _animationParameters.playAnimation);
             }
+        }
+        
+        // Log the components on the clone, for debugging
+        /*
+        foreach (var comp in _destRoot.GetComponentsInChildren<Component>())
+        {
+            if (comp is Transform)
+            {
+                continue;
+            }
+            Debug.Log($"Clone component: {comp.name} of type {comp.GetType()}");
+        }
+        */
+
+        // Disable renderers of the default skin, do this last in case something else goes wrong
+        foreach (var renderer in _sourceRoot.GetComponentsInChildren<SkinnedMeshRenderer>())
+        {
+            renderer.enabled = false;
+        }
+        foreach (var renderer in _sourceRoot.GetComponentsInChildren<MeshRenderer>())
+        {
+            renderer.enabled = false;
         }
     }
 
@@ -222,8 +257,11 @@ public class HasteClone : MonoBehaviour
         prefabHeadTransform.rotation = Quaternion.Euler(21f, 0f, 0f);
         
         // Fix the imported model to match Zoe's A-Pose
-        GetDestBoneTransform(HumanBodyBones.LeftUpperArm).Rotate(Vector3.forward, (_measureArmAngle-_zoeArmAngle), Space.World);
-        GetDestBoneTransform(HumanBodyBones.RightUpperArm).Rotate(Vector3.forward, -(_measureArmAngle-_zoeArmAngle), Space.World);
+        if (_measureArmAngle >= 0f)
+        {
+            GetDestBoneTransform(HumanBodyBones.LeftUpperArm).Rotate(Vector3.forward, (_measureArmAngle-_zoeArmAngle), Space.World);
+            GetDestBoneTransform(HumanBodyBones.RightUpperArm).Rotate(Vector3.forward, -(_measureArmAngle-_zoeArmAngle), Space.World);
+        }
 
         _sourceHips.rotation = Quaternion.identity;
         
@@ -236,7 +274,7 @@ public class HasteClone : MonoBehaviour
                 // No bone on the body prefab? Check if it's on the head
                 if (!prefabBone)
                 {
-                    Debug.Log($"Prefab has no bone: {bone}");
+                    //Debug.Log($"Prefab has no bone: {bone}");
                     continue;
                 }
             }
@@ -250,7 +288,7 @@ public class HasteClone : MonoBehaviour
             if (!destBone)
             {
                 // This case is OK, some bones are optional in Unity, it may make the pose a little bit off though
-                Debug.Log($"Destination has no bone: {bone}");
+                //Debug.Log($"Destination has no bone: {bone}");
                 continue;
             }
             
@@ -415,6 +453,8 @@ public class HasteClone : MonoBehaviour
         SetBoneRotations();
         RotateDestHands();
         SetIKHandles();
+        SetHeadCrownPosition();
+        SetGrappleHandPosition();
 
         // Bend the clone's spine
         var spineBones = new List<Transform>();
@@ -481,10 +521,18 @@ public class HasteClone : MonoBehaviour
 
     private void SetHipPosition()
     {
-        // Match hip position of the two models, then offset the clone upwards
         var up = _sourceHips.up;
-        var offsetAmount = (_measureHipHeight * modelIKParameters.scale) + modelIKParameters.verticalOffset;
-        _destHips.position = _sourceHips.position - (up * _zoeHipHeight) + (up * offsetAmount);
+        if (_measureHipHeight >= 0)
+        {
+            // Match hip position of the two models, then offset the clone upward
+            var offsetAmount = (_measureHipHeight * modelIKParameters.scale) + modelIKParameters.verticalOffset;
+            _destHips.position = _sourceHips.position - (up * _zoeHipHeight) + (up * offsetAmount);
+        }
+        else
+        {
+            var offsetAmount = modelIKParameters.verticalOffset;
+            _destHips.position = _sourceHips.position + (up * offsetAmount);
+        }
     }
 
     // Copy bone rotations from the source to the destination
@@ -520,10 +568,15 @@ public class HasteClone : MonoBehaviour
 
     void RotateSourceArms()
     {
-        // Rotate arms before hand IK
-        RotateArm(_ikHandLeft,-1f);
-        RotateArm(_ikHandRight,1f);
-        
+        if (_ikHandLeft != null)
+        {
+            RotateArm(_ikHandLeft,-1f);
+        }
+
+        if (_ikHandRight != null)
+        {
+            RotateArm(_ikHandRight, 1f);
+        }
         void RotateArm(IKInstance instance, float sign)
         {
             var upperArm = instance.sourceBone.parent.parent;
@@ -536,35 +589,57 @@ public class HasteClone : MonoBehaviour
 
     void RotateDestHands()
     {
-        // Rotate hands before hand IK
-        _ikHandLeft.destBone.Rotate(_ikHandLeft.destNormalized.forward, modelIKParameters.handAngleOffset, Space.World);
-        _ikHandRight.destBone.Rotate(_ikHandRight.destNormalized.forward, -modelIKParameters.handAngleOffset, Space.World);
+        _ikHandLeft?.destBone.Rotate(_ikHandLeft.destNormalized.forward, modelIKParameters.handAngleOffset, Space.World);
+        _ikHandRight?.destBone.Rotate(_ikHandRight.destNormalized.forward, -modelIKParameters.handAngleOffset, Space.World);
+    }
+
+    void SetHeadCrownPosition()
+    {
+        if (_destBones.TryGetValue(HumanBodyBones.Head, out var head) && head && _sourceHead)
+        {
+            _sourceHead.position = head.position;
+        }
+    }
+
+    void SetGrappleHandPosition()
+    {
+        if (_destBones.TryGetValue(HumanBodyBones.RightHand, out var rightHand) && rightHand && _sourceHandRight)
+        {
+            _sourceHandRight.position = rightHand.position;
+        }
     }
     
     void SetIKHandles()
     {
+        // If we are missing measurements it means we're missing some IK bones too
+        if (_measureHipHeight < 0f || _measureStanceWidth < 0f)
+        {
+            return;
+        }
         // Prepare scaling values for the foot IK
         var footScale = new Vector3( _measureStanceWidth / _zoeStanceWidth, _measureHipHeight / _zoeHipHeight, (1f / modelIKParameters.scale) * modelIKParameters.strideLength);
         var manualFootScale = new Vector3(modelIKParameters.stanceWidth, modelIKParameters.stanceHeight, 1);
         var offsetPosition = new Vector3(0f, ZoeFootIKHeightOffset, modelIKParameters.footFrontBackOffset);
-        MoveIkHandle(_ikFootLeft, footScale, manualFootScale, offsetPosition);
-        MoveIkHandle(_ikFootRight, footScale, manualFootScale, offsetPosition);
-
-        // Rotate foot IK targets for knees
-        _ikFootLeft.ikTarget.Rotate(_ikFootLeft.destNormalized.up, modelIKParameters.kneesOut, Space.World);
-        _ikFootRight.ikTarget.Rotate(_ikFootRight.destNormalized.up, -modelIKParameters.kneesOut, Space.World);
-        
-        // Set IK hint forward for knees
-        MoveIKHint(_ikFootLeft, new Vector3(-modelIKParameters.kneesOut * _measureHipHeight / 2f, -_measureHipHeight / 2f, _measureHipHeight * 3f));
-        MoveIKHint(_ikFootRight, new Vector3(modelIKParameters.kneesOut * _measureHipHeight / 2f, -_measureHipHeight / 2f, _measureHipHeight * 3f));
-
-        // Rotate foot IK targets again for "pigeon toe"
-        _ikFootLeft.ikTarget.Rotate(_ikFootLeft.destNormalized.up, modelIKParameters.footAngle, Space.World);
-        _ikFootRight.ikTarget.Rotate(_ikFootRight.destNormalized.up, -modelIKParameters.footAngle, Space.World);
-
-        // Resolve all IK
-        _ikFootLeft.simpleLimbIK.ResolveIK();
-        _ikFootRight.simpleLimbIK.ResolveIK();
+        if (_ikFootLeft != null)
+        {
+            // Set IK handle position
+            MoveIkHandle(_ikFootLeft, footScale, manualFootScale, offsetPosition);
+            // Rotate foot IK targets for knees
+            _ikFootLeft.ikTarget.Rotate(_ikFootLeft.destNormalized.up, modelIKParameters.kneesOut, Space.World);
+            // Set IK hint forward for knees
+            MoveIKHint(_ikFootLeft, new Vector3(-modelIKParameters.kneesOut * _measureHipHeight / 2f, -_measureHipHeight / 2f, _measureHipHeight * 3f));
+            // Rotate foot IK targets again for "pigeon toe"
+            _ikFootLeft.ikTarget.Rotate(_ikFootLeft.destNormalized.up, modelIKParameters.footAngle, Space.World);
+            _ikFootLeft.simpleLimbIK.ResolveIK();
+        }
+        if (_ikFootRight != null)
+        {
+            MoveIkHandle(_ikFootRight, footScale, manualFootScale, offsetPosition);
+            _ikFootRight.ikTarget.Rotate(_ikFootRight.destNormalized.up, -modelIKParameters.kneesOut, Space.World);
+            MoveIKHint(_ikFootRight, new Vector3(modelIKParameters.kneesOut * _measureHipHeight / 2f, -_measureHipHeight / 2f, _measureHipHeight * 3f));
+            _ikFootRight.ikTarget.Rotate(_ikFootRight.destNormalized.up, -modelIKParameters.footAngle, Space.World);
+            _ikFootRight.simpleLimbIK.ResolveIK();
+        }
 
         void MoveIkHandle(IKInstance instance, Vector3 destScale, Vector3 paramScale, Vector3 absolutePositioning)
         {
@@ -599,31 +674,27 @@ public class HasteClone : MonoBehaviour
     private void MeasureAvatar()
     {
         // Imported avatars should be in an A-Pose or T-Pose when instantiated
-        var leftFoot = GetDestBoneTransform(HumanBodyBones.LeftFoot).position;
-        var rightFoot = GetDestBoneTransform(HumanBodyBones.RightFoot).position;
-        var footCenter = (leftFoot + rightFoot) / 2f;
-        var hipsTransform = GetDestBoneTransform(HumanBodyBones.Hips);
-        var hips = hipsTransform.position;
-        var leftHand = GetDestBoneTransform(HumanBodyBones.LeftHand).position;
-        var leftUpperArm = GetDestBoneTransform(HumanBodyBones.LeftUpperArm).position;
-        var rightUpperArm = GetDestBoneTransform(HumanBodyBones.RightUpperArm).position;
-        var shoulderCenter = (leftUpperArm + rightUpperArm) / 2f;
-        
-        // Distance between feet
-        _measureStanceWidth = Vector3.Distance(leftFoot, rightFoot);
-        // Distance from floor to hips
-        _measureHipHeight = Vector3.Distance(hips, footCenter);
-        // Length of arm while outstretched
-        _measureArmLength = Vector3.Distance(leftHand, leftUpperArm);
-        // Distance from hips to arms
-        _measureTorsoLength = Vector3.Distance(hips, shoulderCenter);
-
-        // Arm angle, for correcting A-Pose or T-Pose differences in imported models
-        var dirToHips = (leftUpperArm - hips).normalized;
-        var dirToHand = (leftUpperArm - leftHand).normalized;
-        _measureArmAngle = Vector3.Angle(dirToHips, dirToHand);
-        
-        Debug.Log($"Automatic {gameObject.name} measurements: Stance:{_measureStanceWidth}, Height:{_measureHipHeight}, ArmLength:{_measureArmLength}, TorsoLength:{_measureTorsoLength}, ArmAngle:{_measureArmAngle}");
+        var leftFoot = GetDestBoneTransform(HumanBodyBones.LeftFoot);
+        var rightFoot = GetDestBoneTransform(HumanBodyBones.RightFoot);
+        var hips = GetDestBoneTransform(HumanBodyBones.Hips);
+        var leftHand = GetDestBoneTransform(HumanBodyBones.LeftHand);
+        var leftUpperArm = GetDestBoneTransform(HumanBodyBones.LeftUpperArm);
+        if (leftFoot && rightFoot)
+        {
+            // Distance between feet
+            _measureStanceWidth = Vector3.Distance(leftFoot.position, rightFoot.position);
+            var footCenter = (leftFoot.position + rightFoot.position) / 2f;
+            // Distance from floor to hips
+            _measureHipHeight = Vector3.Distance(hips.position, footCenter);
+        }
+        if (leftUpperArm && leftHand)
+        {
+            // Arm angle, for correcting A-Pose or T-Pose differences in imported models
+            var dirToHips = (leftUpperArm.position - hips.position).normalized;
+            var dirToHand = (leftUpperArm.position - leftHand.position).normalized;
+            _measureArmAngle = Vector3.Angle(dirToHips, dirToHand);
+        }
+        Debug.Log($"Automatic {gameObject.name} measurements: Stance:{_measureStanceWidth}, Height:{_measureHipHeight}, ArmAngle:{_measureArmAngle}");
     }
     
     private static void MeasureZoe()
@@ -690,7 +761,7 @@ public class HasteClone : MonoBehaviour
         {
             return null;
         }
-        return FindRecursive(sourceName, root);
+        return FindRecursive(sourceName, root, strict);
     }
 
     public static Transform FindRecursive(string search, Transform t, bool strict = false)

@@ -19,7 +19,7 @@ public static class HubCharacters
         public LocalizedString localizedName = new UnlocalizedString("Default Name");
         public int skinIndex;
         public Func<HumanBodyBones, string> boneNameFunction;
-        public Action<GameObject> adjustmentsFunction = null;
+        public Action<GameObject> adjustmentsFunction;
         public string[] animatedBoneRoots;
         public GameObject cachedObject; // calculated
         public AnimationParameters animationParameters = new(); // bone names are calculated
@@ -28,7 +28,7 @@ public static class HubCharacters
     private const int BaseIndex = 16000120;
     private const string HubCharactersPrefabName = "Hub_Characters";
     private static GameObject _hubCharactersPrefab;
-    private static readonly HashSet<CharacterInfo> _characterInfos = new();
+    private static readonly HashSet<CharacterInfo> CharacterInfos = new();
 
     public static void RegisterAllSkins()
     {
@@ -44,7 +44,7 @@ public static class HubCharacters
         AnimalFashion|44065c2a-82b7-be04-c881-aec850e8c32a|2801620542504960
         Heir|a0fc5dc1-b8e5-1564-9a83-581fdfd9b045|22073612047171584
          */
-        _characterInfos.Add(new CharacterInfo()
+        CharacterInfos.Add(new CharacterInfo()
         {
             name = "Captain",
             fileName = "Captain",
@@ -72,7 +72,7 @@ public static class HubCharacters
                 offsetRotation = Quaternion.Euler(0f,15f,0f),
             }
         });
-        _characterInfos.Add(new CharacterInfo()
+        CharacterInfos.Add(new CharacterInfo()
         {
             name = "Sage",
             fileName = "Daro",
@@ -104,7 +104,7 @@ public static class HubCharacters
                 playAnimation = 1,
             },
         });
-        _characterInfos.Add(new CharacterInfo()
+        CharacterInfos.Add(new CharacterInfo()
         {
             name = "Heir",
             fileName = "Niada",
@@ -140,7 +140,7 @@ public static class HubCharacters
                 disableIdle = true,
             },
         });
-        _characterInfos.Add(new CharacterInfo()
+        CharacterInfos.Add(new CharacterInfo()
         {
             name = "BL_Keeper_Riza",
             fileName = "Riza",
@@ -218,7 +218,7 @@ public static class HubCharacters
                 offsetRotation = Quaternion.Euler(-25f,-25f,0f),
             }
         });
-        _characterInfos.Add(new CharacterInfo()
+        CharacterInfos.Add(new CharacterInfo()
         {
             name = "BL_Ava",
             fileName = "Ava",
@@ -239,13 +239,25 @@ public static class HubCharacters
                 offsetRotation = Quaternion.Euler(-3f,0f,0f),
             },
         });
-        _characterInfos.Add(new CharacterInfo()
+        CharacterInfos.Add(new CharacterInfo()
         {
             name = "C_Researcher_Shop",
             fileName = "Gan",
             localizedName = new LocalizedString(new Guid("a0fc5dc1-b8e5-1564-9a83-581fdfd9b045"),22073786869956608),
             skinIndex = BaseIndex + 6,
             boneNameFunction = GetGanBoneName,
+            adjustmentsFunction = x =>
+            {
+                var dalil = HasteClone.FindRecursive("Fish", x.transform, true).gameObject.AddComponent<CompanionFollower>();
+                dalil.gameObject.SetActive(true);
+                dalil.followSpeed = 17f;
+                dalil.followOffset = new Vector3(1.5f, 2.5f, 0.7f);
+                dalil.driftVertical = 0.2f;
+                dalil.driftVerticalSpeed = 0.65432f;
+                dalil.driftHorizontal = 0.25f;
+                dalil.driftHorizontalSpeed = 0.8376f;
+                dalil.rotation = Quaternion.Euler(-90f,0f,0f);
+            },
             animatedBoneRoots = new[]
             {
                 "head",
@@ -256,8 +268,51 @@ public static class HubCharacters
                 offsetRotation = Quaternion.Euler(-25f,0f,0f),
             },
         });
+        CharacterInfos.Add(new CharacterInfo()
+        {
+            name = "C_Wraith",
+            fileName = "Wraith",
+            localizedName = new LocalizedString(new Guid("a0fc5dc1-b8e5-1564-9a83-581fdfd9b045"),22073954092662784),
+            skinIndex = BaseIndex + 7,
+            boneNameFunction = GetWraithBoneName,
+            adjustmentsFunction = x =>
+            {
+                var butterfly = Bone("Butterfly").gameObject.AddComponent<CompanionFollower>();
+                butterfly.followSpeed = 1f;
+                butterfly.followOffset = new Vector3(0.6f, 2.5f, -1.5f);
+                butterfly.driftVertical = 0.3f;
+                butterfly.driftVerticalSpeed = 0.21321f;
+                butterfly.driftHorizontal = 0.3f;
+                butterfly.driftHorizontalSpeed = 0.507f;
+                butterfly.rotation = Quaternion.Euler(-90f,25f,0f);
 
-        foreach (var c in _characterInfos)
+                var scythe = Bone("WraithArmRoot_2").gameObject.AddComponent<CompanionFollower>();
+                scythe.followSpeed = 8f;
+                scythe.followOffset = new Vector3(-0.6f, 2.3f, -2.2f);
+                scythe.driftVertical = 0.2f;
+                scythe.driftVerticalSpeed = 0.336f;
+                scythe.driftHorizontal = 0.1f;
+                scythe.driftHorizontalSpeed = 0.813f;
+                scythe.rotation = Quaternion.Euler(-35f,0f,0f);
+
+                Transform Bone(string name) => HasteClone.FindRecursive(name, x.transform, true);
+            },
+            animatedBoneRoots = new[]
+            {
+                "Head",
+                "Mesh",
+                "ButteflyCenter",
+                "WraithArmRoot_0", // Lower arms
+                "WraithArmRoot_2", // Scythe arms
+            },
+            animationParameters = new AnimationParameters()
+            {
+                offsetPosition = new Vector3(0f, 0f, 0.15f),
+                offsetRotation = Quaternion.Euler(-25f,0f,0f),
+            },
+        });
+
+        foreach (var c in CharacterInfos)
         {
             var path = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\{c.fileName}.{c.skinIndex}.json";
             ModelIKParameters ModelIkParameters() => ModelIKParameters.LoadModelIKParameters(path, true);
@@ -272,7 +327,7 @@ public static class HubCharacters
 
     static GameObject GetModelPrefab(string name)
     {
-        var info = _characterInfos.FirstOrDefault(x => x.name == name);
+        var info = CharacterInfos.FirstOrDefault(x => x.name == name);
         if (info == null)
         {
             Debug.LogError($"No model info to match name: {name}");
@@ -289,11 +344,11 @@ public static class HubCharacters
             return null;
         }
         info.cachedObject.SetActive(true);
-        info.adjustmentsFunction?.Invoke(info.cachedObject);
         if (info.animatedBoneRoots != null && info.animationParameters != null)
         {
             info.animationParameters.animatedBoneNames = GetAnimatedBones(info.cachedObject.transform, info.animatedBoneRoots);
         }
+        info.adjustmentsFunction?.Invoke(info.cachedObject);
         info.cachedObject.SetActive(false);
         return info.cachedObject;
     }
@@ -309,6 +364,7 @@ public static class HubCharacters
                 return null;
             }
         }
+        //HasteClone.LogTransformHierarchy(_hubCharactersPrefab.transform);
 
         var characterPrefab = _hubCharactersPrefab.GetComponentsInChildren<Animator>(true).FirstOrDefault(x => x.name == name);
         if (!characterPrefab)
@@ -324,7 +380,13 @@ public static class HubCharacters
         rootObject.SetActive(false);
         var copy = Object.Instantiate(rootObject, Vector3.zero, Quaternion.identity, null);
         Object.DontDestroyOnLoad(copy);
-        var allComponents = copy.GetComponentsInChildren<Component>(true);
+        CleanupCharacter(copy);
+        return copy;
+    }
+
+    static void CleanupCharacter(GameObject character)
+    {
+        var allComponents = character.GetComponentsInChildren<Component>(true);
         foreach (var c in allComponents)
         {
             if (c.name is "riza_ipad" or "riza_pen" or "spear (1)")
@@ -335,17 +397,13 @@ public static class HubCharacters
                 }
                 c.gameObject.SetActive(false);
             }
-            if (c is Animator animator)
-            {
-                animator.enabled = false;
-            }
             if (c is Transform or SkinnedMeshRenderer or MeshRenderer or MeshFilter or Animator)
             {
                 continue;
             }
+            //Debug.Log($"Destroyed extra component: {c.name} of type {c.GetType()}");
             Object.DestroyImmediate(c);
         }
-        return copy;
     }
 
     private static HashSet<string> GetAnimatedBones(Transform root, params string[] names)
@@ -445,6 +503,39 @@ public static class HubCharacters
             case HumanBodyBones.RightHand: return "lhand";
             case HumanBodyBones.LeftEye: return "eye";
             case HumanBodyBones.RightEye: return "eye_1";
+            default:
+                return "";
+        }
+        #endregion
+    }
+    
+    private static string GetWraithBoneName(HumanBodyBones bone)
+    {
+        #region Bunch of Bones
+        switch (bone)
+        {
+            case HumanBodyBones.Hips: return "Spine_2";
+            case HumanBodyBones.LeftUpperLeg: return "";
+            case HumanBodyBones.RightUpperLeg: return "";
+            case HumanBodyBones.LeftLowerLeg: return "";
+            case HumanBodyBones.RightLowerLeg: return "";
+            case HumanBodyBones.LeftFoot: return "";
+            case HumanBodyBones.RightFoot: return "";
+            case HumanBodyBones.Spine: return "Spine_3";
+            case HumanBodyBones.Chest: return"Spine_4";
+            case HumanBodyBones.UpperChest: return "Spine_5";
+            case HumanBodyBones.Neck: return "Neck";
+            case HumanBodyBones.Head: return "Head";
+            case HumanBodyBones.LeftShoulder: return "Shoulder.L";
+            case HumanBodyBones.RightShoulder: return "Shoulder.R";
+            case HumanBodyBones.LeftUpperArm: return "Arm.L";
+            case HumanBodyBones.RightUpperArm: return "Arm.R";
+            case HumanBodyBones.LeftLowerArm: return "Elbow.L";
+            case HumanBodyBones.RightLowerArm: return "Elbow.R";
+            case HumanBodyBones.LeftHand: return "Hand.L";
+            case HumanBodyBones.RightHand: return "Hand.R";
+            case HumanBodyBones.LeftEye: return "";
+            case HumanBodyBones.RightEye: return "";
             default:
                 return "";
         }
