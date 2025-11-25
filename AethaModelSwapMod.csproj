@@ -119,6 +119,7 @@
         <Compile Include="AnimationParameters.cs" />
         <Compile Include="BasicBoneChain.cs" />
         <Compile Include="CompanionFollower.cs" />
+        <Compile Include="FavouriteSkinButton.cs" />
         <Compile Include="HasteClone.cs" />
         <Compile Include="HubCharacters.cs" />
         <Compile Include="Patches\GeneralPatches.cs" />

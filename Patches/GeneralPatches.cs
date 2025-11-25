@@ -1,18 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Landfall.Haste;
 using UnityEngine;
 using UnityEngine.UI;
+using Zorro.ControllerSupport;
+using Object = UnityEngine.Object;
 
 namespace AethaModelSwapMod;
 
 public static class GeneralPatches
 {
     // For SkinSelectionListEntry patch
-    private static SkinManager.Skin _selectedHead;
+    public static SkinManager.Skin selectedHead;
     private static SkinManager.Skin _selectedBody;
+    public static SkinManager.Skin prevSelectedHead;
     private static float _previewChangeTime;
     
     public static void Patch()
@@ -86,6 +88,14 @@ public static class GeneralPatches
                 {
                     ((RectTransform)scrollbar.transform).anchoredPosition = new Vector2(-94f, 0f);
                 }
+                scrollbar.navigation = new Navigation
+                {
+                    mode = Navigation.Mode.None
+                };
+            }
+            foreach (var scrollRect in self.gameObject.GetComponentsInChildren<ScrollRect>(true))
+            {
+                scrollRect.gameObject.AddComponent<ScrollRectAutoScroller>();
             }
         };
         
@@ -148,9 +158,23 @@ public static class GeneralPatches
         On.Landfall.Haste.SkinSelectionListEntry.AssignSkinToListEntry += (orig, self, entry, id, slot) =>
         {
             orig(self, entry, id, slot);
-            _selectedHead = SkinManager.GetHeadSkinFromFacts();
+            selectedHead = SkinManager.GetHeadSkinFromFacts();
             _selectedBody = SkinManager.GetBodySkinFromFacts();
+            prevSelectedHead = selectedHead;
             self.gameObject.SetActive(slot == SkinManager.SkinSlot.Head || !AethaModelSwap.HasSkin((int)entry.Skin));
+            foreach (var button in self.gameObject.GetComponentsInChildren<Button>(true))
+            {
+                button.gameObject.AddComponent<ScrollRectAutoScrollerElement>();
+            }
+            if (!ModelParamsEditor.GetFavouriteStarPrefab() || SkinManager.GetSkinStatus(entry.Skin) != SkinManager.SkinStatus.Purchased || slot == SkinManager.SkinSlot.Body)
+            {
+                return;
+            }
+            var newStarButton = Object.Instantiate(ModelParamsEditor.GetFavouriteStarPrefab(), new Vector3(0f, 0f, 0f), Quaternion.identity, self.transform).AddComponent<FavouriteSkinButton>();
+            newStarButton.skin = entry.Skin;
+            newStarButton.gameObject.AddComponent<LayoutElement>().ignoreLayout = true;
+            newStarButton.transform.localPosition = new Vector3(36f, 35f, 0f);
+            newStarButton.gameObject.SetActive(true);
         };
 
         // Handle setting both head/body skin at once with a single button press
@@ -172,7 +196,7 @@ public static class GeneralPatches
             _previewChangeTime = Time.realtimeSinceStartup;
             
             // Set both if we already have most recently selected or are now selecting a ModelSwap skin
-            var updateBoth = AethaModelSwap.HasSkin((int)_selectedBody) || AethaModelSwap.HasSkin((int)_selectedHead) || AethaModelSwap.HasSkin((int)self.skin.Skin);
+            var updateBoth = AethaModelSwap.HasSkin((int)_selectedBody) || AethaModelSwap.HasSkin((int)selectedHead) || AethaModelSwap.HasSkin((int)self.skin.Skin);
 
             switch(self.slot)
             {
@@ -180,7 +204,8 @@ public static class GeneralPatches
                     _selectedBody = self.skin.Skin;
                     break;
                 case SkinManager.SkinSlot.Head:
-                    _selectedHead = self.skin.Skin;
+                    prevSelectedHead = selectedHead;
+                    selectedHead = self.skin.Skin;
                     break;
             }
 
@@ -199,7 +224,7 @@ public static class GeneralPatches
             }
 
             _selectedBody = self.skin.Skin;
-            _selectedHead = self.skin.Skin;
+            selectedHead = self.skin.Skin;
         
             var prevSlot = self.slot;
             self.slot = SkinManager.SkinSlot.Head;
@@ -217,10 +242,7 @@ public static class GeneralPatches
             const float radius = 10f;
             self.cam.transform.localPosition = new Vector3(Mathf.Cos(angle) * radius, 2.5f, Mathf.Sin(angle) * radius);
             self.cam.transform.LookAt(self.courierRoot.transform.position + new Vector3(0f, 2.5f, 0f));
-            //Debug.Log($"Preview size: {t.rect.width}x{t.rect.height}");
             orig(self);
         };
-
-
     }
 }

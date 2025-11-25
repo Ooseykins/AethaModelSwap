@@ -61,6 +61,17 @@ public class ModelParamsEditor : MonoBehaviour
     private static GameObject _togglePrefab;
     private static GameObject _separatorPrefab;
     private static GameObject _gizmoPrefab;
+
+    private static GameObject _favouriteStarPrefab;
+
+    public static GameObject GetFavouriteStarPrefab()
+    {
+        if (!Instance)
+        {
+            InitializeEditorUI();
+        }
+        return _favouriteStarPrefab;
+    }
     
     private static ModelIKParameters EditorParams => AethaModelSwap.LocalClone ? AethaModelSwap.LocalClone.modelIKParameters : new ModelIKParameters();
 
@@ -88,7 +99,7 @@ public class ModelParamsEditor : MonoBehaviour
 
     private void Awake()
     {
-        foreach (var t in gameObject.GetComponentsInChildren<RectTransform>())
+        foreach (var t in gameObject.GetComponentsInChildren<RectTransform>(true))
         {
             switch (t.name)
             {
@@ -121,6 +132,9 @@ public class ModelParamsEditor : MonoBehaviour
                     break;
                 case "ExitButton":
                     t.GetComponent<Button>().onClick.AddListener(ExitEditor);
+                    break;
+                case "FavouriteButton":
+                    _favouriteStarPrefab = t.gameObject;
                     break;
             }
         }

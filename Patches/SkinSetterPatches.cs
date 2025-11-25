@@ -1,6 +1,10 @@
-﻿using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using Landfall.Haste;
 using Unity.Mathematics;
 using UnityEngine;
+using Zorro.Core;
 
 namespace AethaModelSwapMod.Patches;
 
@@ -8,6 +12,37 @@ public static class SkinSetterPatches
 {
     public static void Patch()
     {
+        
+        // Shuffle the player's skin
+        On.PlayerSkinSetter.Awake += (orig, self) =>
+        {
+            if (self.IsLocalPlayer && SkinDatabase.me)
+            {
+                HashSet<SkinManager.Skin> favouriteSkins = new ();
+                foreach (var entry in SkinDatabase.me.Skins)
+                {
+                    if (FavouriteSkinButton.IsSkinFavourite(entry.Skin))
+                    {
+                        favouriteSkins.Add(entry.Skin);
+                    }
+                }
+                if (favouriteSkins.Any())
+                {
+                    var newSkin = favouriteSkins.RandomElement();
+                    if (SkinManager.HeadSkin == newSkin)
+                    {
+                        // Roll a second time if we get the same skin twice in a row, just for fun!
+                        newSkin = favouriteSkins.RandomElement();
+                    }
+                    SkinManager.BodySkin = newSkin;
+                    SkinManager.HeadSkin = SkinManager.BodySkin;
+                    FactSystem.SetFact(SkinManager.EquippedSkinBodyFact, (float) SkinManager.BodySkin);
+                    FactSystem.SetFact(SkinManager.EquippedSkinHeadFact, (float) SkinManager.HeadSkin);
+                }
+            }
+            orig(self);
+        };
+        
         On.PlayerSkinSetter.SetHipAndNeckVisuals += (orig, self, skin, neckSkin) =>
         {
             if (AethaModelSwap.HasSkin((int)skin))
