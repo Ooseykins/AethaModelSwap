@@ -13,7 +13,7 @@ public class ModelIKParameters
     public float scale = 1f;
 
     public float stanceWidth = 1f;
-    public float stanceHeight = 1f;
+    public float stanceHeight = 0.78f;
     public float footFrontBackOffset = 0f;
     public float strideLength = 1f;
 
