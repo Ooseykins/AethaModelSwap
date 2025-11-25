@@ -27,3 +27,6 @@ Other mods can register models without using the .hastemodel filename extension 
 
 ## Thanks!
 If you create any mods using this, please let me see it! You can contact me on Discord @ooseykins or on Twitter @Ooseykins or @Aetha_Azazie
+
+![](Guides/Screenshots/RizaSurfing.png)
+![](Guides/Screenshots/CaptainSelect.png)
