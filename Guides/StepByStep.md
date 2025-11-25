@@ -54,7 +54,7 @@ If you don't have your own mod set up yet, you can just place them in the AethaM
 
 ![](StepByStepPictures/10StickItSomewhere.png)
 
-Open the model editor from the in-game general settings menu. Select your model with the arrows then when you're satisfied click Save to save the configuration file. It will be wherever you stuck the .hastemodel file and named to match the prefab's name.
+Open the model editor from the in-game general settings menu. Select your model with the arrows then when you're satisfied click Save to save the configuration file. It will be wherever you stuck the .hastemodel file and named to match the prefab's name. The most important slider here is Stance Height! Drag it lower until your model's knees bend in a natural way.
 
 ![](StepByStepPictures/11InGameEditor.png)
 
