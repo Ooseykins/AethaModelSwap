@@ -91,9 +91,8 @@ public class HasteClone : MonoBehaviour
         _destHips = GetDestBoneTransform(HumanBodyBones.Hips);
         if (!_destHips)
         {
-            Debug.LogError($"Model index {index} has no hips set on avatar");
-            Destroy(gameObject);
-            return;
+            _destHips = _destRoot;
+            _correctiveHips = _destHips;
         }
         _instanceScale = _sourceHips.lossyScale.x / ZoePrefabScale;
         
@@ -467,9 +466,9 @@ public class HasteClone : MonoBehaviour
         }
 
         ForceBasePose();
-        SetHipPosition();
         RotateSourceArms();
         SetBoneRotations();
+        SetHipPosition();
         RotateDestHands();
         SetIKHandles();
         SetHeadCrownPosition();
