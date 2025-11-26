@@ -420,9 +420,11 @@ public class HasteClone : MonoBehaviour
         _destRoot.rotation = _sourceHips.rotation;
         _destRoot.position = _sourceHips.position;
 
+        var editorFreeze = AethaModelSwap.LocalClone == this && ModelParamsEditor.IsEditorOpen;
+
         // If we have an enabled animator, do some idle animation blending
         var idleAnimationWeight = 0f;
-        if (_destAnimator && _destAnimator.enabled && !(_animationParameters is { disableIdle: true }))
+        if (_destAnimator && _destAnimator.enabled && !(_animationParameters is { disableIdle: true }) && !editorFreeze)
         {
             // Get the actual idle animation weight, it is a sum of multiple clips possibly
             idleAnimationWeight = _sourceAnimator.GetCurrentAnimatorClipInfo(0)
