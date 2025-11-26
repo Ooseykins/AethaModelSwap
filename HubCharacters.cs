@@ -314,6 +314,30 @@ public static class HubCharacters
                 offsetRotation = Quaternion.Euler(-25f,0f,0f),
             },
         });
+        CharacterInfos.Add(new CharacterInfo()
+        {
+            name = "C_Grunt",
+            fileName = "MascGrunt",
+            localizedName = new LocalizedString(new Guid("a0fc5dc1-b8e5-1564-9a83-581fdfd9b045"),22074176738902016),
+            skinIndex = BaseIndex + 8,
+            boneNameFunction = GetGruntBoneName,
+            adjustmentsFunction = x =>
+            {
+                Bone("Foot_1").gameObject.name = "Foot_L";
+                Bone("Foot_1").gameObject.name = "Foot_R";
+
+                Transform Bone(string name) => HasteClone.FindRecursive(name, x.transform, true);
+            },
+            animatedBoneRoots = new[]
+            {
+                "Head",
+            },
+            animationParameters = new AnimationParameters()
+            {
+                offsetPosition = new Vector3(0f, 0f, 0f),
+                offsetRotation = Quaternion.Euler(-10f,0f,0f),
+            },
+        });
 
         foreach (var c in CharacterInfos)
         {
@@ -392,7 +416,7 @@ public static class HubCharacters
         var allComponents = character.GetComponentsInChildren<Component>(true);
         foreach (var c in allComponents)
         {
-            if (c.name is "riza_ipad" or "riza_pen" or "spear (1)")
+            if (c.name is "riza_ipad" or "riza_pen" or "spear (1)" or "f_metalDetector")
             {
                 if (c is Renderer renderer)
                 {
@@ -773,8 +797,8 @@ public static class HubCharacters
             case HumanBodyBones.RightUpperLeg: return "Leg_R";
             case HumanBodyBones.LeftLowerLeg: return "Knee_L";
             case HumanBodyBones.RightLowerLeg: return "Knee_R";
-            case HumanBodyBones.LeftFoot: return "Foot_l";
-            case HumanBodyBones.RightFoot: return "Foot_1";
+            case HumanBodyBones.LeftFoot: return "Foot_L";
+            case HumanBodyBones.RightFoot: return "Foot_R";
             case HumanBodyBones.Spine: return "Spine_1";
             case HumanBodyBones.Chest: return "Spine_2";
             case HumanBodyBones.UpperChest: return "Spine_3";
@@ -788,36 +812,36 @@ public static class HubCharacters
             case HumanBodyBones.RightLowerArm: return "Elbow_R";
             case HumanBodyBones.LeftHand: return "Hand_L";
             case HumanBodyBones.RightHand: return "Hand_R";
-            case HumanBodyBones.LeftThumbProximal: return "";
-            case HumanBodyBones.LeftThumbIntermediate: return "";
-            case HumanBodyBones.LeftThumbDistal: return "";
-            case HumanBodyBones.LeftIndexProximal: return "";
-            case HumanBodyBones.LeftIndexIntermediate: return "";
-            case HumanBodyBones.LeftIndexDistal: return "";
-            case HumanBodyBones.LeftMiddleProximal: return "";
-            case HumanBodyBones.LeftMiddleIntermediate: return "";
-            case HumanBodyBones.LeftMiddleDistal: return "";
-            case HumanBodyBones.LeftRingProximal: return "";
-            case HumanBodyBones.LeftRingIntermediate: return "";
-            case HumanBodyBones.LeftRingDistal: return "";
-            case HumanBodyBones.LeftLittleProximal: return "";
-            case HumanBodyBones.LeftLittleIntermediate: return "";
-            case HumanBodyBones.LeftLittleDistal: return "";
-            case HumanBodyBones.RightThumbProximal: return "";
-            case HumanBodyBones.RightThumbIntermediate: return "";
-            case HumanBodyBones.RightThumbDistal: return "";
-            case HumanBodyBones.RightIndexProximal: return "";
-            case HumanBodyBones.RightIndexIntermediate: return "";
-            case HumanBodyBones.RightIndexDistal: return "";
-            case HumanBodyBones.RightMiddleProximal: return "";
-            case HumanBodyBones.RightMiddleIntermediate: return "";
-            case HumanBodyBones.RightMiddleDistal: return "";
-            case HumanBodyBones.RightRingProximal: return "";
-            case HumanBodyBones.RightRingIntermediate: return "";
-            case HumanBodyBones.RightRingDistal: return "";
-            case HumanBodyBones.RightLittleProximal: return "";
-            case HumanBodyBones.RightLittleIntermediate: return "";
-            case HumanBodyBones.RightLittleDistal: return "";
+            case HumanBodyBones.LeftThumbProximal: return "thumbl.002";
+            case HumanBodyBones.LeftThumbIntermediate: return "thumbl.003";
+            case HumanBodyBones.LeftThumbDistal: return "thumbl.004";
+            case HumanBodyBones.LeftIndexProximal: return "f_indexx.002";
+            case HumanBodyBones.LeftIndexIntermediate: return "f_indexx.003";
+            case HumanBodyBones.LeftIndexDistal: return "f_indexx.004";
+            case HumanBodyBones.LeftMiddleProximal: return "f_middlee.002";
+            case HumanBodyBones.LeftMiddleIntermediate: return "f_middlee.003";
+            case HumanBodyBones.LeftMiddleDistal: return "f_middlee.004";
+            case HumanBodyBones.LeftRingProximal: return "f_ringg.002";
+            case HumanBodyBones.LeftRingIntermediate: return "f_ringg.003";
+            case HumanBodyBones.LeftRingDistal: return "f_ringg.004";
+            case HumanBodyBones.LeftLittleProximal: return "f_pinkyy.002";
+            case HumanBodyBones.LeftLittleIntermediate: return "f_pinkyy.003";
+            case HumanBodyBones.LeftLittleDistal: return "f_pinkyy.004";
+            case HumanBodyBones.RightThumbProximal: return "thumbr.002";
+            case HumanBodyBones.RightThumbIntermediate: return "thumbr.003";
+            case HumanBodyBones.RightThumbDistal: return "thumbr.004";
+            case HumanBodyBones.RightIndexProximal: return "f_index.002";
+            case HumanBodyBones.RightIndexIntermediate: return "f_index.003";
+            case HumanBodyBones.RightIndexDistal: return "f_index.004";
+            case HumanBodyBones.RightMiddleProximal: return "f_middle.002";
+            case HumanBodyBones.RightMiddleIntermediate: return "f_middle.003";
+            case HumanBodyBones.RightMiddleDistal: return "f_middle.004";
+            case HumanBodyBones.RightRingProximal: return "f_ring.002";
+            case HumanBodyBones.RightRingIntermediate: return "f_ring.003";
+            case HumanBodyBones.RightRingDistal: return "f_ring.004";
+            case HumanBodyBones.RightLittleProximal: return "f_pinky.002";
+            case HumanBodyBones.RightLittleIntermediate: return "f_pinky.003";
+            case HumanBodyBones.RightLittleDistal: return "f_pinky.004";
             default:
                 return "";
         }
