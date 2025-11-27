@@ -338,6 +338,42 @@ public static class HubCharacters
                 offsetRotation = Quaternion.Euler(-10f,0f,0f),
             },
         });
+        CharacterInfos.Add(new CharacterInfo()
+        {
+            name = "BL_FASHIONWEEBOH",
+            fileName = "FashionWeeboh",
+            localizedName = new LocalizedString(new Guid("44065c2a-82b7-be04-c881-aec850e8c32a"),2801620542504960),
+            skinIndex = BaseIndex + 10,
+            boneNameFunction = GetFashionWeebohBoneName,
+            adjustmentsFunction = x =>
+            {
+                // Move some bones to make a real hierarchy
+                Bone("footIK.L").parent = Bone("leg4.L");
+                Bone("footIK.R").parent = Bone("leg4.R");
+                Bone("handIK.L").parent = Bone("forearm.L");
+                Bone("handIK.R").parent = Bone("forearm.R");
+                
+                Bone("arm.L").Rotate(Vector3.up, -45f, Space.World);
+                Bone("arm.R").Rotate(Vector3.up, 45f, Space.World);
+                Bone("forearm.L").Rotate(Vector3.forward, 90f, Space.World);
+                Bone("forearm.R").Rotate(Vector3.forward, -90f, Space.World);
+
+                // Tail
+                var tail = x.AddComponent<BasicBoneChain>();
+                tail.gravity = new Vector3(0f, 9.81f, 0f);
+                tail.maxAngle = 25f;
+                tail.maxSpeed = 22f;
+                tail.AddSingleLink(Bone("tail2"));
+                tail.AddSingleLink(Bone("tail3"));
+                tail.AddSingleLink(Bone("tail4"));
+                tail.AddSingleLink(Bone("tail5"));
+                Transform Bone(string name) => HasteClone.FindRecursive(name, x.transform, true);
+            },
+            animatedBoneRoots = new[]
+            {
+                "Head",
+            },
+        });
 
         foreach (var c in CharacterInfos)
         {
@@ -940,6 +976,37 @@ public static class HubCharacters
             case HumanBodyBones.RightHand: return "Bone.001_L.023";
             case HumanBodyBones.LeftToes: return "Toe_L1";
             case HumanBodyBones.RightToes: return "Toe_R1";
+            default:
+                return "";
+        }
+        #endregion
+    }
+    
+    private static string GetFashionWeebohBoneName(HumanBodyBones bone)
+    {
+        #region Bunch of Bones
+        switch (bone)
+        {
+            case HumanBodyBones.Hips: return "hip";
+            case HumanBodyBones.LeftUpperLeg: return "leg3.L";
+            case HumanBodyBones.RightUpperLeg: return "leg3.R";
+            case HumanBodyBones.LeftLowerLeg: return "leg4.L";
+            case HumanBodyBones.RightLowerLeg: return "leg4.R";
+            case HumanBodyBones.LeftFoot: return "footIK.L";
+            case HumanBodyBones.RightFoot: return "footIK.R";
+            case HumanBodyBones.Spine: return "spine1";
+            case HumanBodyBones.Chest: return "spine2";
+            case HumanBodyBones.UpperChest: return "";
+            case HumanBodyBones.Neck: return "neck";
+            case HumanBodyBones.Head: return "head";
+            case HumanBodyBones.LeftShoulder: return "shoulder.L";
+            case HumanBodyBones.RightShoulder: return "shoulder.R";
+            case HumanBodyBones.LeftUpperArm: return "arm.L";
+            case HumanBodyBones.RightUpperArm: return "arm.R";
+            case HumanBodyBones.LeftLowerArm: return "forearm.L";
+            case HumanBodyBones.RightLowerArm: return "forearm.R";
+            case HumanBodyBones.LeftHand: return "handIK.L";
+            case HumanBodyBones.RightHand: return "handIK.R";
             default:
                 return "";
         }
