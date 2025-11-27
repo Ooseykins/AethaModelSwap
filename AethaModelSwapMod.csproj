@@ -42,6 +42,9 @@
         <Reference Include="com.rlabrecque.steamworks.net">
           <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\com.rlabrecque.steamworks.net.dll</HintPath>
         </Reference>
+        <Reference Include="Febucci.TextAnimator.Runtime">
+          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\Febucci.TextAnimator.Runtime.dll</HintPath>
+        </Reference>
         <Reference Include="Haste.Mmhooks">
           <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\Haste.Mmhooks.dll</HintPath>
         </Reference>
@@ -71,14 +74,8 @@
         <Reference Include="Unity.Mathematics">
           <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\Unity.Mathematics.dll</HintPath>
         </Reference>
-        <Reference Include="Unity.Netcode.Runtime">
-          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\Unity.Netcode.Runtime.dll</HintPath>
-        </Reference>
-        <Reference Include="Unity.Networking.Transport">
-          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\Unity.Networking.Transport.dll</HintPath>
-        </Reference>
-        <Reference Include="Unity.Services.Core.Networking">
-          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\Unity.Services.Core.Networking.dll</HintPath>
+        <Reference Include="Unity.TextMeshPro">
+          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\Unity.TextMeshPro.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine">
           <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\UnityEngine.dll</HintPath>
@@ -103,9 +100,6 @@
         </Reference>
         <Reference Include="Zorro.Core.Runtime">
           <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\Zorro.Core.Runtime.dll</HintPath>
-        </Reference>
-        <Reference Include="Zorro.JiggleBones">
-          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\Zorro.JiggleBones.dll</HintPath>
         </Reference>
         <Reference Include="Zorro.Settings.Runtime">
           <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\Zorro.Settings.Runtime.dll</HintPath>

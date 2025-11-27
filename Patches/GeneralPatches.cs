@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Landfall.Haste;
+using TMPro;
 using UnityEngine;
+using UnityEngine.Localization.Settings;
 using UnityEngine.UI;
 using Zorro.ControllerSupport;
 using Object = UnityEngine.Object;
@@ -98,7 +101,52 @@ public static class GeneralPatches
                 scrollRect.gameObject.AddComponent<ScrollRectAutoScroller>();
             }
         };
-        
+
+        #region Unimportant
+        #region Here be spoilers
+
+        // Poisson d'avril !
+        // If you've spoiled yourself, don't spoil it for anyone else!
+        if (DateTime.Now.Month == 4 && DateTime.Now.Day == 1)
+        {
+            var verySpecialFont = TMP_FontAsset.CreateFontAsset("Comic Sans MS", "Bold");
+            if (verySpecialFont)
+            {
+                var verySpecialFallbacks = new HashSet<TMP_FontAsset>();
+                verySpecialFont.fallbackFontAssetTable = new List<TMP_FontAsset>();
+                On.TMPro.TextMeshProUGUI.OnEnable += (orig, self) =>
+                {
+                    if (!verySpecialFont) return;
+                    if (!verySpecialFallbacks.Contains(self.font))
+                    {
+                        verySpecialFallbacks.Add(self.font);
+                        verySpecialFont.fallbackFontAssetTable.Add(self.font);
+                    }
+                    self.font = verySpecialFont;
+                    self.fontStyle = FontStyles.UpperCase;
+                    orig(self);
+                };
+
+                On.Febucci.UI.Core.TAnimCore.ConvertText += (orig, self, text, mode) =>
+                {
+                    if (verySpecialFont && 
+                        LocalizationSettings.SelectedLocale.Identifier.Code.StartsWith("en") &&
+                        !string.IsNullOrEmpty(text))
+                    {
+                        text = text.Replace("'", "");
+                        text = text.Replace(",", "");
+                        text = text.Replace("!", "!!!");
+                        text = text.Replace("?", "?!");
+                        text = text.Replace("...", "!!");
+                        text = text.Replace(".", "!");
+                    }
+                    orig(self, text, mode);
+                };
+            }
+        }
+
+        #endregion
+        #endregion
         // Make sure the user is a valid skin if they open the skin selection UI to prevent any index errors
         On.Landfall.Haste.SkinSelectionUI.RefreshUI += (orig, self) =>
         {
