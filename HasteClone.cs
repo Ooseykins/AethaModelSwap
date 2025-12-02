@@ -126,11 +126,11 @@ public class HasteClone : MonoBehaviour
             }
         }
 
-        Transform[] leftLegChain = new[]
+        Transform[] leftLegChain =
         {
-            GetDestBoneTransform(HumanBodyBones.LeftUpperLeg),
-            GetDestBoneTransform(HumanBodyBones.LeftLowerLeg),
             GetDestBoneTransform(HumanBodyBones.LeftFoot),
+            GetDestBoneTransform(HumanBodyBones.LeftLowerLeg),
+            GetDestBoneTransform(HumanBodyBones.LeftUpperLeg),
         };
         if (leftLegChain.All(x => x))
         {
@@ -140,11 +140,11 @@ public class HasteClone : MonoBehaviour
                 _destHips,
                 leftLegChain);
         }
-        Transform[] rightLegChain = new[]
+        Transform[] rightLegChain =
         {
-            GetDestBoneTransform(HumanBodyBones.RightUpperLeg),
-            GetDestBoneTransform(HumanBodyBones.RightLowerLeg),
             GetDestBoneTransform(HumanBodyBones.RightFoot),
+            GetDestBoneTransform(HumanBodyBones.RightLowerLeg),
+            GetDestBoneTransform(HumanBodyBones.RightUpperLeg),
         };
         if (rightLegChain.All(x => x))
         {
@@ -154,11 +154,11 @@ public class HasteClone : MonoBehaviour
                 _destHips,
                 rightLegChain);
         }
-        Transform[] leftArmChain = new[]
+        Transform[] leftArmChain =
         {
-            GetDestBoneTransform(HumanBodyBones.LeftUpperArm),
+            GetDestBoneTransform(HumanBodyBones.LeftHand),
             GetDestBoneTransform(HumanBodyBones.LeftLowerArm),
-            GetDestBoneTransform(HumanBodyBones.LeftFoot),
+            GetDestBoneTransform(HumanBodyBones.LeftUpperArm),
         };
         if (leftArmChain.All(x => x))
         {
@@ -168,11 +168,11 @@ public class HasteClone : MonoBehaviour
                 GetDestBoneTransform(HumanBodyBones.LeftUpperArm),
                 leftArmChain);
         }
-        Transform[] rightArmChain = new[]
+        Transform[] rightArmChain =
         {
-            GetDestBoneTransform(HumanBodyBones.RightUpperArm),
+            GetDestBoneTransform(HumanBodyBones.RightHand),
             GetDestBoneTransform(HumanBodyBones.RightLowerArm),
-            GetDestBoneTransform(HumanBodyBones.RightFoot),
+            GetDestBoneTransform(HumanBodyBones.RightUpperArm),
         };
         if (rightArmChain.All(x => x))
         {
@@ -384,12 +384,12 @@ public class HasteClone : MonoBehaviour
     IKInstance AddLimbIK(Transform sourceBone, Transform sourceAnchor, Transform destAnchor, params Transform[] boneChain)
     {
         var ikTarget = new GameObject($"IkTarget: {sourceBone}").transform;
-        ikTarget.position = boneChain[^1].position;
-        ikTarget.rotation = boneChain[^1].rotation;
-        ikTarget.parent = boneChain[^1].root;
+        ikTarget.position = boneChain[0].position;
+        ikTarget.rotation = boneChain[0].rotation;
+        ikTarget.parent = boneChain[0].root;
         var ikHint = new GameObject($"IkHint: {sourceBone}").transform;
-        ikHint.parent = boneChain[^1].root;
-        var ik = new SimpleLimbIK(ikTarget, ikHint, boneChain[0], boneChain[1], boneChain[2]);
+        ikHint.parent = boneChain[0].root;
+        var ik = new SimpleLimbIK(ikTarget, ikHint, boneChain[2], boneChain[1], boneChain[0]);
         var destNormalized = new GameObject($"Normalized: {sourceBone}").transform;
         destNormalized.parent = ikTarget;
         destNormalized.localPosition = Vector3.zero;
@@ -401,7 +401,7 @@ public class HasteClone : MonoBehaviour
         return new IKInstance()
         {
             sourceBone = sourceBone,
-            destBone = boneChain[^1],
+            destBone = boneChain[0],
             ikTarget = ikTarget,
             ikHint = ikHint,
             destAnchor = destAnchor,
