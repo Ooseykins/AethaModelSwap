@@ -15,8 +15,7 @@ public class SimpleLimbIK
     const int Iterations = 10; // Iterations per call
     const float Delta = 0.001f; // Distance to stop moving
     const float SnapBackStrength = 1f; // Strength of going back to the start position.
-
-    const int ChainLength = 2;
+    
     readonly float[] _bonesLength; //Target to Origin
     readonly float _completeLength;
     readonly Transform[] _bones;
@@ -26,33 +25,25 @@ public class SimpleLimbIK
     readonly Quaternion _startRotationTarget;
     readonly Transform _root;
 
-    public SimpleLimbIK(Transform endBone, Transform target, Transform hint)
+    public SimpleLimbIK(Transform target, Transform hint, params Transform[] bones)
     {
         _target = target;
         _hint = hint;
         
-        _bones = new Transform[ChainLength + 1];
-        _positions = new Vector3[ChainLength + 1];
-        _bonesLength = new float[ChainLength];
-        _startDirectionSucc = new Vector3[ChainLength + 1];
-        _startRotationBone = new Quaternion[ChainLength + 1];
+        _bones = new Transform[bones.Length];
+        _positions = new Vector3[bones.Length];
+        _bonesLength = new float[bones.Length-1];
+        _startDirectionSucc = new Vector3[bones.Length];
+        _startRotationBone = new Quaternion[bones.Length];
         
-        _root = endBone;
-        for (var i = 0; i <= ChainLength; i++)
-        {
-            if (_root == null)
-            {
-                throw new UnityException("The chain value is longer than the ancestor chain!");
-            }
-            _root = _root.parent;
-        }
-        
+        _root = bones[0].parent;
+
         _startRotationTarget = GetRotationRootSpace(target);
         
-        var current = endBone;
         _completeLength = 0;
         for (var i = _bones.Length - 1; i >= 0; i--)
         {
+            var current = bones[i];
             _bones[i] = current;
             _startRotationBone[i] = GetRotationRootSpace(current);
 
@@ -68,8 +59,6 @@ public class SimpleLimbIK
                 _bonesLength[i] = _startDirectionSucc[i].magnitude;
                 _completeLength += _bonesLength[i];
             }
-
-            current = current.parent;
         }
     }
 
