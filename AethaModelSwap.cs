@@ -92,13 +92,18 @@ public class AethaModelSwap
                 }
             }
         };
-
-        // Unload all bundles on the main menu
+        // Handle some special cases on scene changes
         SceneManager.sceneLoaded += (scene, mode) =>
         {
+            // Unload all bundles on the main menu
             if (scene.name == "MainMenu")
             {
                 UnloadAllBundles();
+            }
+            // Enable the fashionable weeboh and add a helper in the hub scene
+            if (scene.name == "FullHub")
+            {
+                FashionableWeebohHelpUI.AddToScene();
             }
         };
         GeneralPatches.Patch();

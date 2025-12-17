@@ -95,6 +95,9 @@
         <Reference Include="UnityEngine.UI">
           <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\UnityEngine.UI.dll</HintPath>
         </Reference>
+        <Reference Include="UnityEngine.UIModule">
+          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+        </Reference>
         <Reference Include="Zorro.ControllerSupport">
           <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\Zorro.ControllerSupport.dll</HintPath>
         </Reference>
@@ -113,6 +116,7 @@
         <Compile Include="AnimationParameters.cs" />
         <Compile Include="BasicBoneChain.cs" />
         <Compile Include="CompanionFollower.cs" />
+        <Compile Include="FashionableWeebohHelpUI.cs" />
         <Compile Include="FavouriteSkinButton.cs" />
         <Compile Include="HasteClone.cs" />
         <Compile Include="HubCharacters.cs" />

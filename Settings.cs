@@ -3,9 +3,30 @@ using System.Reflection;
 using Landfall.Haste;
 using UnityEngine;
 using UnityEngine.Localization;
+using UnityEngine.Localization.Tables;
 using Zorro.Settings;
 
 namespace AethaModelSwapMod;
+
+[HasteSetting]
+public class ShowFashionableWeebohHelpUI : BoolSetting, IExposedSetting
+{
+    public static bool value;
+    public override void ApplyValue()
+    {
+        if (FashionableWeebohHelpUI.instance)
+        {
+            FashionableWeebohHelpUI.instance.gameObject.SetActive(Value);
+        }
+        value = Value;
+    }
+
+    protected override bool GetDefaultValue() => true;
+    public override LocalizedString OffString => new ((TableReference) "Settings", (TableEntryReference) "DisabledGraphicOption");
+    public override LocalizedString OnString => new ((TableReference) "Settings", (TableEntryReference) "EnabledGraphicOption");
+    public LocalizedString GetDisplayName() => new UnlocalizedString("Show Fashionable Weeboh icon in hub");
+    public string GetCategory() => "General";
+}
 
 [HasteSetting]
 public class OpenEditor : ButtonSetting, IExposedSetting
