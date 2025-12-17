@@ -76,11 +76,11 @@ public static class SkinSetterPatches
             {
                 foreach (var r in currentHip.GetComponentsInChildren<SkinnedMeshRenderer>())
                 {
-                    r.enabled = true;
+                    r.forceRenderingOff = false;
                 }
                 foreach (var r in currentHip.GetComponentsInChildren<Renderer>())
                 {
-                    r.enabled = true;
+                    r.forceRenderingOff = false;
                 }
                 return;
             }
