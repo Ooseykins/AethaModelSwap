@@ -63,3 +63,15 @@ public class OpenModPath : ButtonSetting, IExposedSetting
     public LocalizedString GetDisplayName() => new UnlocalizedString("AethaModelSwap Directory");
     public string GetCategory() => "General";
 }
+
+[HasteSetting]
+public class UnlimitedSkinWeights : BoolSetting, IExposedSetting
+{
+    public override void ApplyValue() => QualitySettings.skinWeights = Value ? SkinWeights.Unlimited : SkinWeights.FourBones;
+
+    protected override bool GetDefaultValue() => true;
+    public override LocalizedString OffString => new UnlocalizedString("4 bones");
+    public override LocalizedString OnString => new UnlocalizedString("Unlimited");
+    public LocalizedString GetDisplayName() => new UnlocalizedString("Skinned Mesh Renderer quality");
+    public string GetCategory() => "Graphics";
+}
