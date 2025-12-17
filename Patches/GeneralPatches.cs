@@ -287,9 +287,11 @@ public static class GeneralPatches
         {
             self.rectTransform.sizeDelta = new Vector2(600, 700);
             var angle = (Time.realtimeSinceStartup - _previewChangeTime) * 0.5f + (Mathf.PI * 0.5f);
-            const float radius = 10f;
-            self.cam.transform.localPosition = new Vector3(Mathf.Cos(angle) * radius, 2.5f, Mathf.Sin(angle) * radius);
-            self.cam.transform.LookAt(self.courierRoot.transform.position + new Vector3(0f, 2.5f, 0f));
+            float resolutionMult = Screen.height / 1080f;
+            float radius = resolutionMult * 12f;
+            float height = resolutionMult * 1.5f;
+            self.cam.transform.position = self.courierRoot.transform.position + new Vector3(Mathf.Cos(angle) * radius, height, Mathf.Sin(angle) * radius);
+            self.cam.transform.LookAt(self.courierRoot.transform.position + new Vector3(0f, height, 0f));
             orig(self);
         };
     }
