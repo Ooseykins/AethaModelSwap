@@ -249,14 +249,14 @@ public class AethaModelSwap
                 var regPath = path;
                 var regName = prefab.name;
 
-                var sprite = LoadSprite($"{regDirectory}\\{regName}");
+                var sprite = LoadSprite($"{regDirectory}/{regName}");
                 
                 RegisterSkin(index, 
                     prefabName, 
                     sprite, 
                     () =>
                     {
-                        var modelIKParametersPath = $"{regDirectory}\\{regName}.json";
+                        var modelIKParametersPath = $"{regDirectory}/{regName}.json";
                         var modelIKParameters = ModelIKParameters.LoadModelIKParameters(modelIKParametersPath, true);
                         return modelIKParameters;
                     }, 

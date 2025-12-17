@@ -377,9 +377,9 @@ public static class HubCharacters
 
         foreach (var c in CharacterInfos)
         {
-            var path = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\{c.fileName}.{c.skinIndex}.json";
+            var path = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}/{c.fileName}.{c.skinIndex}.json";
             ModelIKParameters ModelIkParameters() => ModelIKParameters.LoadModelIKParameters(path, true);
-            var spritePath = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\{c.fileName}.{c.skinIndex}.png";
+            var spritePath = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}/{c.fileName}.{c.skinIndex}.png";
             AethaModelSwap.RegisterSkin(c.skinIndex, c.fileName, AethaModelSwap.LoadSprite(spritePath), ModelIkParameters, () => GetModelPrefab(c.name), GetBoneDictionary(c.boneNameFunction), () => c.animationParameters, c.localizedName);
         }
         if (SkinDatabase.me)

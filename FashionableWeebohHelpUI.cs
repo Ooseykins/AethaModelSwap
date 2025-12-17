@@ -12,7 +12,7 @@ public class FashionableWeebohHelpUI : LocationHelpUI<FashionableWeebohHelpUI>
 {
     private static Sprite _icon;
     public static FashionableWeebohHelpUI instance;
-    private static string IconPath => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\FashionableWeebohIcon.png";
+    private static string IconPath => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/FashionableWeebohIcon.png";
 
     public static void AddToScene()
     {

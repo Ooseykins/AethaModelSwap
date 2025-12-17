@@ -21,13 +21,13 @@ public class ModelParamsEditor : MonoBehaviour
         switch(Application.platform)
         {
             case RuntimePlatform.WindowsPlayer:
-                return $"{AssemblyDirectory}\\modeleditorui.windows.assetbundle";
+                return $"{AssemblyDirectory}/modeleditorui.windows.assetbundle";
             case RuntimePlatform.LinuxPlayer:
-                return $"{AssemblyDirectory}\\modeleditorui.linux.assetbundle";
+                return $"{AssemblyDirectory}/modeleditorui.linux.assetbundle";
             case RuntimePlatform.OSXPlayer:
-                return $"{AssemblyDirectory}\\modeleditorui.mac.assetbundle";
+                return $"{AssemblyDirectory}/modeleditorui.mac.assetbundle";
             default:
-                return $"{AssemblyDirectory}\\modeleditorui.windows.assetbundle";
+                return $"{AssemblyDirectory}/modeleditorui.windows.assetbundle";
         }
     }
     
