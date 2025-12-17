@@ -66,6 +66,10 @@ public class HasteClone : MonoBehaviour
     // Animator of the instantiated clone, used for getting bone references
     private Animator _destAnimator;
     private Animator _sourceAnimator;
+    
+    // Watch the skinned mesh renderer state to enable/disable the clone's renderers
+    private SkinnedMeshRenderer _zoeRenderer;
+    private List<Renderer> _cloneRenderers = new ();
 
     public ModelIKParameters modelIKParameters = new ();
 
@@ -95,10 +99,7 @@ public class HasteClone : MonoBehaviour
             _correctiveHips = _destHips;
         }
         _instanceScale = _sourceHips.lossyScale.x / ZoePrefabScale;
-        
-        // Player character, in case we need refs later
-        
-        
+
         // Replace materials with Haste's to make things look a bit nicer
         SetMaterials();
         
@@ -228,15 +229,26 @@ public class HasteClone : MonoBehaviour
                 newHandPoint.isRight = true;
             }
         }
+        
+        // Store references to all the renderers to enable/disable based on the Zoe renderer state
+        foreach (var renderer in _destRoot.GetComponentsInChildren<SkinnedMeshRenderer>())
+        {
+            _cloneRenderers.Add(renderer);
+        }
+        foreach (var renderer in _destRoot.GetComponentsInChildren<MeshRenderer>())
+        {
+            _cloneRenderers.Add(renderer);
+        }
 
         // Disable renderers of the default skin, do this last in case something else goes wrong
         foreach (var renderer in _sourceRoot.GetComponentsInChildren<SkinnedMeshRenderer>())
         {
-            renderer.enabled = false;
+            renderer.forceRenderingOff = true;
+            _zoeRenderer = renderer;
         }
         foreach (var renderer in _sourceRoot.GetComponentsInChildren<MeshRenderer>())
         {
-            renderer.enabled = false;
+            renderer.forceRenderingOff = true;
         }
     }
 
@@ -438,6 +450,18 @@ public class HasteClone : MonoBehaviour
             Debug.Log("HasteClone destroyed due to missing animator");
             Destroy(gameObject);
             return;
+        }
+
+        // Sync renderers to match Zoe
+        if (_zoeRenderer)
+        {
+            foreach (var r in _cloneRenderers)
+            {
+                if (r)
+                {
+                    r.enabled = _zoeRenderer.enabled;
+                }
+            }
         }
 
         _destRoot.localScale = Vector3.one;
