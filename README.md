@@ -22,6 +22,12 @@ The configuration file can be created in game using the configuration interface 
 ## Multiplayer
 Yep it works in multiplayer! If a player is using a custom skin that you don't have installed, they will appear as the default Zoe Courier skin. If another player doesn't have this mod, they will see you as the default skin.
 
+## Hair jiggle physics?
+
+It seems like this plugin is used in Haste already: https://assetstore.unity.com/packages/tools/animation/dynamic-bone-16743
+
+If you configure the dynamic bones on your prefab in Unity they should work A-OK in Haste once exported (Thanks Mari!)
+
 ## Extending this mod
 Other mods can register models without using the .hastemodel filename extension by calling AethaModelSwap.RegisterSkin and AethaModelSwap.RegisterToSkinManager. It's preferred to use the overloads that take Func parameters, to allow the models to lazily load only when needed.
 
