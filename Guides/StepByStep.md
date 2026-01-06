@@ -89,3 +89,9 @@ Bones in the Inspector on the right will be marked with a solid or dotted circle
 ## I can't turn off "Replace Standard materials"
 
 This is due to an optimization of the model materials. Uncheck the box, save the configuration, then restart the game. The model should now have it's base materials.
+
+## I want my model's hair to flow!
+
+This plugin is included with Haste: https://assetstore.unity.com/packages/tools/animation/dynamic-bone-16743
+
+If you configure your prefab in Unity using that plugin, it should work A-OK in Haste after exporting.
