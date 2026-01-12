@@ -16,7 +16,7 @@ public static class SkinSetterPatches
         // Shuffle the player's skin
         On.PlayerSkinSetter.Awake += (orig, self) =>
         {
-            if (self.IsLocalPlayer && SkinDatabase.me)
+            if (self.IsLocalPlayer && SkinDatabase.me && FavouriteSkinButton.ShuffleEnabled)
             {
                 HashSet<SkinManager.Skin> favouriteSkins = new ();
                 foreach (var entry in SkinDatabase.me.Skins)

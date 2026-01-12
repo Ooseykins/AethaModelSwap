@@ -71,6 +71,7 @@ public static class GeneralPatches
             var bgColor = new Color(0.0483f, 0.0495f, 0.0566f, 1);
             var handleColor = new Color(0.0837f, 0.2672f, 0.3774f, 1);
 
+            // Fix the scrollbars to be skinned
             foreach (var scrollbar in self.gameObject.GetComponentsInChildren<Scrollbar>(true))
             {
                 var bg = scrollbar.GetComponent<Image>();
@@ -96,9 +97,45 @@ public static class GeneralPatches
                     mode = Navigation.Mode.None
                 };
             }
+            
+            // Add auto-scrollers which are missing, this enables controller support in this menu
             foreach (var scrollRect in self.gameObject.GetComponentsInChildren<ScrollRect>(true))
             {
                 scrollRect.gameObject.AddComponent<ScrollRectAutoScroller>();
+            }
+            
+            // Add an extra button for turning shuffle on and off
+            var templateButton = self.gameObject.GetComponentsInChildren<Button>(true).FirstOrDefault(x => x.name == "Confirm")?.gameObject;
+            if (templateButton)
+            {
+                var newButton = Object.Instantiate(templateButton, templateButton.transform.parent);
+                var text = newButton.GetComponentInChildren<Zorro.Localization.LocalizeUIText>(true);
+                var button = newButton.GetComponentInChildren<Button>(true);
+                if (button && text)
+                {
+                    var originalColor = text.Text.color;
+                    button.onClick.RemoveAllListeners();
+                    button.onClick.AddListener(() =>
+                    {
+                        FavouriteSkinButton.ShuffleEnabled = !FavouriteSkinButton.ShuffleEnabled;
+                        SyncVisuals();
+                    });
+                    SyncVisuals();
+                    void SyncVisuals()
+                    {
+                        if (FavouriteSkinButton.ShuffleEnabled)
+                        {
+                            text.SetString(new UnlocalizedString($"Shuffle ON"));
+                            text.Text.color = new Color(0.9226f, 0.5203f, 0.9890f, 1f);
+                        }
+                        else
+                        {
+                            text.SetString(new UnlocalizedString("Shuffle OFF"));
+                            text.Text.color = originalColor;
+                        }
+                    }
+                }
+                newButton.transform.SetSiblingIndex(1);
             }
         };
 

@@ -104,6 +104,9 @@
         <Reference Include="Zorro.Core.Runtime">
           <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\Zorro.Core.Runtime.dll</HintPath>
         </Reference>
+        <Reference Include="Zorro.Localization">
+          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\Zorro.Localization.dll</HintPath>
+        </Reference>
         <Reference Include="Zorro.Settings.Runtime">
           <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\Zorro.Settings.Runtime.dll</HintPath>
         </Reference>

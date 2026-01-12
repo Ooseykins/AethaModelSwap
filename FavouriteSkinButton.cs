@@ -8,6 +8,13 @@ namespace AethaModelSwapMod;
 
 public class FavouriteSkinButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
+    private const string ShuffleFactString = "ShuffleModelSwap";
+    public static bool ShuffleEnabled
+    {
+        get => FactSystem.GetFact(new Fact(ShuffleFactString)) > 0;
+        set => FactSystem.SetFact(new Fact(ShuffleFactString), value ? 1f : 0f);
+    } 
+    
     public SkinManager.Skin skin;
     
     private static readonly Color SelectedColorOuter = new (0f, 0f, 0f, 0.5f);
