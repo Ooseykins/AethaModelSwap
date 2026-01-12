@@ -115,6 +115,7 @@
         <Compile Include="AethaModelSwap.cs" />
         <Compile Include="AnimationParameters.cs" />
         <Compile Include="BasicBoneChain.cs" />
+        <Compile Include="CheckUGCCompatibility.cs" />
         <Compile Include="CompanionFollower.cs" />
         <Compile Include="FashionableWeebohHelpUI.cs" />
         <Compile Include="FavouriteSkinButton.cs" />

@@ -108,6 +108,7 @@ public class AethaModelSwap
         };
         GeneralPatches.Patch();
         SkinSetterPatches.Patch();
+        CheckUGCCompatibility.CheckCompatibiltiy();
     }
 
     public static void ValidateLocalSkin()
