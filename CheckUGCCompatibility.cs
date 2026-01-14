@@ -13,7 +13,6 @@ public static class CheckUGCCompatibility
     private const uint UpdateTime = 1767240000; // January 1 2026
     private static readonly PublishedFileId_t[] BadFileIds =
     {
-        (PublishedFileId_t)3408901301,
     };
     
     private const string HeaderText = "Some mods may be incompatible with AethaModelSwap:\n";
