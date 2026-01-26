@@ -63,6 +63,9 @@ public class AethaModelSwap
         public Func<AnimationParameters> animationParameters;
     }
 
+    public static bool IsBaseSkin(int index) => Enum.IsDefined(typeof(SkinManager.Skin), index);
+    public static bool IsHubSkin(int index) => index is >= 16000120 and <= 16000129; 
+
     public static bool HasSkin(int index) => RegisteredSkins.ContainsKey(index);
     public static string GetName(int index) => RegisteredSkins.ContainsKey(index) ? RegisteredSkins[index].name : "";
     public static Sprite GetSprite(int index) => RegisteredSkins.ContainsKey(index) ? RegisteredSkins[index].sprite : null;
@@ -72,6 +75,9 @@ public class AethaModelSwap
         ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action(ModelParamsEditor.OpenEditor).Method));
         ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action<int>(SetSkin).Method));
         ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action(SpawnBasePoseOnPlayer).Method));
+        ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action<int,TextureSwap.SkinCreationMode>(TextureSwap.CreateNewSkin).Method));
+        ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action<int>(TextureSwap.SetOverridePalette).Method));
+        ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action(TextureSwap.Reapply).Method));
         
         HubCharacters.RegisterAllSkins();
         
@@ -79,6 +85,7 @@ public class AethaModelSwap
         foreach (var item in Modloader.LoadedItemDirectories)
         {
             LoadSkins(item.Value.directory);
+            TextureSwap.SearchDirectory(item.Value.directory);
         }
         // Hot load newly subscribed models
         Modloader.OnItemLoaded += t =>
@@ -90,6 +97,7 @@ public class AethaModelSwap
                 {
                     RegisterToSkinManager(SkinDatabase.me);
                 }
+                TextureSwap.SearchDirectory(directory);
             }
         };
         // Handle some special cases on scene changes
@@ -325,6 +333,7 @@ public class AethaModelSwap
         foreach (var skin in RegisteredSkins)
         {
             var newEntry = Object.Instantiate(instance.Skins[0]);
+            newEntry.name = skin.Value.name;
             newEntry.Name = skin.Value.localizedName;
             newEntry.Skin = (SkinManager.Skin)skin.Key;
             newEntry.BodyPrefab = instance.GetSkin(0).BodyPrefab;

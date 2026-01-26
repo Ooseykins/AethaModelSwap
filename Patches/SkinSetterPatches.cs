@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Landfall.Haste;
@@ -50,6 +51,10 @@ public static class SkinSetterPatches
                 neckSkin = skin;
             }
             orig(self, skin, neckSkin);
+            if (Enum.IsDefined(typeof(SkinManager.Skin), skin))
+            {
+                TextureSwap.ApplyPalette(self.gameObject, (int)skin, 1, true, false);
+            }
         };
 
         On.PlayerSkinSetter.SetNeckVisuals += (orig, self, skin) =>
@@ -82,14 +87,20 @@ public static class SkinSetterPatches
                 {
                     r.forceRenderingOff = false;
                 }
+                TextureSwap.ApplyPalette(self.gameObject, (int)skin, 1, false, true);
                 return;
             }
 
             var clone = AethaModelSwap.InstantiateSkin(currentHip.transform, (int)skin, self.IsLocalPlayer);
+            if (self.IsLocalPlayer)
+            {
+                TextureSwap.ApplyPalette(clone.gameObject, (int)skin, 1, true, true);
+            }
 
             // This handles the SkinPreview3d layer setting logic for the clone
             if (clone && self.transform.root.name == "GAME")
             {
+                TextureSwap.ApplyPalette(clone.gameObject, (int)skin, 1, true, true);
                 var preview = self.transform.root.GetComponentInChildren<SkinPreview3d>();
                 if (!preview) return;
                 var layer = math.tzcnt(preview.cam.cullingMask);
