@@ -98,6 +98,9 @@
         <Reference Include="UnityEngine.UIModule">
           <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\UnityEngine.UIModule.dll</HintPath>
         </Reference>
+        <Reference Include="UnityEngine.VideoModule">
+          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\UnityEngine.VideoModule.dll</HintPath>
+        </Reference>
         <Reference Include="Zorro.ControllerSupport">
           <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\Zorro.ControllerSupport.dll</HintPath>
         </Reference>
@@ -132,6 +135,7 @@
         <Compile Include="Settings.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
         <Compile Include="TextureSwap.cs" />
+        <Compile Include="TutorialHelper.cs" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

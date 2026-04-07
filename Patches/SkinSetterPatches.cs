@@ -59,6 +59,12 @@ public static class SkinSetterPatches
 
         On.PlayerSkinSetter.SetNeckVisuals += (orig, self, skin) =>
         {
+            // Remember that we've changed skins before, so we don't bother the player with tutorials
+            // This tutorial is meant to be slightly more "stubborn" than other tutorials
+            if (skin != SkinManager.Skin.Default && self.IsLocalPlayer)
+            {
+                FashionableWeebohHelpUI.HasChangedSkins = true;
+            }
             // Set the neck's parent to null, cause it's about to be destroyed and we don't want two necks on the instantiated model
             var currentNeck = GetCurrentNeck(self);
             if (currentNeck)

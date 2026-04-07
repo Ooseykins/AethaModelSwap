@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Reflection;
+using Landfall.Haste;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,6 +14,27 @@ public class FashionableWeebohHelpUI : LocationHelpUI<FashionableWeebohHelpUI>
     private static Sprite _icon;
     public static FashionableWeebohHelpUI instance;
     private static string IconPath => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/FashionableWeebohIcon.png";
+    private static string TutorialVideoPath => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/FashionableWeebohTutorial.mp4";
+    private static string TutorialImagePath => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/FashionableWeebohTutorial.png";
+    
+    private const string HasChangedSkinsString = "HasChangedSkinsModelSwap";
+    public static bool HasChangedSkins
+    {
+        get => FactSystem.GetFact(new Fact(HasChangedSkinsString)) > 0 || SkinManager.GetHeadSkinFromFacts() != SkinManager.Skin.Default || SkinManager.GetBodySkinFromFacts() != SkinManager.Skin.Default;
+        set => FactSystem.SetFact(new Fact(HasChangedSkinsString), value ? 1f : 0f);
+    } 
+
+    public static void FashionableWeebohTutorial()
+    {
+        TutorialHelper.TriggerTutorial(51,
+            "Downloaded a new skin?",
+            "The <style=H>Fashionable Weeboh</style> can help you out!",
+            "Follow the <style=Spark>weeboh icon</style> on your HUD and talk to them in <style=H>The Hub</style>",
+            TutorialVideoPath,
+            TutorialImagePath, // Fallback if the video fails
+            45f,
+            true);
+    }
 
     public static void AddToScene()
     {

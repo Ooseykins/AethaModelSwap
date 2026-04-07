@@ -78,6 +78,7 @@ public class AethaModelSwap
         ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action<int,TextureSwap.SkinCreationMode>(TextureSwap.CreateNewSkin).Method));
         ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action<int>(TextureSwap.SetOverridePalette).Method));
         ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action(TextureSwap.Reapply).Method));
+        ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action(FashionableWeebohHelpUI.FashionableWeebohTutorial).Method));
         
         HubCharacters.RegisterAllSkins();
         

@@ -193,6 +193,7 @@ public static class GeneralPatches
                 ModelParamsEditor.ExitEditor();
             }
             _previewChangeTime = Time.realtimeSinceStartup;
+            FashionableWeebohHelpUI.HasChangedSkins = true; // If the player has found the Fashionable Weeboh before, never show the tutorial again
             orig(self);
         };
 
@@ -330,6 +331,22 @@ public static class GeneralPatches
             self.cam.transform.position = self.courierRoot.transform.position + new Vector3(Mathf.Cos(angle) * radius, height, Mathf.Sin(angle) * radius);
             self.cam.transform.LookAt(self.courierRoot.transform.position + new Vector3(0f, height, 0f));
             orig(self);
+        };
+
+        On.GM_Hub.Start += (orig, self) =>
+        {
+            if (GM_Hub.loadingFromMainMenu)
+            {
+                MonoFunctions.DelayCall(DelayedPopup, 4.5f);
+            }
+            orig(self);
+            void DelayedPopup()
+            {
+                if (TutorialPopUpHandler.Instance.currentTutorialPopUp == null && !FashionableWeebohHelpUI.HasChangedSkins)
+                {
+                    FashionableWeebohHelpUI.FashionableWeebohTutorial();
+                }
+            }
         };
     }
 }
