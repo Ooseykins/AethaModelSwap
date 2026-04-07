@@ -521,7 +521,6 @@ public class HasteClone : MonoBehaviour
         SetHipPosition();
         RotateDestHands();
         SetIKHandles();
-        SetHeadCrownPosition();
 
         // Bend the clone's spine
         var spineBones = new List<Transform>();
@@ -565,6 +564,8 @@ public class HasteClone : MonoBehaviour
                 _destHips.localRotation *= Quaternion.Slerp(Quaternion.identity, _animationParameters.offsetRotation, idleAnimationWeight);
             }
         }
+        
+        SetHeadCrownPosition();
     }
 
     private void ForceBasePose()
