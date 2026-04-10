@@ -86,11 +86,17 @@
         <Reference Include="UnityEngine.AssetBundleModule">
           <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
         </Reference>
+        <Reference Include="UnityEngine.AudioModule">
+          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
+        </Reference>
         <Reference Include="UnityEngine.CoreModule">
           <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.ImageConversionModule">
           <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.PhysicsModule">
+          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.UI">
           <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\UnityEngine.UI.dll</HintPath>
@@ -100,6 +106,15 @@
         </Reference>
         <Reference Include="UnityEngine.UIModule">
           <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.UnityWebRequestAudioModule">
+          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.UnityWebRequestModule">
+          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\UnityEngine.UnityWebRequestModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.UnityWebRequestWWWModule">
+          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.VideoModule">
           <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\UnityEngine.VideoModule.dll</HintPath>
@@ -123,6 +138,7 @@
     <ItemGroup>
         <Compile Include="AethaModelSwap.cs" />
         <Compile Include="AnimationParameters.cs" />
+        <Compile Include="AudioLoader.cs" />
         <Compile Include="BasicBoneChain.cs" />
         <Compile Include="CheckUGCCompatibility.cs" />
         <Compile Include="CompanionFollower.cs" />

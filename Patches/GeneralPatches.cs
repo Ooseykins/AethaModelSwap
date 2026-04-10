@@ -20,6 +20,7 @@ public static class GeneralPatches
     private static SkinManager.Skin _selectedBody;
     public static SkinManager.Skin prevSelectedHead;
     private static float _previewChangeTime;
+    private static int _sparkCombo;
     
     public static void Patch()
     {
@@ -374,6 +375,28 @@ public static class GeneralPatches
             self.coin = originalCoin;
         };
 
+        On.DroppedObject.DoInit += (orig, self, vel) =>
+        {
+            orig(self, vel);
+            if (AethaModelSwap.selectedSpark != null && !AethaModelSwap.selectedSpark.cachedPrefab)
+            {
+                AethaModelSwap.selectedSpark.cachedPrefab = AethaModelSwap.selectedSpark.loadPrefab?.Invoke();
+            }
+            if (AethaModelSwap.selectedSpark == null || !AethaModelSwap.selectedSpark.cachedPrefab)
+            {
+                return;
+            }
+            var baseModel = self.transform.FindChildRecursive("Cylinder");
+            if (!baseModel)
+            {
+                return;
+            }
+            baseModel.gameObject.SetActive(false);
+            var newModel = Object.Instantiate(AethaModelSwap.selectedSpark.cachedPrefab, baseModel.parent);
+            newModel.transform.localRotation = Quaternion.identity;
+            newModel.transform.localPosition = Vector3.zero;
+        };
+
         On.HasteSettingsHandler.ctor += (orig, self) =>
         {
             orig(self);
@@ -381,6 +404,85 @@ public static class GeneralPatches
             {
                 self.AddSetting(new SparkStyleSetting());
             }
+        };
+
+        On.Spark.Start += (orig, self) =>
+        {
+            orig(self);
+            
+            // Save the default spark sound effects
+            AethaModelSwap.DefaultSparkSfx ??= self.sfx;
+            
+            // Load the new spark sound effects
+            if (AethaModelSwap.selectedSpark != null && AethaModelSwap.selectedSpark.sfx == null)
+            {
+                AethaModelSwap.selectedSpark.sfx = new[] { Object.Instantiate(AethaModelSwap.DefaultSparkSfx[0]) }; // Copy this sound, no particular reason
+                AethaModelSwap.selectedSpark.sfx[0].clips = Array.Empty<AudioClip>();
+                var settings = new SFX_Settings
+                {
+                    mixerGroup = AethaModelSwap.DefaultSparkSfx[0].settings.mixerGroup, // Use the mixer group from the default sound
+                    volume = 0.05f,
+                    volume_Variation = 0f,
+                    pitch = 1f,
+                    pitch_Variation = 0f,
+                    cooldown = 0.0025f,
+                };
+                AethaModelSwap.selectedSpark.sfx[0].settings = settings;
+                foreach (var path in AethaModelSwap.selectedSpark.sfxPaths)
+                {
+                    self.StartCoroutine(AudioLoader.LoadNewClip(path, AethaModelSwap.selectedSpark.sfx[0]));
+                }
+            }
+        };
+        
+        // Assign the alternate sound effects when it's touched. The sound is played from a coroutine and it's complicated
+        On.Spark.GoToPlayer += (orig, self, player, up) =>
+        {
+            orig(self, player, up);
+            if (AethaModelSwap.selectedSpark != null && AethaModelSwap.selectedSpark.sfx != null)
+            {
+                self.sfx = AethaModelSwap.selectedSpark.sfx;
+            }
+        };
+
+        // Use custom pitch-scaling here since Haste's is hardcoded. Uses a neato "combo" to get pleasant rising pitches
+        On.SFX_Player.PlaySFX += (orig, self, sfx, position, transform, settings, multiplier, loop, id, pitchMultiplier) =>
+        {
+            if (AethaModelSwap.selectedSpark != null && AethaModelSwap.selectedSpark.sfx != null && sfx == AethaModelSwap.selectedSpark.sfx[0])
+            {
+                var pitchStep = 1f + (1f / (192f));
+                pitchMultiplier = 1f * Mathf.Pow(pitchStep, _sparkCombo);
+                _sparkCombo++;
+                if (_sparkCombo > 192)
+                {
+                    _sparkCombo = 192;
+                }
+                
+            }
+            return orig(self, sfx, position, transform, settings, multiplier, loop, id, pitchMultiplier);
+        };
+
+        // This is for resetting the player's "combo". It resets faster if they're going faster
+        On.SparkHandler.PickupTrigger += (orig, self) =>
+        {
+            var vel = 100f;
+            if (Player.localPlayer && Player.localPlayer.character && Player.localPlayer.character.IsVisible && Player.localPlayer.character.refs != null && Player.localPlayer.character.refs.rig)
+            {
+                vel = Player.localPlayer.character.refs.rig.linearVelocity.magnitude;
+            }
+            else if (HasteSpectate.TryGet(out var data))
+            {
+                vel = data.Velocity.magnitude;
+            }
+            if (vel < 100f)
+            {
+                vel = 100f;
+            }
+            if (SparkHandler.Instance.timeSinceLastPickup > 0.3f / (vel/100f))
+            {
+                _sparkCombo = 0;
+            }
+            orig(self);
         };
     }
 }

@@ -10,6 +10,7 @@ using UnityEngine.Localization;
 using UnityEngine.SceneManagement;
 using Zorro.Core.CLI;
 using Object = UnityEngine.Object;
+using UnityEngine.Networking;
 
 namespace AethaModelSwapMod;
 
@@ -48,6 +49,7 @@ public class AethaModelSwap
     public static HasteClone LocalClone { get; internal set; }
 
     private static readonly Dictionary<int, RegisteredSkin> RegisteredSkins = new();
+    public static SFX_Instance[] DefaultSparkSfx;
     public static readonly List<RegisteredModel> RegisteredSparks = new();
     public static RegisteredModel selectedSpark;
     private static readonly HashSet<AssetBundle> LoadedBundles = new();
@@ -70,6 +72,8 @@ public class AethaModelSwap
         public LocalizedString LocalizedName => new UnlocalizedString(name.Replace(".spark","", StringComparison.InvariantCultureIgnoreCase));
         public Func<GameObject> loadPrefab;
         public GameObject cachedPrefab;
+        public SFX_Instance[] sfx = null;
+        public List<string> sfxPaths = new();
     }
 
     public static bool IsBaseSkin(int index) => Enum.IsDefined(typeof(SkinManager.Skin), index);
@@ -235,6 +239,11 @@ public class AethaModelSwap
                             return skin;
                         },
                     };
+                    foreach (var audioPath in Directory.GetFiles(directory).Where(x => x.ToLower().Contains(prefab.name.ToLower())))
+                    {
+                        Debug.Log($"Found sound effect at path: {audioPath}");
+                        spark.sfxPaths.Add(audioPath);
+                    }
                     RegisteredSparks.Add(spark);
                     Debug.Log($"Registered spark {prefab.name}");
                     continue;
