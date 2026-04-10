@@ -130,5 +130,6 @@ public class SparkStyleSetting : Setting, IEnumSetting, IExposedSetting
     public void SetValue(int v, ISettingHandler settingHandler, bool fromUI)
     {
         AethaModelSwap.selectedSpark = v == 0 ? null : AethaModelSwap.RegisteredSparks[v - 1];
+        settingHandler.SaveSetting(this);
     }
 }
