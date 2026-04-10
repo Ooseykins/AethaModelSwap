@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.Localization.Settings;
 using UnityEngine.UI;
 using Zorro.ControllerSupport;
+using Zorro.Core;
 using Object = UnityEngine.Object;
 
 namespace AethaModelSwapMod;
@@ -346,6 +347,39 @@ public static class GeneralPatches
                 {
                     FashionableWeebohHelpUI.FashionableWeebohTutorial();
                 }
+            }
+        };
+        
+        On.CoinSpawner.Go_Random += (orig, self, random) =>
+        {
+            if (AethaModelSwap.selectedSpark != null && !AethaModelSwap.selectedSpark.cachedPrefab)
+            {
+                AethaModelSwap.selectedSpark.cachedPrefab = AethaModelSwap.selectedSpark.loadPrefab?.Invoke();
+            }
+            if (AethaModelSwap.selectedSpark == null || !AethaModelSwap.selectedSpark.cachedPrefab)
+            {
+                orig(self, random);
+                return;
+            }
+            var newCoin = Object.Instantiate(self.coin, Vector3.zero, Quaternion.identity, null);
+            var baseModel = newCoin.transform.FindChildRecursive("Cylinder");
+            baseModel.gameObject.SetActive(false);
+            var newModel = Object.Instantiate(AethaModelSwap.selectedSpark.cachedPrefab, baseModel.parent);
+            newModel.transform.localRotation = Quaternion.identity;
+            newModel.transform.localPosition = Vector3.zero;
+            var originalCoin = self.coin;
+            self.coin = newCoin;
+            orig(self, random);
+            Object.Destroy(newCoin);
+            self.coin = originalCoin;
+        };
+
+        On.HasteSettingsHandler.ctor += (orig, self) =>
+        {
+            orig(self);
+            if (AethaModelSwap.RegisteredSparks.Count > 0)
+            {
+                self.AddSetting(new SparkStyleSetting());
             }
         };
     }

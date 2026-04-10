@@ -95,6 +95,9 @@
         <Reference Include="UnityEngine.UI">
           <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\UnityEngine.UI.dll</HintPath>
         </Reference>
+        <Reference Include="UnityEngine.UIElementsModule">
+          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\UnityEngine.UIElementsModule.dll</HintPath>
+        </Reference>
         <Reference Include="UnityEngine.UIModule">
           <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\UnityEngine.UIModule.dll</HintPath>
         </Reference>

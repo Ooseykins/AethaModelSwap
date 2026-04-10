@@ -16,7 +16,6 @@ namespace AethaModelSwapMod;
 [LandfallPlugin]
 public class AethaModelSwap
 {
-    private const string Guid = "Aetha.ModelSwap";
     private const string WindowsModelExtension = ".windows.hastemodel";
     private const string LinuxModelExtension = ".linux.hastemodel";
     private const string MacModelExtension = ".mac.hastemodel";
@@ -49,6 +48,8 @@ public class AethaModelSwap
     public static HasteClone LocalClone { get; internal set; }
 
     private static readonly Dictionary<int, RegisteredSkin> RegisteredSkins = new();
+    public static readonly List<RegisteredModel> RegisteredSparks = new();
+    public static RegisteredModel selectedSpark;
     private static readonly HashSet<AssetBundle> LoadedBundles = new();
 
     private class RegisteredSkin
@@ -61,6 +62,14 @@ public class AethaModelSwap
         public GameObject cachedPrefab;
         public Dictionary<HumanBodyBones, string> boneNames;
         public Func<AnimationParameters> animationParameters;
+    }
+
+    public class RegisteredModel
+    {
+        public string name;
+        public LocalizedString LocalizedName => new UnlocalizedString(name.Replace(".spark","", StringComparison.InvariantCultureIgnoreCase));
+        public Func<GameObject> loadPrefab;
+        public GameObject cachedPrefab;
     }
 
     public static bool IsBaseSkin(int index) => Enum.IsDefined(typeof(SkinManager.Skin), index);
@@ -207,14 +216,38 @@ public class AethaModelSwap
             foreach (var prefab in bundle.LoadAllAssets<GameObject>())
             {
                 Debug.Log($"Loading prefab {prefab.name}");
+                if (prefab.name.ToLower().EndsWith(".spark"))
+                {
+                    var tmpPath = path;
+                    var tmpName = prefab.name;
+                    var spark = new RegisteredModel
+                    {
+                        name = prefab.name,
+                        loadPrefab = () =>
+                        {
+                            if (!bundle)
+                            {
+                                bundle = AssetBundle.LoadFromFile(tmpPath);
+                            }
+                            LoadedBundles.Add(bundle);
+                            Debug.Log($"Lazily loading prefab: {tmpName}");
+                            var skin = bundle.LoadAsset<GameObject>(tmpName);
+                            return skin;
+                        },
+                    };
+                    RegisteredSparks.Add(spark);
+                    Debug.Log($"Registered spark {prefab.name}");
+                    continue;
+                }
+
                 var anim = prefab.GetComponentInChildren<Animator>();
                 if (!anim)
                 {
                     Debug.LogWarning($"No animator on prefab {prefab.name}, continuing anyways");
-                }
-                if (!anim.avatar || !anim.avatar.isHuman)
-                {
-                    Debug.LogWarning($"No human avatar on prefab {prefab.name}, continuing anyways");
+                    if (!anim.avatar || !anim.avatar.isHuman)
+                    {
+                        Debug.LogWarning($"No human avatar on prefab {prefab.name}, continuing anyways");
+                    }
                 }
 
                 var splitPoint = prefab.name.LastIndexOf('.');

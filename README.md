@@ -28,6 +28,10 @@ It seems like this plugin is used in Haste already: https://assetstore.unity.com
 
 If you configure the dynamic bones on your prefab in Unity they should work A-OK in Haste once exported (Thanks Mari!)
 
+## Spark Models
+
+Similar to exporting a skin, instead you can export any prefab named with a ".spark" suffix. If for example a prefab is named "Big Coin.spark" and exported into the .hastemodel files, it will show up in the spark model settings dropdown. Since this is clientside only, you don't need to add any ID suffix number to the prefab name.
+
 ## Extending this mod
 Other mods can register models without using the .hastemodel filename extension by calling AethaModelSwap.RegisterSkin and AethaModelSwap.RegisterToSkinManager. It's preferred to use the overloads that take Func parameters, to allow the models to lazily load only when needed.
 
