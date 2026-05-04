@@ -216,7 +216,12 @@ public class AethaModelSwap
                 Debug.Log($"Failed to load bundle {path}");
                 continue;
             }
-
+            var subDir = Path.GetDirectoryName(path);
+            if (subDir == null)
+            {
+                Debug.LogError($"Failed to get directory for {path}");
+                continue;
+            }
             foreach (var prefab in bundle.LoadAllAssets<GameObject>())
             {
                 Debug.Log($"Loading prefab {prefab.name}");
@@ -239,7 +244,7 @@ public class AethaModelSwap
                             return skin;
                         },
                     };
-                    foreach (var audioPath in Directory.GetFiles(directory).Where(x => x.ToLower().Contains(prefab.name.ToLower())))
+                    foreach (var audioPath in Directory.GetFiles(subDir).Where(x => x.ToLower().Contains(prefab.name.ToLower())))
                     {
                         Debug.Log($"Found sound effect at path: {audioPath}");
                         spark.sfxPaths.Add(audioPath);
@@ -296,11 +301,12 @@ public class AethaModelSwap
                     continue;
                 }
 
-                var regDirectory = directory;
+                // Declared as variables so they are captured in the functions below correctly
+                var regDirectory = subDir;
                 var regPath = path;
                 var regName = prefab.name;
 
-                var sprite = LoadSprite($"{regDirectory}/{regName}");
+                var sprite = LoadSprite($"{subDir}/{regName}");
                 
                 RegisterSkin(index, 
                     prefabName, 
