@@ -207,7 +207,7 @@ public class AethaModelSwap
 
     public static void LoadSkins(string directory)
     {
-        foreach (var path in Directory.GetFiles(directory).Where(IsCompatiblePlatformModel))
+        foreach (var path in Directory.GetFiles(directory, "*.hastemodel", SearchOption.AllDirectories).Where(IsCompatiblePlatformModel))
         {
             Debug.Log($"Loading model bundle {path}");
             var bundle = AssetBundle.LoadFromFile(path);
