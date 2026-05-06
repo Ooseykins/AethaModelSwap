@@ -64,6 +64,7 @@ public class AethaModelSwap
         public GameObject cachedPrefab;
         public Dictionary<HumanBodyBones, string> boneNames;
         public Func<AnimationParameters> animationParameters;
+        public bool hideWhileLocked = false;
     }
 
     public class RegisteredModel
@@ -89,7 +90,6 @@ public class AethaModelSwap
         ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action<int>(SetSkin).Method));
         ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action(SpawnBasePoseOnPlayer).Method));
         ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action<int,TextureSwap.SkinCreationMode>(TextureSwap.CreateNewSkin).Method));
-        ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action<int>(TextureSwap.SetOverridePalette).Method));
         ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action(TextureSwap.Reapply).Method));
         ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action(FashionableWeebohHelpUI.FashionableWeebohTutorial).Method));
         
@@ -99,7 +99,7 @@ public class AethaModelSwap
         foreach (var item in Modloader.LoadedItemDirectories)
         {
             LoadSkins(item.Value.directory);
-            // TextureSwap.SearchDirectory(item.Value.directory); // Temporarily Disabled
+            TextureSwap.SearchDirectory(item.Value.directory);
         }
         // Hot load newly subscribed models
         Modloader.OnItemLoaded += t =>
@@ -111,7 +111,7 @@ public class AethaModelSwap
                 {
                     RegisterToSkinManager(SkinDatabase.me);
                 }
-                //TextureSwap.SearchDirectory(directory); // Temporarily Disabled
+                TextureSwap.SearchDirectory(directory);
             }
         };
         // Handle some special cases on scene changes
@@ -345,17 +345,18 @@ public class AethaModelSwap
     }
 
     // For other mod devs, this is a simpler way to just register a skin
-    public static void RegisterSkin(int index, string name, Sprite sprite, ModelIKParameters modelIKParameters, GameObject prefab, Dictionary<HumanBodyBones, string> boneNames = null)
+    public static void RegisterSkin(int index, string name, Sprite sprite, ModelIKParameters modelIKParameters, GameObject prefab, Dictionary<HumanBodyBones, string> boneNames = null, bool hideWhileLocked = false)
     {
-        RegisterSkin(index, name, sprite, () => modelIKParameters, () => prefab, boneNames);
+        RegisterSkin(index, name, sprite, () => modelIKParameters, () => prefab, boneNames, hideWhileLocked: hideWhileLocked);
     }
 
     // Passing a function in here to get the prefab allows it to lazily load
-    public static void RegisterSkin(int index, string name, Sprite sprite, Func<ModelIKParameters> modelIKParameters, Func<GameObject> prefab, Dictionary<HumanBodyBones, string> boneNames = null, Func<AnimationParameters> animationParameters = null, LocalizedString localizedName = null)
+    public static void RegisterSkin(int index, string name, Sprite sprite, Func<ModelIKParameters> modelIKParameters, Func<GameObject> prefab, Dictionary<HumanBodyBones, string> boneNames = null, Func<AnimationParameters> animationParameters = null, LocalizedString localizedName = null, bool hideWhileLocked = false)
     {
         if (RegisteredSkins.ContainsKey(index))
         {
-            Debug.LogError($"A skin is already registered to index {index}");
+            Debug.LogWarning($"A skin is already registered to index {index}");
+            return;
         }
 
         RegisteredSkins[index] = new RegisteredSkin
@@ -367,9 +368,27 @@ public class AethaModelSwap
             loadPrefab = prefab,
             boneNames = boneNames,
             animationParameters = animationParameters,
+            hideWhileLocked = hideWhileLocked,
         };
 
         Debug.Log($"Successfully registered skin {index}: {name}");
+    }
+    
+    // Register a skin variant
+    public static void RegisterSkinVariant(int index, int baseIndex, string name, Sprite sprite, bool hideWhileLocked = false)
+    {
+        Debug.Log($"Registering variant {index} for {baseIndex}");
+        if (RegisteredSkins.ContainsKey(index))
+        {
+            Debug.LogError($"A skin is already registered to index {index}");
+            return;
+        }
+        if (!RegisteredSkins.TryGetValue(baseIndex, out var baseSkin))
+        {
+            Debug.LogWarning($"No base skin available for variant at {baseIndex}. Load order may be incorrect.");
+            return;
+        }
+        RegisterSkin(index, name, sprite, baseSkin.modelIKParameters, baseSkin.loadPrefab, baseSkin.boneNames, baseSkin.animationParameters, hideWhileLocked: hideWhileLocked);
     }
 
     // Add all skins to the skin manager
@@ -395,6 +414,10 @@ public class AethaModelSwap
             }
             newEntry.skinPurchaseCost = 0;
             newEntries[skin.Key] = newEntry;
+            if (!skin.Value.hideWhileLocked)
+            {
+                SkinManager.PurchaseSkin((SkinManager.Skin)skin.Key);
+            }
         }
 
         // Overwrite existing skins
@@ -418,16 +441,6 @@ public class AethaModelSwap
             skinsList.Add(entry);
         }
         instance.Skins = skinsList.ToArray();
-
-        foreach (var entry in instance.Skins)
-        {
-            // Automatically unlock all modded skins. Consider changing this if we want mod skins to have unlock conditions
-            if (!Enum.IsDefined(typeof(SkinManager.Skin), entry.Skin))
-            {
-                SkinManager.UnlockSkin(entry.Skin, false);
-                SkinManager.PurchaseSkin(entry.Skin);
-            }
-        }
     }
     
     // Helper method to just load an image file as a sprite

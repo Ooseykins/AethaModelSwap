@@ -138,6 +138,7 @@
     <ItemGroup>
         <Compile Include="AethaModelSwap.cs" />
         <Compile Include="AnimationParameters.cs" />
+        <Compile Include="AntiRiza.cs" />
         <Compile Include="AudioLoader.cs" />
         <Compile Include="BasicBoneChain.cs" />
         <Compile Include="CheckUGCCompatibility.cs" />

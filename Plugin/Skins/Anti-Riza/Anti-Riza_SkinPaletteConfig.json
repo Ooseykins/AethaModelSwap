@@ -1,7 +1,8 @@
 {
-  "skinName": "Riza",
-  "skinId": 16000124,
-  "paletteId": 866,
+  "skinName": "Anti-Riza",
+  "skinId": 16000131,
+  "baseSkinId": 16000124,
+  "hideWhileLocked": true,
   "rendererReplacementParamsList": [
     {
       "rendererName": "riza_ipad",

@@ -249,7 +249,8 @@ public static class GeneralPatches
             selectedHead = SkinManager.GetHeadSkinFromFacts();
             _selectedBody = SkinManager.GetBodySkinFromFacts();
             prevSelectedHead = selectedHead;
-            self.gameObject.SetActive(slot == SkinManager.SkinSlot.Head || !AethaModelSwap.HasSkin((int)entry.Skin));
+            // Leave functionality normal for base skins. Hide body slots or locked skins for AethaModelSwap.
+            self.gameObject.SetActive((slot == SkinManager.SkinSlot.Head && SkinManager.GetSkinStatus(entry.Skin) != SkinManager.SkinStatus.Locked) || !AethaModelSwap.HasSkin((int)entry.Skin));
             foreach (var button in self.gameObject.GetComponentsInChildren<Button>(true))
             {
                 button.gameObject.AddComponent<ScrollRectAutoScrollerElement>();
@@ -483,6 +484,29 @@ public static class GeneralPatches
                 _sparkCombo = 0;
             }
             orig(self);
+        };
+
+        On.GM_Rest.Start += (orig, self) =>
+        {
+            AntiRiza.CreateAntiRizaInteraction();
+            var feeder = self.interactionFeeder.GetComponentInChildren<SingleCharacterInteractionFeeder>();
+            if (AntiRiza.interactionPoolObject && !feeder.interactionPools.Contains(AntiRiza.interactionPoolObject))
+            {
+                var poolList = feeder.interactionPools.ToList();
+                poolList.Add(AntiRiza.interactionPoolObject);
+                feeder.interactionPools = poolList.ToArray();
+            }
+            orig(self);
+            if (AntiRiza.antiRiza && SingleCharacterInteractionFeeder.ActiveInteraction.GetCharactersInvolved().Contains(AntiRiza.antiRiza))
+            {
+                var riza = UnityEngine.Object
+                    .FindObjectsByType<InteractableCharacter>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+                    .FirstOrDefault(x => x.character == InteractionCharacterDatabase.Instance.keeper);
+                if (riza != null)
+                {
+                    TextureSwap.ApplyPalette(riza.gameObject, 16000131, true, true);
+                }
+            }
         };
     }
 }

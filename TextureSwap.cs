@@ -13,7 +13,7 @@ namespace AethaModelSwapMod;
 public static class TextureSwap
 {
     private static readonly Dictionary<string, string> AvailableTextures = new();
-    private static readonly Dictionary<(int skin, int palette), SkinReplacementParams> AvailableSkinPalettes = new();
+    private static readonly Dictionary<int, SkinReplacementParams> AvailableSkinPalettes = new();
 
     private static readonly HashSet<(GameObject root, List<Texture2D> textures)> InstantiatedTextures = new();
 
@@ -122,10 +122,6 @@ public static class TextureSwap
     private static string NewSkinDirectory => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)+"/Skins";
     private const string SkinPaletteSuffix = "_SkinPaletteConfig.json";
 
-    private static int _overridePalette = -1;
-
-    public static void SetOverridePalette(int value) => _overridePalette = value;
-
     public enum SkinCreationMode
     {
         Simple, // Copy just _MainTex type textures
@@ -139,7 +135,8 @@ public static class TextureSwap
     {
         [JsonProperty] public string skinName = "";
         [JsonProperty] public int skinId = -1;
-        [JsonProperty] public int paletteId = -1;
+        [JsonProperty] public int baseSkinId = -1;
+        [JsonProperty] public bool hideWhileLocked = false;
         [JsonProperty] public List<RendererReplacementParams> rendererReplacementParamsList = new();
 
         public void Apply(GameObject root, bool body = true, bool head = true)
@@ -320,26 +317,19 @@ public static class TextureSwap
             }
         }
     }
+    
     public static void Reapply()
     {
         SearchDirectory(NewSkinDirectory);
         SkinManager.SetFullOutfit(SkinManager.HeadSkin);
     }
 
-    public static void ApplyPalette(GameObject root, int skinId, int paletteId, bool body, bool head)
+    public static void ApplyPalette(GameObject root, int skinId, bool body, bool head)
     {
-        if (_overridePalette >= 0)
-        {
-            paletteId = _overridePalette;
-        }
-        if (paletteId <= 0)
-        {
-            return;
-        }
         CleanupAll();
-        if (AvailableSkinPalettes.TryGetValue((skinId, paletteId), out var skinReplacementParams))
+        if (AvailableSkinPalettes.TryGetValue(skinId, out var skinReplacementParams))
         {
-            Debug.Log($"Attempting to apply palette: {paletteId}");
+            Debug.Log($"Attempting to apply palette: {skinId}");
             skinReplacementParams.Apply(root, body, head);
         }
     }
@@ -349,10 +339,18 @@ public static class TextureSwap
         foreach (var path in Directory.GetFiles(directory, "*"+SkinPaletteSuffix, SearchOption.AllDirectories))
         {
             var skinReplacementParams = JsonConvert.DeserializeObject<SkinReplacementParams>(File.ReadAllText(path));
+            var spritePath = Path.GetDirectoryName(path) + "/icon";
             if (skinReplacementParams != null)
             {
-                Debug.Log($"Created skin variant for {skinReplacementParams.skinName} {skinReplacementParams.skinId} : {skinReplacementParams.paletteId}");
-                AvailableSkinPalettes[(skinReplacementParams.skinId, skinReplacementParams.paletteId)] = skinReplacementParams;
+                Debug.Log($"Created skin variant of {skinReplacementParams.baseSkinId}: {skinReplacementParams.skinName} {skinReplacementParams.skinId}");
+                AvailableSkinPalettes[skinReplacementParams.skinId] = skinReplacementParams;
+                if(!AethaModelSwap.HasSkin(skinReplacementParams.skinId)){
+                    AethaModelSwap.RegisterSkinVariant(skinReplacementParams.skinId, skinReplacementParams.baseSkinId, skinReplacementParams.skinName, AethaModelSwap.LoadSprite(spritePath), skinReplacementParams.hideWhileLocked);
+                }
+                else
+                {
+                    Debug.Log($"Reloaded skin variant {skinReplacementParams.skinName} {skinReplacementParams.skinId}");
+                }
             }
         }
         foreach (var path in Directory.GetFiles(directory, "*_skin_*_*.png", SearchOption.AllDirectories))
@@ -407,11 +405,16 @@ public static class TextureSwap
         return null;
     }
     
-    public static void CreateNewSkin(int id, SkinCreationMode mode = SkinCreationMode.Simple)
+    public static void CreateNewSkin(int skinId, SkinCreationMode mode = SkinCreationMode.Simple)
     {
         if (!Player.localPlayer || !Player.localPlayer.character.refs.playerSkinSetter)
         {
             Debug.LogError("No PlayerSkinSetter to create skin from");
+            return;
+        }
+        if (AethaModelSwap.HasSkin(skinId))
+        {
+            Debug.LogError($"A skin is already registered for {skinId}");
             return;
         }
         SkinManager.UpdateSkinFromFacts();
@@ -420,28 +423,36 @@ public static class TextureSwap
             Debug.LogError("Set the head and body skin to match before creating a new skin");
             return;
         }
-
-        var skin = (int)SkinManager.BodySkin;
-        if (AethaModelSwap.IsBaseSkin(skin))
+        var baseSkinIndex = (int)SkinManager.BodySkin;
+        if (AvailableSkinPalettes.ContainsKey(baseSkinIndex))
         {
-            CreateNewSkin(Player.localPlayer.character.refs.playerSkinSetter.gameObject, skin, id, mode);
+            Debug.LogError("Can't create a skin variant from a skin variant. Switch to a base skin and try again.");
+            return;
+        }
+        if (AethaModelSwap.IsBaseSkin(baseSkinIndex))
+        {
+            CreateNewSkin(Player.localPlayer.character.refs.playerSkinSetter.gameObject, skinId, baseSkinIndex, mode);
         }
         else
         {
-            CreateNewSkin(AethaModelSwap.LocalClone.gameObject, skin, id, mode);
+            CreateNewSkin(AethaModelSwap.LocalClone.gameObject, skinId, baseSkinIndex, mode);
         }
         SearchDirectory(NewSkinDirectory);
+        if (SkinDatabase.me)
+        {
+            AethaModelSwap.RegisterToSkinManager(SkinDatabase.me);
+        }
     }
 
-    static void CreateNewSkin(GameObject root, int skinIndex, int paletteIndex, SkinCreationMode mode)
+    static void CreateNewSkin(GameObject root, int skinIndex, int baseSkinIndex, SkinCreationMode mode)
     {
-        var fileSuffix = $"_skin_{skinIndex}_{paletteIndex}.png";
-        var skinName = SkinDatabase.me.Skins.First(x => x.Skin == (SkinManager.Skin)skinIndex).name;
+        var fileSuffix = $"_skin_{skinIndex}_{baseSkinIndex}.png";
+        var skinName = SkinDatabase.me.Skins.First(x => x.Skin == (SkinManager.Skin)baseSkinIndex).name;
         var skinReplacementParams = new SkinReplacementParams
         {
             skinName = skinName,
             skinId = skinIndex,
-            paletteId = paletteIndex,
+            baseSkinId = baseSkinIndex,
         };
         HashSet<Texture2D> textures = new();
         var renderers = GetRenderers(root).ToList();
@@ -485,7 +496,7 @@ public static class TextureSwap
                 skinReplacementParams.rendererReplacementParamsList.RemoveAt(skinReplacementParams.rendererReplacementParamsList.Count-1);
             }
         }
-        var directory = $"{NewSkinDirectory}/{skinName}_{skinIndex}_{paletteIndex}";
+        var directory = $"{NewSkinDirectory}/{skinName}_{skinIndex}";
         
         Debug.Log($"Dumping {textures.Count} textures for skin {skinIndex} to {directory}");
 
@@ -508,7 +519,7 @@ public static class TextureSwap
             }
         }
 
-        var configPath = $"{directory}/{skinName}_{paletteIndex}{SkinPaletteSuffix}";
+        var configPath = $"{directory}/{skinName}_{baseSkinIndex}{SkinPaletteSuffix}";
         JsonSerializerSettings settings = new JsonSerializerSettings
         {
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
@@ -524,7 +535,16 @@ public static class TextureSwap
             var bytes = copiedTexture.EncodeToPNG();
             File.WriteAllBytes(filePath, bytes);
         }
-        
+
+        var icon = AethaModelSwap.GetSprite(baseSkinIndex);
+        if (icon)
+        {
+            var copiedTexture = BlitCopy(icon.texture);
+            var filePath = $"{directory}/icon.png";
+            var bytes = copiedTexture.EncodeToPNG();
+            File.WriteAllBytes(filePath, bytes);
+        }
+
         string GetSimplifiedName(string textureName)
         {
             if (mode == SkinCreationMode.Simple)
