@@ -53,7 +53,7 @@ public static class SkinSetterPatches
             orig(self, skin, neckSkin);
             if (Enum.IsDefined(typeof(SkinManager.Skin), skin))
             {
-                TextureSwap.ApplyPalette(self.gameObject, (int)skin, true, false);
+                //TextureSwap.ApplyPalette(self.gameObject, (int)skin, true, false);
             }
         };
 
@@ -95,17 +95,17 @@ public static class SkinSetterPatches
                 {
                     r.forceRenderingOff = false;
                 }
-                TextureSwap.ApplyPalette(self.gameObject, (int)skin, false, true);
+                //TextureSwap.ApplyPalette(self.gameObject, (int)skin, false, true);
                 return;
             }
 
             var clone = AethaModelSwap.InstantiateSkin(currentHip.transform, (int)skin, self.IsLocalPlayer);
-            TextureSwap.ApplyPalette(clone.gameObject, (int)skin, true, true);
+            //TextureSwap.ApplyPalette(clone.gameObject, (int)skin, true, true);
 
             // This handles the SkinPreview3d layer setting logic for the clone
             if (clone && self.transform.root.name == "GAME")
             {
-                TextureSwap.ApplyPalette(clone.gameObject, (int)skin, true, true);
+                //TextureSwap.ApplyPalette(clone.gameObject, (int)skin, true, true);
                 var preview = self.transform.root.GetComponentInChildren<SkinPreview3d>();
                 if (!preview) return;
                 var layer = math.tzcnt(preview.cam.cullingMask);

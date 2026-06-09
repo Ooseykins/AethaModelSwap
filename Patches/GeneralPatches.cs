@@ -543,6 +543,7 @@ public static class GeneralPatches
             orig(self);
         };
 
+        /*
         On.GM_Rest.Start += (orig, self) =>
         {
             AntiRiza.CreateAntiRizaInteraction();
@@ -565,5 +566,6 @@ public static class GeneralPatches
                 }
             }
         };
+        */
     }
 }

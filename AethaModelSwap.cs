@@ -101,7 +101,7 @@ public class AethaModelSwap
         foreach (var item in Modloader.LoadedItemDirectories)
         {
             LoadSkins(item.Value.directory);
-            TextureSwap.SearchDirectory(item.Value.directory);
+            //TextureSwap.SearchDirectory(item.Value.directory);
         }
         // Hot load newly subscribed models
         Modloader.OnItemLoaded += t =>
@@ -113,7 +113,7 @@ public class AethaModelSwap
                 {
                     RegisterToSkinManager(SkinDatabase.me);
                 }
-                TextureSwap.SearchDirectory(directory);
+                //TextureSwap.SearchDirectory(directory);
             }
         };
         // Handle some special cases on scene changes
