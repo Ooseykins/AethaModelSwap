@@ -74,6 +74,9 @@
         <Reference Include="Unity.Mathematics">
           <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\Unity.Mathematics.dll</HintPath>
         </Reference>
+        <Reference Include="Unity.Splines">
+          <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\Unity.Splines.dll</HintPath>
+        </Reference>
         <Reference Include="Unity.TextMeshPro">
           <HintPath>..\..\..\..\Steam\steamapps\common\Haste\Haste_Data\Managed\Unity.TextMeshPro.dll</HintPath>
         </Reference>

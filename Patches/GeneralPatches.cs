@@ -391,6 +391,48 @@ public static class GeneralPatches
             self.coin = originalCoin;
         };
 
+        On.SplinePropSpawnConfig.Generate += (orig, self, container, transform, totalLength, random) =>
+        {
+            if (AethaModelSwap.selectedSpark != null && !AethaModelSwap.selectedSpark.cachedPrefab)
+            {
+                AethaModelSwap.selectedSpark.cachedPrefab = AethaModelSwap.selectedSpark.loadPrefab?.Invoke();
+            }
+            if (AethaModelSwap.selectedSpark == null || !AethaModelSwap.selectedSpark.cachedPrefab)
+            {
+                orig(self, container, transform, totalLength, random);
+                return;
+            }
+            
+            // Only instantiate the coin and make an actual copy of the array if an objectsToSpawn element is named "Coin"
+            GameObject newCoin = null;
+            var arrayCopy = self.objectsToSpawn; 
+            
+            for(int i = 0; i < self.objectsToSpawn.Length; i++)
+            {
+                if (self.objectsToSpawn[i].name == "Coin")
+                {
+                    // If we don't have a coin prefab yet, make it and copy the objectsToSpawnArray
+                    if (!newCoin)
+                    {
+                        arrayCopy = self.objectsToSpawn.ToArray(); // ToArray copies the array instead of keeping it as a reference
+                        newCoin = Object.Instantiate(self.objectsToSpawn[i], Vector3.zero, Quaternion.identity, null);
+                        var baseModel = newCoin.transform.FindChildRecursive("Cylinder");
+                        baseModel.gameObject.SetActive(false);
+                        var newModel = Object.Instantiate(AethaModelSwap.selectedSpark.cachedPrefab, baseModel.parent);
+                        newModel.transform.localRotation = Quaternion.identity;
+                        newModel.transform.localPosition = Vector3.zero;
+                    }
+                    self.objectsToSpawn[i] = newCoin;
+                }
+            }
+            orig(self, container, transform, totalLength, random);
+            self.objectsToSpawn = arrayCopy;
+            if (newCoin)
+            {
+                Object.Destroy(newCoin);
+            }
+        };
+
         On.DroppedObject.DoInit += (orig, self, vel) =>
         {
             orig(self, vel);
