@@ -32,7 +32,7 @@ public static class ZoeModelSwap
     {
         foreach (var (skinId, value) in _instantiatedPrefabs)
         {
-            AddToSkinDatabase(instance, value.name, skinId, value.head, value.body, AethaModelSwap.LoadSprite($"{AssemblyDirectory}/{value.name}HeadIcon"), AethaModelSwap.LoadSprite($"{AssemblyDirectory}/{value.name}BodyIcon"));
+            AddToSkinDatabase(instance, value.name, skinId, value.head, value.body, AethaModelSwap.LoadSprite($"{AssemblyDirectory}/{value.name}HeadIcon"), AethaModelSwap.LoadSprite($"{AssemblyDirectory}/{value.name}BodyIcon"), AethaModelSwap.LoadSprite($"{AssemblyDirectory}/{value.name}PlayerIcon"));
             SkinManager.PurchaseSkin((SkinManager.Skin)skinId);
         }
     }
