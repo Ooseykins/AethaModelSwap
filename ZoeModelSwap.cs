@@ -79,14 +79,13 @@ public static class ZoeModelSwap
 
     public static void InstantiatePrefab(string name, int id)
     {
+        if (_instantiatedPrefabs.ContainsKey(id))
+        {
+            return;
+        }
         if (!SkinDatabase.me)
         {
             Debug.LogWarning($"Skin database is not available for skin template for {name}");
-            return;
-        }
-        if (_instantiatedPrefabs.ContainsKey(id))
-        {
-            Debug.LogWarning($"Already instantiated prefab for skin id {id}");
             return;
         }
         if (SkinDatabase.me.GetSkin((SkinManager.Skin)id) && SkinDatabase.me.GetSkin((SkinManager.Skin)id).Skin != SkinManager.Skin.Default)
