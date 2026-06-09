@@ -149,11 +149,13 @@
         <Compile Include="HubCharacters.cs" />
         <Compile Include="Patches\GeneralPatches.cs" />
         <Compile Include="Patches\SkinSetterPatches.cs" />
+        <Compile Include="ZoeModelSwap.cs" />
         <Compile Include="SimpleLimbIK.cs" />
         <Compile Include="ModelIKParameters.cs" />
         <Compile Include="ModelParameterEditor.cs" />
         <Compile Include="Settings.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="SkinnedMeshRendererBonesByName.cs" />
         <Compile Include="TextureSwap.cs" />
         <Compile Include="TutorialHelper.cs" />
     </ItemGroup>

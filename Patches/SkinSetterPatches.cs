@@ -73,6 +73,7 @@ public static class SkinSetterPatches
             }
             
             orig(self, skin);
+            GetCurrentNeck(self)?.SetActive(true);
             
             Debug.Log($"AethaModelSwap Postfix on {self}: switching to skin {(int)skin}");
 
@@ -82,6 +83,7 @@ public static class SkinSetterPatches
                 Debug.LogError($"Something different went wrong with reflection, AethaModelSwap is NOT swapping to {skin}");
                 return;
             }
+            currentHip.SetActive(true);
         
             if (!AethaModelSwap.HasSkin((int)skin))
             {
@@ -98,10 +100,7 @@ public static class SkinSetterPatches
             }
 
             var clone = AethaModelSwap.InstantiateSkin(currentHip.transform, (int)skin, self.IsLocalPlayer);
-            if (self.IsLocalPlayer)
-            {
-                TextureSwap.ApplyPalette(clone.gameObject, (int)skin, true, true);
-            }
+            TextureSwap.ApplyPalette(clone.gameObject, (int)skin, true, true);
 
             // This handles the SkinPreview3d layer setting logic for the clone
             if (clone && self.transform.root.name == "GAME")

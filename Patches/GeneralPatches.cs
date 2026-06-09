@@ -204,12 +204,22 @@ public static class GeneralPatches
         {
             orig(self);
             AethaModelSwap.RegisterToSkinManager(self);
+            if (DateTime.Now >= DateTime.Parse("2026-06-16") || (AethaModelSwap.overrideMonth == 6 && AethaModelSwap.overrideDay == 16))
+            {
+                ZoeModelSwap.InstantiatePrefab("Scout", 70);
+            }
+            ZoeModelSwap.RegisterZoeSkins(self);
         };
 
         // Set the head skin as well when setting the body skin
         On.Landfall.Haste.SkinManager.SetBodySkin += (orig, skin) =>
         {
             if (Enum.IsDefined(typeof(SkinManager.Skin), skin))
+            {
+                orig(skin);
+                return;
+            }
+            if (skin != SkinManager.Skin.Default && SkinDatabase.me && SkinDatabase.me.GetSkin(skin))
             {
                 orig(skin);
                 return;
@@ -228,6 +238,11 @@ public static class GeneralPatches
         On.Landfall.Haste.SkinManager.SetHeadSkin += (orig, skin) =>
         {
             if (Enum.IsDefined(typeof(SkinManager.Skin), skin))
+            {
+                orig(skin);
+                return;
+            }
+            if (skin != SkinManager.Skin.Default && SkinDatabase.me && SkinDatabase.me.GetSkin(skin))
             {
                 orig(skin);
                 return;

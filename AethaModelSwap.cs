@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using AethaModelSwapMod.Patches;
 using Landfall.Haste;
+using TMPro;
 using UnityEngine.Localization;
 using UnityEngine.SceneManagement;
 using Zorro.Core.CLI;
@@ -92,6 +93,7 @@ public class AethaModelSwap
         ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action<int,TextureSwap.SkinCreationMode>(TextureSwap.CreateNewSkin).Method));
         ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action(TextureSwap.Reapply).Method));
         ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action(FashionableWeebohHelpUI.FashionableWeebohTutorial).Method));
+        ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action<int,int>(SetDate).Method));
         
         HubCharacters.RegisterAllSkins();
         
@@ -121,6 +123,14 @@ public class AethaModelSwap
             if (scene.name == "MainMenu")
             {
                 UnloadAllBundles();
+                int month = overrideMonth > 0 ? overrideMonth : DateTime.Now.Month;
+                int day = overrideDay > 0 ? overrideDay : DateTime.Now.Day;
+                if (month == 6 && day is >= 16 and <= 22)
+                {
+                    // Happy Birthday PEAK!
+                    MainMenuMessage($"Happy Birthday PEAK!");
+                    ZoeModelSwap.MainMenuApplySkin("Scout", true);
+                }
             }
             // Enable the fashionable weeboh and add a helper in the hub scene
             if (scene.name == "FullHub")
@@ -132,11 +142,49 @@ public class AethaModelSwap
         SkinSetterPatches.Patch();
     }
 
+    public static int overrideMonth = -1;
+    public static int overrideDay = -1;
+    public static void SetDate(int month, int day)
+    {
+        overrideMonth = month;
+        overrideDay = day;
+    }
+
+    public static void MainMenuMessage(string message)
+    {
+        GameObject template = GameObject.Find("Version");
+        if (!template)
+        {
+            Debug.LogWarning($"No template for main menu message: {message}");
+            return;
+        }
+        var newMessage = Object.Instantiate(template, template.transform.position + new Vector3(0,-100,0), template.transform.rotation, template.transform.parent);
+        newMessage.transform.localScale = Vector3.one * 1.5f;
+        Object.Destroy(newMessage.GetComponent<BuildVersionText>());
+        newMessage.name = "AethaModelSwap main menu message";
+        var text = newMessage.GetComponent<TextMeshProUGUI>();
+        if (!text)
+        {
+            Debug.LogWarning($"No TextMeshProUGUI component for main menu message: {message}");
+            return;
+        }
+        text.textWrappingMode = TextWrappingModes.NoWrap;
+        text.SetText(message);
+    }
+
     public static void ValidateLocalSkin()
     {
         if (!SkinDatabase.me) return;
         var bodySkin = (SkinManager.Skin)FactSystem.GetFact(SkinManager.EquippedSkinBodyFact);
         var headSkin = (SkinManager.Skin)FactSystem.GetFact(SkinManager.EquippedSkinHeadFact);
+        if (SkinDatabase.me.GetSkin(bodySkin).Skin != SkinManager.Skin.Default)
+        {
+            return;
+        }
+        if (SkinDatabase.me.GetSkin(headSkin).Skin != SkinManager.Skin.Default)
+        {
+            return;
+        }
         if ((!HasSkin((int)bodySkin) && !Enum.IsDefined(typeof(SkinManager.Skin), bodySkin)) 
             || (!HasSkin((int)headSkin) && !Enum.IsDefined(typeof(SkinManager.Skin), headSkin)))
         {
