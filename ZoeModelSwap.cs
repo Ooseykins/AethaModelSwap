@@ -11,6 +11,7 @@ public static class ZoeModelSwap
 {
     private static string AssemblyDirectory => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
     private static Dictionary<int, (string name, GameObject head, GameObject body)> _instantiatedPrefabs = new();
+    private static List<(string name, int id, int baseSkinId, Sprite playerIcon, Sprite uiIcon, Sprite bodyIcon)> _baseSkinVariants = new();
 
     private static GameObject HeadSkin;
     private static GameObject BodySkin;
@@ -35,6 +36,18 @@ public static class ZoeModelSwap
             AddToSkinDatabase(instance, value.name, skinId, value.head, value.body, AethaModelSwap.LoadSprite($"{AssemblyDirectory}/{value.name}HeadIcon"), AethaModelSwap.LoadSprite($"{AssemblyDirectory}/{value.name}BodyIcon"), AethaModelSwap.LoadSprite($"{AssemblyDirectory}/{value.name}PlayerIcon"));
             SkinManager.PurchaseSkin((SkinManager.Skin)skinId);
         }
+        foreach (var variant in _baseSkinVariants)
+        {
+            var baseSkin = instance.GetSkin((SkinManager.Skin)variant.baseSkinId);
+            AddToSkinDatabase(instance, variant.name, variant.id, baseSkin.HeadPrefab, baseSkin.BodyPrefab, variant.uiIcon, variant.bodyIcon, variant.playerIcon);
+            SkinManager.PurchaseSkin((SkinManager.Skin)variant.id);
+        }
+        _baseSkinVariants.Clear();
+    }
+
+    public static void AddSkinVariant(string name, int id, int baseSkinId, Sprite playerIcon = null, Sprite uiIcon = null, Sprite bodyIcon = null)
+    {
+        _baseSkinVariants.Add((name, id, baseSkinId, playerIcon, uiIcon, bodyIcon));
     }
 
     public static void AddToSkinDatabase(SkinDatabase skinDatabase,
@@ -72,6 +85,12 @@ public static class ZoeModelSwap
         foreach (var entry in skinDatabase.Skins)
         {
             skinsList.Add(entry);
+        }
+        var original = skinDatabase.GetSkin((SkinManager.Skin)id);
+        if (original && original.Skin != SkinManager.Skin.Default)
+        {
+            skinsList.Remove(original);
+            Debug.LogWarning($"Replaced already loaded skin: {original.name} {id}");
         }
         skinsList.Add(newEntry);
         skinDatabase.Skins = skinsList.ToArray();

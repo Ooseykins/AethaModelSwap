@@ -1,0 +1,370 @@
+{
+  "skinName": "Gilded Weeboh",
+  "skinId": 12,
+  "baseSkinId": 10,
+  "hideWhileLocked": false,
+  "playerIconName": "PlayerIcon_skin_5508_10.png",
+  "uiIconName": "UIIcon_skin_5508_10.png",
+  "uiBodyIconName": "UIBodyIcon_skin_5508_10.png",
+  "rendererReplacementParamsList": [
+    {
+      "rendererName": "PUPIL",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_Wobbler",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "wobblerTexturing_Wobbler_Body_BaseColor_skin_5508_10.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "googleyEyeBase_low",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_Wobbler",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "wobblerTexturing_Wobbler_Body_BaseColor_skin_5508_10.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "PUPIL",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_Wobbler",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "wobblerTexturing_Wobbler_Body_BaseColor_skin_5508_10.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "googleyEyeBase_low",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_Wobbler",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "wobblerTexturing_Wobbler_Body_BaseColor_skin_5508_10.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "TeetBottom",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_Eyes Opaque",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "courier_c_eyesmouth_BaseColor_skin_5508_10.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "cameraflap2_low.001",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_ToolsWeeboh",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "wobblerTexturing_c_bags_BaseColor_skin_5508_10.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "BagLid",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_Tools",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "c_bags_basecolor_24_skin_5508_10.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "BagMain",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_Tools",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "c_bags_basecolor_24_skin_5508_10.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "Hair",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_Hairweeboh",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "c_hair_basecolor_24_skin_5508_10.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "Head",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_Faceweeboh",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "courier_c_skin_BaseColor_skin_5508_10.png"
+          }
+        },
+        {
+          "materialName": "M_Courier_Eyes Opaque",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "courier_c_eyesmouth_BaseColor_skin_5508_10.png"
+          }
+        },
+        {
+          "materialName": "M_Courier_Hairweeboh",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "c_hair_basecolor_24_skin_5508_10.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "head_low",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_Weeboh",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "weebohtexturing_weeboh_body_BaseColor_skin_5508_10.png",
+			"_Metal": "Weeboh5508_Metallic.png"
+          }
+        },
+        {
+          "materialName": "M_Courier_Weeboh",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "weebohtexturing_weeboh_body_BaseColor_skin_5508_10.png",
+			"_Metal": "Weeboh5508_Metallic.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "topfluff_low",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_Weeboh",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "weebohtexturing_weeboh_body_BaseColor_skin_5508_10.png",
+			"_Metal": "Weeboh5508_Metallic.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "antlers_low",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_Weeboh",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "weebohtexturing_weeboh_body_BaseColor_skin_5508_10.png",
+			"_Metal": "Weeboh5508_Metallic.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "glovesinner_low.001",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_BaseColorweeboh",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "courier_c_clothes_BaseColor_skin_5508_10.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "body_low",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_Weeboh",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "weebohtexturing_weeboh_body_BaseColor_skin_5508_10.png",
+			"_Metal": "Weeboh5508_Metallic.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "fluff_low",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_Weeboh",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "weebohtexturing_weeboh_body_BaseColor_skin_5508_10.png",
+			"_Metal": "Weeboh5508_Metallic.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "foot_low",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_Faceweeboh",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "courier_c_skin_BaseColor_skin_5508_10.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "glovesinner_low",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_BaseColorweeboh",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "courier_c_clothes_BaseColor_skin_5508_10.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "Hair",
+      "materialParams": [
+        {
+          "materialName": "c_hair",
+          "shader": "Standard",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": null
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "Head",
+      "materialParams": [
+        {
+          "materialName": "c_skin",
+          "shader": "Standard",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": null
+          }
+        },
+        {
+          "materialName": "c_eyesmouth",
+          "shader": "Standard",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": null
+          }
+        },
+        {
+          "materialName": "c_hair",
+          "shader": "Standard",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": null
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "head_low",
+      "materialParams": [
+        {
+          "materialName": "weeboh_body",
+          "shader": "Standard",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": null
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "scarfmain_low",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_BaseColorweeboh",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "courier_c_clothes_BaseColor_skin_5508_10.png"
+          }
+        }
+      ]
+    }
+  ]
+}

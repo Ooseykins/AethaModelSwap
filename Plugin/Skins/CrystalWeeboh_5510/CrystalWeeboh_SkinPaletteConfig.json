@@ -1,0 +1,1374 @@
+{
+  "skinName": "Crystal Weeboh",
+  "skinId": 13,
+  "baseSkinId": 10,
+  "hideWhileLocked": false,
+  "playerIconName": "PlayerIcon_skin_5510_10.png",
+  "uiIconName": "UIIcon_skin_5510_10.png",
+  "uiBodyIconName": "UIBodyIcon_skin_5510_10.png",
+  "rendererReplacementParamsList": [
+    {
+      "rendererName": "PUPIL",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_Wobbler",
+          "shader": "W/savCharacterNEW",
+          "floats": {
+			  "_EmissionIntensity": 15.0
+		  },
+          "vectors": {},
+          "textures": {
+            "_MainTex": "wobblerTexturing_Wobbler_Body_BaseColor_skin_5510_10.png",
+			"_Emission": "wobblerTexturing_Wobbler_Body_BaseColor_skin_5510_10.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "googleyEyeBase_low",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_Wobbler",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "wobblerTexturing_Wobbler_Body_BaseColor_skin_5510_10.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "PUPIL",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_Wobbler",
+          "shader": "W/savCharacterNEW",
+          "floats": {
+			  "_EmissionIntensity": 15.0
+		  },
+          "vectors": {},
+          "textures": {
+            "_MainTex": "wobblerTexturing_Wobbler_Body_BaseColor_skin_5510_10.png",
+			"_Emission": "wobblerTexturing_Wobbler_Body_BaseColor_skin_5510_10.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "googleyEyeBase_low",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_Wobbler",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "wobblerTexturing_Wobbler_Body_BaseColor_skin_5510_10.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "TeetBottom",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_Eyes Opaque",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "courier_c_eyesmouth_BaseColor_skin_5510_10.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "cameraflap2_low.001",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_ToolsWeeboh",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "wobblerTexturing_c_bags_BaseColor_skin_5510_10.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "BagLid",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_Tools",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "c_bags_basecolor_24_skin_5510_10.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "BagMain",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_Tools",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "c_bags_basecolor_24_skin_5510_10.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "Hair",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_Hairweeboh",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "c_hair_basecolor_24_skin_5510_10.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "Head",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_Faceweeboh",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "courier_c_skin_BaseColor_skin_5510_10.png"
+          }
+        },
+        {
+          "materialName": "M_Courier_Eyes Opaque",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "courier_c_eyesmouth_BaseColor_skin_5510_10.png"
+          }
+        },
+        {
+          "materialName": "M_Courier_Hairweeboh",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "c_hair_basecolor_24_skin_5510_10.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "head_low",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_Weeboh",
+          "shader": "sav_rizaonly",
+          "floats": {
+            "__dirty": 0.0,
+            "_Offset": 0.0,
+            "_H": 0.0,
+            "_S": 1.0,
+            "_V": 1.0,
+            "_Counter": 0.0,
+            "_DotsOnly": 0.0,
+            "_EmissionIntensity": 0.0,
+            "_NormalStr": 1.0,
+            "_RimAmount": 0.51,
+            "_RimColorIntensity": 0.252771,
+            "_RimPower": 1.89,
+            "_ShieldAmount": 0.0,
+            "_ShineAmount": 0.0,
+            "_SpecularAmount": 3.1,
+            "_SpecularOpacity": 0.29,
+            "_SpecularRange": 0.6,
+            "_SpecularTintIntensity": 0.09,
+            "_UVScale": 2.83,
+            "_NoiseStr": 0.2,
+            "_normalstr": 0.626,
+            "_VoronoiScale": 1.67,
+            "_H2": 0.0,
+            "_S2": 1.4,
+            "_V2": 2.74,
+            "_TriplanarScaling": 1.0,
+            "_Fade2Scale": 4.0,
+            "_Noise2Scale": 1.0,
+            "_CrystalSpecularAmount": 3.27,
+            "_CrystalSpecularRange": 0.66,
+            "_XYcoloramount": 0.3,
+            "_XZcoloramount": 0.197,
+            "_Xcoloramount": 0.156,
+            "_YZcoloramount": 0.352,
+            "_Ycoloramount": 0.334,
+            "_Zcoloramount": 0.169,
+            "_cracksAmt": 1.68,
+            "_crackssmoothness": 0.08,
+            "_crystalfresnelpower": 2.5,
+            "_crystalglowpower": 5.0,
+            "_crystalglowsize": 7.61,
+            "_crystalvoronoiscale": 1.0,
+            "_edgepower": 6.06,
+            "_rainbowAmt": 0.594
+          },
+          "vectors": {
+            "_Noise_ST": null,
+            "_Noise_TexelSize": null,
+            "_Noise_HDR": null,
+            "_texcoord_ST": null,
+            "_texcoord_TexelSize": null,
+            "_texcoord_HDR": null,
+            "_ShadowColor": {
+              "x": 0.7013527,
+              "y": 0.718274,
+              "z": 0.7509433,
+              "w": 0.0
+            },
+            "_RimColor": {
+              "x": 0.05893806,
+              "y": 1.15693426,
+              "z": 0.6254418,
+              "w": 0.0
+            },
+            "_ShaderColor": {
+              "x": 2.670157,
+              "y": 2.670157,
+              "z": 2.670157,
+              "w": 1.0
+            },
+            "_Shadows": {
+              "x": 0.0,
+              "y": 0.199999988,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_ShadowsHSV": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0,
+              "w": 0.0
+            },
+            "_SpecularTintColor": {
+              "x": 0.8000001,
+              "y": 1.0,
+              "z": 0.368627131,
+              "w": 0.0
+            },
+            "_Normal_ST": null,
+            "_Normal_TexelSize": null,
+            "_Normal_HDR": null,
+            "_Metal_ST": null,
+            "_Metal_TexelSize": null,
+            "_Metal_HDR": null,
+            "_Emission_ST": null,
+            "_Emission_TexelSize": null,
+            "_Emission_HDR": null,
+            "_NoiseScroll": {
+              "x": 0.0,
+              "y": 0.01,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_MainTex1_ST": null,
+            "_MainTex1_TexelSize": null,
+            "_MainTex1_HDR": null,
+            "_FadeScroll": {
+              "x": 0.1,
+              "y": -0.04,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_FadeRemap": {
+              "x": 0.4784217,
+              "y": 1.0,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_Noise2Scroll": {
+              "x": -0.02,
+              "y": -0.1,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_Fade_ST": null,
+            "_Fade_TexelSize": null,
+            "_Fade_HDR": null,
+            "_TTT_ST": null,
+            "_TTT_TexelSize": null,
+            "_TTT_HDR": null,
+            "_Normal1_ST": null,
+            "_Normal1_TexelSize": null,
+            "_Normal1_HDR": null,
+            "_CrystalReflectiveColor": {
+              "x": 0.4105377,
+              "y": 0.0,
+              "z": 1.0,
+              "w": 0.0
+            },
+            "_CrystalSpecularTint": {
+              "x": 0.0,
+              "y": 1.0,
+              "z": 0.906537056,
+              "w": 0.0
+            },
+            "_WorldXYcolor": {
+              "x": 0.9613735,
+              "y": 0.352830142,
+              "z": 1.0,
+              "w": 0.0
+            },
+            "_WorldXZcolor": {
+              "x": 0.0132074989,
+              "y": 0.640299,
+              "z": 1.0,
+              "w": 0.0
+            },
+            "_WorldXcolor": {
+              "x": 0.647058845,
+              "y": 0.664882958,
+              "z": 1.0,
+              "w": 0.0
+            },
+            "_WorldYZcolor": {
+              "x": 0.7226415,
+              "y": 1.0,
+              "z": 0.970005453,
+              "w": 0.0
+            },
+            "_WorldYcolor": {
+              "x": 1.0,
+              "y": 0.9930573,
+              "z": 0.352830142,
+              "w": 0.0
+            },
+            "_WorldZcolor": {
+              "x": 0.3686274,
+              "y": 0.8047733,
+              "z": 1.0,
+              "w": 0.0
+            },
+            "_cracksColors": {
+              "x": 0.0,
+              "y": 0.207248852,
+              "z": 0.44526276,
+              "w": 0.0
+            },
+            "_crystalfresnelcolor": {
+              "x": 0.0,
+              "y": 3.07096672,
+              "z": 4.0,
+              "w": 0.0
+            },
+            "_crystalfresnelminmax": {
+              "x": 0.399999857,
+              "y": 0.439130336,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_crystalinnerglowcolor": {
+              "x": 0.0,
+              "y": 0.166529,
+              "z": 2.27193069,
+              "w": 0.0
+            },
+            "_crystalinnerglowrange": {
+              "x": 0.800000131,
+              "y": 1.0,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_edgeminmax": {
+              "x": 0.03135887,
+              "y": 0.0592335463,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_thickminmax": {
+              "x": 0.0,
+              "y": 0.616582632,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_CrystalMask_ST": null,
+            "_CrystalMask_TexelSize": null,
+            "_CrystalMask_HDR": null,
+            "_edgehighlight_ST": null,
+            "_edgehighlight_TexelSize": null,
+            "_edgehighlight_HDR": null,
+            "_Noise1_ST": null,
+            "_Noise1_TexelSize": null,
+            "_Noise1_HDR": null,
+            "_thicknessMAsk_ST": null,
+            "_thicknessMAsk_TexelSize": null,
+            "_thicknessMAsk_HDR": null,
+            "_TTT1_ST": null,
+            "_TTT1_TexelSize": null,
+            "_TTT1_HDR": null
+          },
+          "textures": {
+            "_Noise": "CrystalWeebohNoise2.png",
+            "_texcoord": null,
+            "_Emission": null,
+            "_Metal": null,
+            "_Normal": null,
+            "_Fade": "CrystalWeebohNoise12.png",
+            "_MainTex1": "weebohtexturing_weeboh_body_BaseColor_skin_5510_10.png",
+            "_TTT": "CrystalWeebohNoise72.png",
+            "_Normal1": null,
+            "_CrystalMask": "CrystalWeebohRoughness.png",
+            "_Noise1": "CrystalWeebohNoise60.png",
+            "_TTT1": "CrystalWeebohNoise72.png",
+            "_edgehighlight": "CrystalWeebohConvex.png",
+            "_thicknessMAsk": "CrystalWeebohThickness.png"
+          }
+        },
+        {
+          "materialName": "M_Courier_Weeboh",
+          "shader": "sav_rizaonly",
+          "floats": {
+            "__dirty": 0.0,
+            "_Offset": 0.0,
+            "_H": 0.0,
+            "_S": 1.0,
+            "_V": 1.0,
+            "_Counter": 0.0,
+            "_DotsOnly": 0.0,
+            "_EmissionIntensity": 0.0,
+            "_NormalStr": 1.0,
+            "_RimAmount": 0.51,
+            "_RimColorIntensity": 0.252771,
+            "_RimPower": 1.89,
+            "_ShieldAmount": 0.0,
+            "_ShineAmount": 0.0,
+            "_SpecularAmount": 3.1,
+            "_SpecularOpacity": 0.29,
+            "_SpecularRange": 0.6,
+            "_SpecularTintIntensity": 0.09,
+            "_UVScale": 2.83,
+            "_NoiseStr": 0.2,
+            "_normalstr": 0.626,
+            "_VoronoiScale": 1.67,
+            "_H2": 0.0,
+            "_S2": 1.4,
+            "_V2": 2.74,
+            "_TriplanarScaling": 1.0,
+            "_Fade2Scale": 4.0,
+            "_Noise2Scale": 1.0,
+            "_CrystalSpecularAmount": 3.27,
+            "_CrystalSpecularRange": 0.66,
+            "_XYcoloramount": 0.3,
+            "_XZcoloramount": 0.197,
+            "_Xcoloramount": 0.156,
+            "_YZcoloramount": 0.352,
+            "_Ycoloramount": 0.334,
+            "_Zcoloramount": 0.169,
+            "_cracksAmt": 1.68,
+            "_crackssmoothness": 0.08,
+            "_crystalfresnelpower": 2.5,
+            "_crystalglowpower": 5.0,
+            "_crystalglowsize": 7.61,
+            "_crystalvoronoiscale": 1.0,
+            "_edgepower": 6.06,
+            "_rainbowAmt": 0.594
+          },
+          "vectors": {
+            "_Noise_ST": null,
+            "_Noise_TexelSize": null,
+            "_Noise_HDR": null,
+            "_texcoord_ST": null,
+            "_texcoord_TexelSize": null,
+            "_texcoord_HDR": null,
+            "_ShadowColor": {
+              "x": 0.7013527,
+              "y": 0.718274,
+              "z": 0.7509433,
+              "w": 0.0
+            },
+            "_RimColor": {
+              "x": 0.05893806,
+              "y": 1.15693426,
+              "z": 0.6254418,
+              "w": 0.0
+            },
+            "_ShaderColor": {
+              "x": 2.670157,
+              "y": 2.670157,
+              "z": 2.670157,
+              "w": 1.0
+            },
+            "_Shadows": {
+              "x": 0.0,
+              "y": 0.199999988,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_ShadowsHSV": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0,
+              "w": 0.0
+            },
+            "_SpecularTintColor": {
+              "x": 0.8000001,
+              "y": 1.0,
+              "z": 0.368627131,
+              "w": 0.0
+            },
+            "_Normal_ST": null,
+            "_Normal_TexelSize": null,
+            "_Normal_HDR": null,
+            "_Metal_ST": null,
+            "_Metal_TexelSize": null,
+            "_Metal_HDR": null,
+            "_Emission_ST": null,
+            "_Emission_TexelSize": null,
+            "_Emission_HDR": null,
+            "_NoiseScroll": {
+              "x": 0.0,
+              "y": 0.01,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_MainTex1_ST": null,
+            "_MainTex1_TexelSize": null,
+            "_MainTex1_HDR": null,
+            "_FadeScroll": {
+              "x": 0.1,
+              "y": -0.04,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_FadeRemap": {
+              "x": 0.4784217,
+              "y": 1.0,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_Noise2Scroll": {
+              "x": -0.02,
+              "y": -0.1,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_Fade_ST": null,
+            "_Fade_TexelSize": null,
+            "_Fade_HDR": null,
+            "_TTT_ST": null,
+            "_TTT_TexelSize": null,
+            "_TTT_HDR": null,
+            "_Normal1_ST": null,
+            "_Normal1_TexelSize": null,
+            "_Normal1_HDR": null,
+            "_CrystalReflectiveColor": {
+              "x": 0.4105377,
+              "y": 0.0,
+              "z": 1.0,
+              "w": 0.0
+            },
+            "_CrystalSpecularTint": {
+              "x": 0.0,
+              "y": 1.0,
+              "z": 0.906537056,
+              "w": 0.0
+            },
+            "_WorldXYcolor": {
+              "x": 0.9613735,
+              "y": 0.352830142,
+              "z": 1.0,
+              "w": 0.0
+            },
+            "_WorldXZcolor": {
+              "x": 0.0132074989,
+              "y": 0.640299,
+              "z": 1.0,
+              "w": 0.0
+            },
+            "_WorldXcolor": {
+              "x": 0.647058845,
+              "y": 0.664882958,
+              "z": 1.0,
+              "w": 0.0
+            },
+            "_WorldYZcolor": {
+              "x": 0.7226415,
+              "y": 1.0,
+              "z": 0.970005453,
+              "w": 0.0
+            },
+            "_WorldYcolor": {
+              "x": 1.0,
+              "y": 0.9930573,
+              "z": 0.352830142,
+              "w": 0.0
+            },
+            "_WorldZcolor": {
+              "x": 0.3686274,
+              "y": 0.8047733,
+              "z": 1.0,
+              "w": 0.0
+            },
+            "_cracksColors": {
+              "x": 0.0,
+              "y": 0.207248852,
+              "z": 0.44526276,
+              "w": 0.0
+            },
+            "_crystalfresnelcolor": {
+              "x": 0.0,
+              "y": 3.07096672,
+              "z": 4.0,
+              "w": 0.0
+            },
+            "_crystalfresnelminmax": {
+              "x": 0.399999857,
+              "y": 0.439130336,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_crystalinnerglowcolor": {
+              "x": 0.0,
+              "y": 0.166529,
+              "z": 2.27193069,
+              "w": 0.0
+            },
+            "_crystalinnerglowrange": {
+              "x": 0.800000131,
+              "y": 1.0,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_edgeminmax": {
+              "x": 0.03135887,
+              "y": 0.0592335463,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_thickminmax": {
+              "x": 0.0,
+              "y": 0.616582632,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_CrystalMask_ST": null,
+            "_CrystalMask_TexelSize": null,
+            "_CrystalMask_HDR": null,
+            "_edgehighlight_ST": null,
+            "_edgehighlight_TexelSize": null,
+            "_edgehighlight_HDR": null,
+            "_Noise1_ST": null,
+            "_Noise1_TexelSize": null,
+            "_Noise1_HDR": null,
+            "_thicknessMAsk_ST": null,
+            "_thicknessMAsk_TexelSize": null,
+            "_thicknessMAsk_HDR": null,
+            "_TTT1_ST": null,
+            "_TTT1_TexelSize": null,
+            "_TTT1_HDR": null
+          },
+          "textures": {
+            "_Noise": "CrystalWeebohNoise2.png",
+            "_texcoord": null,
+            "_Emission": null,
+            "_Metal": null,
+            "_Normal": null,
+            "_Fade": "CrystalWeebohNoise12.png",
+            "_MainTex1": "weebohtexturing_weeboh_body_BaseColor_skin_5510_10.png",
+            "_TTT": "CrystalWeebohNoise72.png",
+            "_Normal1": null,
+            "_CrystalMask": "CrystalWeebohRoughness.png",
+            "_Noise1": "CrystalWeebohNoise60.png",
+            "_TTT1": "CrystalWeebohNoise72.png",
+            "_edgehighlight": "CrystalWeebohConvex.png",
+            "_thicknessMAsk": "CrystalWeebohThickness.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "topfluff_low",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_Weeboh",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "weebohtexturing_weeboh_body_BaseColor_skin_5510_10.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "antlers_low",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_Weeboh",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "weebohtexturing_weeboh_body_BaseColor_skin_5510_10.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "glovesinner_low.001",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_BaseColorweeboh",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "courier_c_clothes_BaseColor_skin_5510_10.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "body_low",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_Weeboh",
+          "shader": "sav_rizaonly",
+          "floats": {
+            "__dirty": 0.0,
+            "_Offset": 0.0,
+            "_H": 0.0,
+            "_S": 1.0,
+            "_V": 1.0,
+            "_Counter": 0.0,
+            "_DotsOnly": 0.0,
+            "_EmissionIntensity": 0.0,
+            "_NormalStr": 1.0,
+            "_RimAmount": 0.51,
+            "_RimColorIntensity": 0.252771,
+            "_RimPower": 1.89,
+            "_ShieldAmount": 0.0,
+            "_ShineAmount": 0.0,
+            "_SpecularAmount": 3.1,
+            "_SpecularOpacity": 0.29,
+            "_SpecularRange": 0.6,
+            "_SpecularTintIntensity": 0.09,
+            "_UVScale": 2.83,
+            "_NoiseStr": 0.2,
+            "_normalstr": 0.626,
+            "_VoronoiScale": 1.67,
+            "_H2": 0.0,
+            "_S2": 1.4,
+            "_V2": 2.74,
+            "_TriplanarScaling": 1.0,
+            "_Fade2Scale": 4.0,
+            "_Noise2Scale": 1.0,
+            "_CrystalSpecularAmount": 3.27,
+            "_CrystalSpecularRange": 0.66,
+            "_XYcoloramount": 0.3,
+            "_XZcoloramount": 0.197,
+            "_Xcoloramount": 0.156,
+            "_YZcoloramount": 0.352,
+            "_Ycoloramount": 0.334,
+            "_Zcoloramount": 0.169,
+            "_cracksAmt": 1.68,
+            "_crackssmoothness": 0.08,
+            "_crystalfresnelpower": 2.5,
+            "_crystalglowpower": 5.0,
+            "_crystalglowsize": 7.61,
+            "_crystalvoronoiscale": 1.0,
+            "_edgepower": 6.06,
+            "_rainbowAmt": 0.594
+          },
+          "vectors": {
+            "_Noise_ST": null,
+            "_Noise_TexelSize": null,
+            "_Noise_HDR": null,
+            "_texcoord_ST": null,
+            "_texcoord_TexelSize": null,
+            "_texcoord_HDR": null,
+            "_ShadowColor": {
+              "x": 0.7013527,
+              "y": 0.718274,
+              "z": 0.7509433,
+              "w": 0.0
+            },
+            "_RimColor": {
+              "x": 0.05893806,
+              "y": 1.15693426,
+              "z": 0.6254418,
+              "w": 0.0
+            },
+            "_ShaderColor": {
+              "x": 2.670157,
+              "y": 2.670157,
+              "z": 2.670157,
+              "w": 1.0
+            },
+            "_Shadows": {
+              "x": 0.0,
+              "y": 0.199999988,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_ShadowsHSV": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0,
+              "w": 0.0
+            },
+            "_SpecularTintColor": {
+              "x": 0.8000001,
+              "y": 1.0,
+              "z": 0.368627131,
+              "w": 0.0
+            },
+            "_Normal_ST": null,
+            "_Normal_TexelSize": null,
+            "_Normal_HDR": null,
+            "_Metal_ST": null,
+            "_Metal_TexelSize": null,
+            "_Metal_HDR": null,
+            "_Emission_ST": null,
+            "_Emission_TexelSize": null,
+            "_Emission_HDR": null,
+            "_NoiseScroll": {
+              "x": 0.0,
+              "y": 0.01,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_MainTex1_ST": null,
+            "_MainTex1_TexelSize": null,
+            "_MainTex1_HDR": null,
+            "_FadeScroll": {
+              "x": 0.1,
+              "y": -0.04,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_FadeRemap": {
+              "x": 0.4784217,
+              "y": 1.0,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_Noise2Scroll": {
+              "x": -0.02,
+              "y": -0.1,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_Fade_ST": null,
+            "_Fade_TexelSize": null,
+            "_Fade_HDR": null,
+            "_TTT_ST": null,
+            "_TTT_TexelSize": null,
+            "_TTT_HDR": null,
+            "_Normal1_ST": null,
+            "_Normal1_TexelSize": null,
+            "_Normal1_HDR": null,
+            "_CrystalReflectiveColor": {
+              "x": 0.4105377,
+              "y": 0.0,
+              "z": 1.0,
+              "w": 0.0
+            },
+            "_CrystalSpecularTint": {
+              "x": 0.0,
+              "y": 1.0,
+              "z": 0.906537056,
+              "w": 0.0
+            },
+            "_WorldXYcolor": {
+              "x": 0.9613735,
+              "y": 0.352830142,
+              "z": 1.0,
+              "w": 0.0
+            },
+            "_WorldXZcolor": {
+              "x": 0.0132074989,
+              "y": 0.640299,
+              "z": 1.0,
+              "w": 0.0
+            },
+            "_WorldXcolor": {
+              "x": 0.647058845,
+              "y": 0.664882958,
+              "z": 1.0,
+              "w": 0.0
+            },
+            "_WorldYZcolor": {
+              "x": 0.7226415,
+              "y": 1.0,
+              "z": 0.970005453,
+              "w": 0.0
+            },
+            "_WorldYcolor": {
+              "x": 1.0,
+              "y": 0.9930573,
+              "z": 0.352830142,
+              "w": 0.0
+            },
+            "_WorldZcolor": {
+              "x": 0.3686274,
+              "y": 0.8047733,
+              "z": 1.0,
+              "w": 0.0
+            },
+            "_cracksColors": {
+              "x": 0.0,
+              "y": 0.207248852,
+              "z": 0.44526276,
+              "w": 0.0
+            },
+            "_crystalfresnelcolor": {
+              "x": 0.0,
+              "y": 3.07096672,
+              "z": 4.0,
+              "w": 0.0
+            },
+            "_crystalfresnelminmax": {
+              "x": 0.399999857,
+              "y": 0.439130336,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_crystalinnerglowcolor": {
+              "x": 0.0,
+              "y": 0.166529,
+              "z": 2.27193069,
+              "w": 0.0
+            },
+            "_crystalinnerglowrange": {
+              "x": 0.800000131,
+              "y": 1.0,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_edgeminmax": {
+              "x": 0.03135887,
+              "y": 0.0592335463,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_thickminmax": {
+              "x": 0.0,
+              "y": 0.616582632,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_CrystalMask_ST": null,
+            "_CrystalMask_TexelSize": null,
+            "_CrystalMask_HDR": null,
+            "_edgehighlight_ST": null,
+            "_edgehighlight_TexelSize": null,
+            "_edgehighlight_HDR": null,
+            "_Noise1_ST": null,
+            "_Noise1_TexelSize": null,
+            "_Noise1_HDR": null,
+            "_thicknessMAsk_ST": null,
+            "_thicknessMAsk_TexelSize": null,
+            "_thicknessMAsk_HDR": null,
+            "_TTT1_ST": null,
+            "_TTT1_TexelSize": null,
+            "_TTT1_HDR": null
+          },
+          "textures": {
+            "_Noise": "CrystalWeebohNoise2.png",
+            "_texcoord": null,
+            "_Emission": null,
+            "_Metal": null,
+            "_Normal": null,
+            "_Fade": "CrystalWeebohNoise12.png",
+            "_MainTex1": "weebohtexturing_weeboh_body_BaseColor_skin_5510_10.png",
+            "_TTT": "CrystalWeebohNoise72.png",
+            "_Normal1": null,
+            "_CrystalMask": "CrystalWeebohRoughness.png",
+            "_Noise1": "CrystalWeebohNoise60.png",
+            "_TTT1": "CrystalWeebohNoise72.png",
+            "_edgehighlight": "CrystalWeebohConvex.png",
+            "_thicknessMAsk": "CrystalWeebohThickness.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "fluff_low",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_Weeboh",
+          "shader": "sav_rizaonly",
+          "floats": {
+            "__dirty": 0.0,
+            "_Offset": 0.0,
+            "_H": 0.0,
+            "_S": 1.0,
+            "_V": 1.0,
+            "_Counter": 0.0,
+            "_DotsOnly": 0.0,
+            "_EmissionIntensity": 0.0,
+            "_NormalStr": 1.0,
+            "_RimAmount": 0.51,
+            "_RimColorIntensity": 0.252771,
+            "_RimPower": 1.89,
+            "_ShieldAmount": 0.0,
+            "_ShineAmount": 0.0,
+            "_SpecularAmount": 3.1,
+            "_SpecularOpacity": 0.29,
+            "_SpecularRange": 0.6,
+            "_SpecularTintIntensity": 0.09,
+            "_UVScale": 2.83,
+            "_NoiseStr": 0.2,
+            "_normalstr": 0.626,
+            "_VoronoiScale": 1.67,
+            "_H2": 0.0,
+            "_S2": 1.4,
+            "_V2": 2.74,
+            "_TriplanarScaling": 1.0,
+            "_Fade2Scale": 4.0,
+            "_Noise2Scale": 1.0,
+            "_CrystalSpecularAmount": 3.27,
+            "_CrystalSpecularRange": 0.66,
+            "_XYcoloramount": 0.3,
+            "_XZcoloramount": 0.197,
+            "_Xcoloramount": 0.156,
+            "_YZcoloramount": 0.352,
+            "_Ycoloramount": 0.334,
+            "_Zcoloramount": 0.169,
+            "_cracksAmt": 1.68,
+            "_crackssmoothness": 0.08,
+            "_crystalfresnelpower": 2.5,
+            "_crystalglowpower": 5.0,
+            "_crystalglowsize": 7.61,
+            "_crystalvoronoiscale": 1.0,
+            "_edgepower": 6.06,
+            "_rainbowAmt": 0.594
+          },
+          "vectors": {
+            "_Noise_ST": null,
+            "_Noise_TexelSize": null,
+            "_Noise_HDR": null,
+            "_texcoord_ST": null,
+            "_texcoord_TexelSize": null,
+            "_texcoord_HDR": null,
+            "_ShadowColor": {
+              "x": 0.7013527,
+              "y": 0.718274,
+              "z": 0.7509433,
+              "w": 0.0
+            },
+            "_RimColor": {
+              "x": 0.05893806,
+              "y": 1.15693426,
+              "z": 0.6254418,
+              "w": 0.0
+            },
+            "_ShaderColor": {
+              "x": 2.670157,
+              "y": 2.670157,
+              "z": 2.670157,
+              "w": 1.0
+            },
+            "_Shadows": {
+              "x": 0.0,
+              "y": 0.199999988,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_ShadowsHSV": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0,
+              "w": 0.0
+            },
+            "_SpecularTintColor": {
+              "x": 0.8000001,
+              "y": 1.0,
+              "z": 0.368627131,
+              "w": 0.0
+            },
+            "_Normal_ST": null,
+            "_Normal_TexelSize": null,
+            "_Normal_HDR": null,
+            "_Metal_ST": null,
+            "_Metal_TexelSize": null,
+            "_Metal_HDR": null,
+            "_Emission_ST": null,
+            "_Emission_TexelSize": null,
+            "_Emission_HDR": null,
+            "_NoiseScroll": {
+              "x": 0.0,
+              "y": 0.01,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_MainTex1_ST": null,
+            "_MainTex1_TexelSize": null,
+            "_MainTex1_HDR": null,
+            "_FadeScroll": {
+              "x": 0.1,
+              "y": -0.04,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_FadeRemap": {
+              "x": 0.4784217,
+              "y": 1.0,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_Noise2Scroll": {
+              "x": -0.02,
+              "y": -0.1,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_Fade_ST": null,
+            "_Fade_TexelSize": null,
+            "_Fade_HDR": null,
+            "_TTT_ST": null,
+            "_TTT_TexelSize": null,
+            "_TTT_HDR": null,
+            "_Normal1_ST": null,
+            "_Normal1_TexelSize": null,
+            "_Normal1_HDR": null,
+            "_CrystalReflectiveColor": {
+              "x": 0.4105377,
+              "y": 0.0,
+              "z": 1.0,
+              "w": 0.0
+            },
+            "_CrystalSpecularTint": {
+              "x": 0.0,
+              "y": 1.0,
+              "z": 0.906537056,
+              "w": 0.0
+            },
+            "_WorldXYcolor": {
+              "x": 0.9613735,
+              "y": 0.352830142,
+              "z": 1.0,
+              "w": 0.0
+            },
+            "_WorldXZcolor": {
+              "x": 0.0132074989,
+              "y": 0.640299,
+              "z": 1.0,
+              "w": 0.0
+            },
+            "_WorldXcolor": {
+              "x": 0.647058845,
+              "y": 0.664882958,
+              "z": 1.0,
+              "w": 0.0
+            },
+            "_WorldYZcolor": {
+              "x": 0.7226415,
+              "y": 1.0,
+              "z": 0.970005453,
+              "w": 0.0
+            },
+            "_WorldYcolor": {
+              "x": 1.0,
+              "y": 0.9930573,
+              "z": 0.352830142,
+              "w": 0.0
+            },
+            "_WorldZcolor": {
+              "x": 0.3686274,
+              "y": 0.8047733,
+              "z": 1.0,
+              "w": 0.0
+            },
+            "_cracksColors": {
+              "x": 0.0,
+              "y": 0.207248852,
+              "z": 0.44526276,
+              "w": 0.0
+            },
+            "_crystalfresnelcolor": {
+              "x": 0.0,
+              "y": 3.07096672,
+              "z": 4.0,
+              "w": 0.0
+            },
+            "_crystalfresnelminmax": {
+              "x": 0.399999857,
+              "y": 0.439130336,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_crystalinnerglowcolor": {
+              "x": 0.0,
+              "y": 0.166529,
+              "z": 2.27193069,
+              "w": 0.0
+            },
+            "_crystalinnerglowrange": {
+              "x": 0.800000131,
+              "y": 1.0,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_edgeminmax": {
+              "x": 0.03135887,
+              "y": 0.0592335463,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_thickminmax": {
+              "x": 0.0,
+              "y": 0.616582632,
+              "z": 0.0,
+              "w": 0.0
+            },
+            "_CrystalMask_ST": null,
+            "_CrystalMask_TexelSize": null,
+            "_CrystalMask_HDR": null,
+            "_edgehighlight_ST": null,
+            "_edgehighlight_TexelSize": null,
+            "_edgehighlight_HDR": null,
+            "_Noise1_ST": null,
+            "_Noise1_TexelSize": null,
+            "_Noise1_HDR": null,
+            "_thicknessMAsk_ST": null,
+            "_thicknessMAsk_TexelSize": null,
+            "_thicknessMAsk_HDR": null,
+            "_TTT1_ST": null,
+            "_TTT1_TexelSize": null,
+            "_TTT1_HDR": null
+          },
+          "textures": {
+            "_Noise": "CrystalWeebohNoise2.png",
+            "_texcoord": null,
+            "_Emission": null,
+            "_Metal": null,
+            "_Normal": null,
+            "_Fade": "CrystalWeebohNoise12.png",
+            "_MainTex1": "weebohtexturing_weeboh_body_BaseColor_skin_5510_10.png",
+            "_TTT": "CrystalWeebohNoise72.png",
+            "_Normal1": null,
+            "_CrystalMask": "CrystalWeebohRoughness.png",
+            "_Noise1": "CrystalWeebohNoise60.png",
+            "_TTT1": "CrystalWeebohNoise72.png",
+            "_edgehighlight": "CrystalWeebohConvex.png",
+            "_thicknessMAsk": "CrystalWeebohThickness.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "foot_low",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_Faceweeboh",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "courier_c_skin_BaseColor_skin_5510_10.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "glovesinner_low",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_BaseColorweeboh",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "courier_c_clothes_BaseColor_skin_5510_10.png"
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "Hair",
+      "materialParams": [
+        {
+          "materialName": "c_hair",
+          "shader": "Standard",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": null
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "Head",
+      "materialParams": [
+        {
+          "materialName": "c_skin",
+          "shader": "Standard",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": null
+          }
+        },
+        {
+          "materialName": "c_eyesmouth",
+          "shader": "Standard",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": null
+          }
+        },
+        {
+          "materialName": "c_hair",
+          "shader": "Standard",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": null
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "head_low",
+      "materialParams": [
+        {
+          "materialName": "weeboh_body",
+          "shader": "Standard",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": null
+          }
+        }
+      ]
+    },
+    {
+      "rendererName": "scarfmain_low",
+      "materialParams": [
+        {
+          "materialName": "M_Courier_BaseColorweeboh",
+          "shader": "W/savCharacterNEW",
+          "floats": {},
+          "vectors": {},
+          "textures": {
+            "_MainTex": "courier_c_clothes_BaseColor_skin_5510_10.png"
+          }
+        }
+      ]
+    }
+  ]
+}

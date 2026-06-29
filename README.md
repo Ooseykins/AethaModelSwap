@@ -32,11 +32,35 @@ If you configure the dynamic bones on your prefab in Unity they should work A-OK
 
 Similar to exporting a skin, instead you can export any prefab named with a ".spark" suffix. If for example a prefab is named "Big Coin.spark" and exported into the .hastemodel files, it will show up in the spark model settings dropdown. Since this is clientside only, you don't need to add any ID suffix number to the prefab name.
 
+Add any .wav sound files to your mod with this kind of naming scheme to add pickup sound effects: "Big Coin.spark.1.wav",  "Big Coin.spark.2.wav", and so on.
+
+## Texture variants
+
+This feature is extremely barebones! To create a texture variant equip the skin you'd like to use as the base then use (in the F1 console) `TextureSwap.CreateNewSkin Id Mode`
+
+`Id` must be within the same range as other models, between 100 and 16,000,000 and must be completely unique.
+
+`Mode` will modify the contents of the output .json file and can be any of:
+- `Simple` - Just the most important textures (Recommended!)
+- `Textures` - All textures
+- `Advanced` - All properties, values all as null
+- `CopyFull` - All properties, values copied from the base skin (NOT recommended)
+- `CopyLess` - Most properties, cutting out the annoying ones
+
+The textures and .json config file will be output to the AethaModelSwap skins folder, accessible through the button in Haste's General settings.
+
+Edit the SkinPaletteConfig.json file to change the name of your skin variant, it's id, and individual material parameters if you're extremely brave. Textures must be saved as .png files.
+
+Use `TextureSwap.Update` to reload your changes while Haste is running. You should not need to restart your game while editing your skin except to change the UI icons.
+
+When you're done, make sure to move your skin to it's own mod folder so you don't lose any work if you uninstall AethaModelSwap! Packaging the skin variant as it's own mod just requires the .json file and textures to be included.
+
 ## Extending this mod
 Other mods can register models without using the .hastemodel filename extension by calling AethaModelSwap.RegisterSkin and AethaModelSwap.RegisterToSkinManager. It's preferred to use the overloads that take Func parameters, to allow the models to lazily load only when needed.
 
 ## Thanks!
 If you create any mods using this, please let me see it! You can contact me on Discord @ooseykins or on Twitter @Ooseykins or @Aetha_Azazie
 
+![](Guides/Screenshots/CustomZoeSkins.png)
 ![](Guides/Screenshots/RizaSurfing.png)
 ![](Guides/Screenshots/CaptainSelect.png)

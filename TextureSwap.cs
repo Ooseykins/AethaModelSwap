@@ -15,7 +15,7 @@ public static class TextureSwap
     private static readonly Dictionary<string, string> AvailableTextures = new();
     private static readonly Dictionary<int, SkinReplacementParams> AvailableSkinPalettes = new();
 
-    private static readonly HashSet<(GameObject root, List<Texture2D> textures)> InstantiatedTextures = new();
+    private static readonly Dictionary<string, Texture2D> InstantiatedTextures = new();
 
     private static readonly string[] MainTexturePropertyNames = { "_MainTex", "_MainTex1" };
     
@@ -42,7 +42,7 @@ public static class TextureSwap
         "evilcoin_wobble_1", // Ava's anti-spark
     };
     
-    // Simplified names to make it easier to 
+    // Simplified names to make it easier to understand which textures do what
     private static readonly (string actual,string simplified)[] TextureSimplifiedNamesBase = {
         // Default & other basic skins
         ("courier_c_clothes_BaseColor", "Clothes"),
@@ -137,11 +137,13 @@ public static class TextureSwap
         [JsonProperty] public int skinId = -1;
         [JsonProperty] public int baseSkinId = -1;
         [JsonProperty] public bool hideWhileLocked = false;
+        [JsonProperty] public string playerIconName = "";
+        [JsonProperty] public string uiIconName = "";
+        [JsonProperty] public string uiBodyIconName = "";
         [JsonProperty] public List<RendererReplacementParams> rendererReplacementParamsList = new();
 
         public void Apply(GameObject root, bool body = true, bool head = true)
         {
-            Dictionary<string, Texture2D> createdTextures = new();
             List<(RendererReplacementParams replacement, Renderer renderer)> rendererPairs = new();
             foreach (var renderer in GetRenderers(root))
             {
@@ -165,25 +167,22 @@ public static class TextureSwap
             }
             foreach (var pair in rendererPairs)
             {
-                pair.replacement.Apply(pair.renderer, createdTextures);
+                pair.replacement.Apply(pair.renderer);
             }
-            InstantiatedTextures.Add((root, createdTextures.Values.ToList()));
         }
     }
 
-    private static void CleanupAll()
+    public static void UnloadAllTextures()
     {
-        foreach (var entry in InstantiatedTextures)
+        Debug.Log($"Cleaning up {InstantiatedTextures.Count} Texture Swaps");
+        foreach (var (_, texture) in InstantiatedTextures)
         {
-            if (!entry.root)
+            if (texture != null)
             {
-                foreach (var texture in entry.textures)
-                {
-                    UnityEngine.Object.Destroy(texture);
-                }
+                UnityEngine.Object.Destroy(texture);
             }
         }
-        InstantiatedTextures.RemoveWhere(x => !x.root);
+        InstantiatedTextures.Clear();
     }
 
     private class RendererReplacementParams
@@ -191,7 +190,7 @@ public static class TextureSwap
         [JsonProperty] public string rendererName = "";
         [JsonProperty] public List<MaterialReplacementParams> materialParams = new();
 
-        public void Apply(Renderer renderer, Dictionary<string, Texture2D> createdTextures)
+        public void Apply(Renderer renderer)
         {
             for (int i = 0; i < renderer.materials.Length; i++)
             {
@@ -201,10 +200,10 @@ public static class TextureSwap
                 }
                 if (i >= materialParams.Count)
                 {
-                    Debug.LogError($"Material params count mismatch: {renderer.materials.Length} on renderer, {materialParams.Count} in config");
+                    Debug.LogWarning($"Material params count mismatch: {renderer.name} {renderer.materials.Length} on renderer, {rendererName} {materialParams.Count} in config");
                     return;
                 }
-                materialParams[i].Apply(renderer.materials[i], createdTextures);
+                materialParams[i].Apply(renderer.materials[i]);
             }
         }
     }
@@ -264,8 +263,16 @@ public static class TextureSwap
             }
         }
 
-        public void Apply(Material material, Dictionary<string, Texture2D> createdTextures)
+        public void Apply(Material material)
         {
+            if (!string.IsNullOrEmpty(shader) && material.shader.name != shader)
+            {
+                material.shader = Shader.Find(shader);
+                if (material.shader == null)
+                {
+                    Debug.LogError($"Could not find shader {shader} for {material}");
+                }
+            }
             if (floats != null)
             {
                 foreach (var kvp in floats)
@@ -296,21 +303,20 @@ public static class TextureSwap
                     {
                         continue;
                     }
-                    if (createdTextures.ContainsKey(filename))
+                    if (!material.HasProperty(property))
                     {
-                        material.SetTexture(property, createdTextures[filename]);
+                        continue;
+                    }
+                    if (InstantiatedTextures.ContainsKey(filename))
+                    {
+                        material.SetTexture(property, InstantiatedTextures[filename]);
                     }
                     else
                     {
                         var newTexture = LoadTexture(filename);
                         if (newTexture)
                         {
-                            if (material.HasProperty(property))
-                            {
-                                newTexture.name = material.GetTexture(property).name;
-                            }
                             material.SetTexture(property, newTexture);
-                            createdTextures[filename] = newTexture;
                         }
                     }
                 }
@@ -318,15 +324,19 @@ public static class TextureSwap
         }
     }
     
-    public static void Reapply()
+    public static void Update()
     {
+        UnloadAllTextures();
         SearchDirectory(NewSkinDirectory);
+        if (SkinDatabase.me)
+        {
+            ZoeModelSwap.RegisterZoeSkins(SkinDatabase.me);
+        }
         SkinManager.SetFullOutfit(SkinManager.HeadSkin);
     }
 
     public static void ApplyPalette(GameObject root, int skinId, bool body, bool head)
     {
-        CleanupAll();
         if (AvailableSkinPalettes.TryGetValue(skinId, out var skinReplacementParams))
         {
             Debug.Log($"Attempting to apply palette: {skinId}");
@@ -336,26 +346,36 @@ public static class TextureSwap
 
     public static void SearchDirectory(string directory)
     {
+        foreach (var path in Directory.GetFiles(directory, "*.png", SearchOption.AllDirectories))
+        {
+            Debug.Log($"Texture found: {Path.GetFileName(path)}");
+            AvailableTextures[Path.GetFileName(path)] = path;
+        }
         foreach (var path in Directory.GetFiles(directory, "*"+SkinPaletteSuffix, SearchOption.AllDirectories))
         {
             var skinReplacementParams = JsonConvert.DeserializeObject<SkinReplacementParams>(File.ReadAllText(path));
-            var spritePath = Path.GetDirectoryName(path) + "/icon";
             if (skinReplacementParams != null)
             {
                 Debug.Log($"Created skin variant of {skinReplacementParams.baseSkinId}: {skinReplacementParams.skinName} {skinReplacementParams.skinId}");
                 AvailableSkinPalettes[skinReplacementParams.skinId] = skinReplacementParams;
-                if(!AethaModelSwap.HasSkin(skinReplacementParams.skinId)){
-                    AethaModelSwap.RegisterSkinVariant(skinReplacementParams.skinId, skinReplacementParams.baseSkinId, skinReplacementParams.skinName, AethaModelSwap.LoadSprite(spritePath), skinReplacementParams.hideWhileLocked);
+                if(!AethaModelSwap.HasSkin(skinReplacementParams.skinId))
+                {
+                    AvailableTextures.TryGetValue(skinReplacementParams.playerIconName, out var playerIconPath);
+                    AvailableTextures.TryGetValue(skinReplacementParams.uiIconName, out var uiIconPath);
+                    AvailableTextures.TryGetValue(skinReplacementParams.uiBodyIconName, out var uiBodyIconPath);
+                    AethaModelSwap.RegisterSkinVariant(skinReplacementParams.skinId,
+                        skinReplacementParams.baseSkinId,
+                        skinReplacementParams.skinName,
+                        AethaModelSwap.LoadSprite(playerIconPath),
+                        AethaModelSwap.LoadSprite(uiIconPath),
+                        AethaModelSwap.LoadSprite(uiBodyIconPath),
+                        skinReplacementParams.hideWhileLocked);
                 }
                 else
                 {
                     Debug.Log($"Reloaded skin variant {skinReplacementParams.skinName} {skinReplacementParams.skinId}");
                 }
             }
-        }
-        foreach (var path in Directory.GetFiles(directory, "*_skin_*_*.png", SearchOption.AllDirectories))
-        {
-            AvailableTextures[Path.GetFileName(path)] = path;
         }
     }
 
@@ -385,15 +405,20 @@ public static class TextureSwap
 
     private static Texture2D LoadTexture(string fileName)
     {
+        if (InstantiatedTextures.ContainsKey(fileName))
+        {
+            return InstantiatedTextures[fileName];
+        }
         if (AvailableTextures.ContainsKey(fileName))
         {
             var path = AvailableTextures[fileName];
             if (File.Exists(path))
             {
                 var data = File.ReadAllBytes(path);
-                var texture = new Texture2D(2, 2);
-                if (texture.LoadImage(data, false))
+                var texture = SystemInfo.SupportsTextureFormat(TextureFormat.DXT5) ? new Texture2D(4, 4, TextureFormat.DXT5, true) : new Texture2D(4, 4);
+                if (texture.LoadImage(data, true))
                 {
+                    InstantiatedTextures[fileName] = texture;
                     return texture;
                 }
                 else
@@ -483,7 +508,6 @@ public static class TextureSwap
                         }
                         if (materialReplacementParams.textures.ContainsKey(name))
                         {
-                            //Debug.Log($"{r.name}: {texture.name}");
                             textures.Add(texture);
                             var fileName = GetSimplifiedName(texture.name);
                             materialReplacementParams.textures[name] = fileName + fileSuffix;
@@ -518,8 +542,48 @@ public static class TextureSwap
                 return;
             }
         }
+        
+        // Dumping the UI icons for the skin
+        if (AethaModelSwap.IsBaseSkin(baseSkinIndex))
+        {
+            var baseSkin = SkinDatabase.me.GetSkin((SkinManager.Skin)baseSkinIndex);
+            if (baseSkin.PlayerIcon)
+            {
+                var copiedTexture = BlitCopy(baseSkin.PlayerIcon.texture);
+                var bytes = copiedTexture.EncodeToPNG();
+                skinReplacementParams.playerIconName = $"PlayerIcon{fileSuffix}";
+                File.WriteAllBytes($"{directory}/{skinReplacementParams.playerIconName}", bytes);
+            }
+            if (baseSkin.UIIcon)
+            {
+                var copiedTexture = BlitCopy(baseSkin.UIIcon.texture);
+                var bytes = copiedTexture.EncodeToPNG();
+                skinReplacementParams.uiIconName = $"UIIcon{fileSuffix}";
+                File.WriteAllBytes($"{directory}/{skinReplacementParams.uiIconName}", bytes);
+            }
+            if (baseSkin.UIBodyIcon)
+            {
+                var copiedTexture = BlitCopy(baseSkin.UIBodyIcon.texture);
+                var bytes = copiedTexture.EncodeToPNG();
+                skinReplacementParams.uiBodyIconName = $"UIBodyIcon{fileSuffix}";
+                File.WriteAllBytes($"{directory}/{skinReplacementParams.uiBodyIconName}", bytes);
+            }
+        }
+        else
+        {
+            var playerIcon = AethaModelSwap.GetSprite(baseSkinIndex);
+            if (playerIcon)
+            {
+                var copiedTexture = BlitCopy(playerIcon.texture);
+                var bytes = copiedTexture.EncodeToPNG();
+                skinReplacementParams.playerIconName = $"PlayerIcon{fileSuffix}";
+                skinReplacementParams.uiIconName = $"UIIcon{fileSuffix}";
+                skinReplacementParams.uiBodyIconName = $"UIBodyIcon{fileSuffix}";
+                File.WriteAllBytes($"{directory}/{skinReplacementParams.playerIconName}", bytes);
+            }
+        }
 
-        var configPath = $"{directory}/{skinName}_{baseSkinIndex}{SkinPaletteSuffix}";
+        var configPath = $"{directory}/{skinName}_{skinIndex}{SkinPaletteSuffix}";
         JsonSerializerSettings settings = new JsonSerializerSettings
         {
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
@@ -532,15 +596,6 @@ public static class TextureSwap
             var copiedTexture = BlitCopy(t);
             var name = GetSimplifiedName(t.name);
             var filePath = $"{directory}/{name}{fileSuffix}";
-            var bytes = copiedTexture.EncodeToPNG();
-            File.WriteAllBytes(filePath, bytes);
-        }
-
-        var icon = AethaModelSwap.GetSprite(baseSkinIndex);
-        if (icon)
-        {
-            var copiedTexture = BlitCopy(icon.texture);
-            var filePath = $"{directory}/icon.png";
             var bytes = copiedTexture.EncodeToPNG();
             File.WriteAllBytes(filePath, bytes);
         }

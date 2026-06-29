@@ -90,8 +90,8 @@ public class AethaModelSwap
         ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action(ModelParamsEditor.OpenEditor).Method));
         ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action<int>(SetSkin).Method));
         ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action(SpawnBasePoseOnPlayer).Method));
+        ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action(TextureSwap.Update).Method));
         ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action<int,TextureSwap.SkinCreationMode>(TextureSwap.CreateNewSkin).Method));
-        ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action(TextureSwap.Reapply).Method));
         ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action(FashionableWeebohHelpUI.FashionableWeebohTutorial).Method));
         ConsoleCommands.ConsoleCommandMethods.Add(new ConsoleCommand(new Action<int,int>(SetDate).Method));
         
@@ -101,7 +101,7 @@ public class AethaModelSwap
         foreach (var item in Modloader.LoadedItemDirectories)
         {
             LoadSkins(item.Value.directory);
-            //TextureSwap.SearchDirectory(item.Value.directory);
+            TextureSwap.SearchDirectory(item.Value.directory);
         }
         // Hot load newly subscribed models
         Modloader.OnItemLoaded += t =>
@@ -113,7 +113,7 @@ public class AethaModelSwap
                 {
                     RegisterToSkinManager(SkinDatabase.me);
                 }
-                //TextureSwap.SearchDirectory(directory);
+                TextureSwap.SearchDirectory(directory);
             }
         };
         // Handle some special cases on scene changes
@@ -122,6 +122,7 @@ public class AethaModelSwap
             // Unload all bundles on the main menu
             if (scene.name == "MainMenu")
             {
+                TextureSwap.UnloadAllTextures();
                 UnloadAllBundles();
                 int month = overrideMonth > 0 ? overrideMonth : DateTime.Now.Month;
                 int day = overrideDay > 0 ? overrideDay : DateTime.Now.Day;
@@ -423,7 +424,7 @@ public class AethaModelSwap
     }
     
     // Register a skin variant
-    public static void RegisterSkinVariant(int index, int baseIndex, string name, Sprite sprite, bool hideWhileLocked = false)
+    public static void RegisterSkinVariant(int index, int baseIndex, string name, Sprite playerIcon = null, Sprite uiIcon = null, Sprite bodyIcon = null, bool hideWhileLocked = false)
     {
         Debug.Log($"Registering variant {index} for {baseIndex}");
         if (RegisteredSkins.ContainsKey(index))
@@ -431,12 +432,17 @@ public class AethaModelSwap
             Debug.LogError($"A skin is already registered to index {index}");
             return;
         }
+        if (IsBaseSkin(baseIndex))
+        {
+            ZoeModelSwap.AddSkinVariant(name, index, baseIndex, playerIcon, uiIcon, bodyIcon);
+            return;
+        }
         if (!RegisteredSkins.TryGetValue(baseIndex, out var baseSkin))
         {
             Debug.LogWarning($"No base skin available for variant at {baseIndex}. Load order may be incorrect.");
             return;
         }
-        RegisterSkin(index, name, sprite, baseSkin.modelIKParameters, baseSkin.loadPrefab, baseSkin.boneNames, baseSkin.animationParameters, hideWhileLocked: hideWhileLocked);
+        RegisterSkin(index, name, playerIcon, baseSkin.modelIKParameters, baseSkin.loadPrefab, baseSkin.boneNames, baseSkin.animationParameters, hideWhileLocked: hideWhileLocked);
     }
 
     // Add all skins to the skin manager
