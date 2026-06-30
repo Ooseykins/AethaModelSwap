@@ -267,10 +267,18 @@ public static class TextureSwap
         {
             if (!string.IsNullOrEmpty(shader) && material.shader.name != shader)
             {
-                material.shader = Shader.Find(shader);
-                if (material.shader == null)
+                if (AethaModelSwap.CustomShaders.TryGetValue(shader, out var customShader))
                 {
-                    Debug.LogError($"Could not find shader {shader} for {material}");
+                    material.shader = customShader;
+                }
+                else
+                {
+                    var foundShader = Shader.Find(shader);
+                    material.shader = foundShader;
+                    if (!foundShader)
+                    {
+                        Debug.LogError($"Could not find shader {shader} for {material.name}");
+                    }
                 }
             }
             if (floats != null)

@@ -54,6 +54,8 @@ public class AethaModelSwap
     public static readonly List<RegisteredModel> RegisteredSparks = new();
     public static RegisteredModel selectedSpark;
     private static readonly HashSet<AssetBundle> LoadedBundles = new();
+    private static readonly HashSet<AssetBundle> DoNotUnloadBundles = new();
+    public static readonly Dictionary<string, Shader> CustomShaders = new();
 
     private class RegisteredSkin
     {
@@ -271,9 +273,39 @@ public class AethaModelSwap
                 Debug.LogError($"Failed to get directory for {path}");
                 continue;
             }
+
+            // Load custom shaders from assets
+            foreach (var shader in bundle.LoadAllAssets<Shader>())
+            {
+                if (!Shader.Find(shader.name) && !CustomShaders.ContainsKey(shader.name))
+                {
+                    Debug.Log($"Loaded shader from asset: {shader.name}");
+                    CustomShaders[shader.name] = shader;
+                    DoNotUnloadBundles.Add(bundle);
+                }
+            }
+            
             foreach (var prefab in bundle.LoadAllAssets<GameObject>())
             {
                 Debug.Log($"Loading prefab {prefab.name}");
+                
+                // Load custom shaders from materials
+                foreach (var r in prefab.GetComponentsInChildren<Renderer>(true))
+                {
+                    foreach (var m in r.materials)
+                    {
+                        if (m && m.shader)
+                        {
+                            if (!Shader.Find(m.shader.name) && !CustomShaders.ContainsKey(m.shader.name))
+                            {
+                                Debug.Log($"Loaded shader from prefab: {m.shader.name}");
+                                CustomShaders[m.shader.name] = m.shader;
+                                DoNotUnloadBundles.Add(bundle);
+                            }
+                        }
+                    }
+                }
+                
                 if (prefab.name.ToLower().EndsWith(".spark"))
                 {
                     var tmpPath = path;
@@ -378,7 +410,7 @@ public class AethaModelSwap
                         return skin;
                     });
             }
-            bundle.Unload(true);
+            bundle.Unload(!DoNotUnloadBundles.Contains(bundle));
         }
     }
     
@@ -388,7 +420,7 @@ public class AethaModelSwap
         {
             if (bundle)
             {
-                bundle.Unload(true);
+                bundle.Unload(!DoNotUnloadBundles.Contains(bundle));
             }
         }
     }
