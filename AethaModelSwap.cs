@@ -284,6 +284,15 @@ public class AethaModelSwap
                     DoNotUnloadBundles.Add(bundle);
                 }
             }
+            foreach (var material in bundle.LoadAllAssets<Material>())
+            {
+                if (material.shader && !Shader.Find(material.shader.name) && !CustomShaders.ContainsKey(material.shader.name))
+                {
+                    Debug.Log($"Loaded shader from material: {material.name} {material.shader.name}");
+                    CustomShaders[material.shader.name] = material.shader;
+                    DoNotUnloadBundles.Add(bundle);
+                }
+            }
             
             foreach (var prefab in bundle.LoadAllAssets<GameObject>())
             {
