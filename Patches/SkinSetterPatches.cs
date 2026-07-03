@@ -52,6 +52,7 @@ public static class SkinSetterPatches
             }
             orig(self, skin, neckSkin);
             TextureSwap.ApplyPalette(self.gameObject, (int)skin, true, false);
+            TextureSwap.ApplyPalette(self.gameObject, (int)neckSkin, false, true);
         };
 
         On.PlayerSkinSetter.SetNeckVisuals += (orig, self, skin) =>
